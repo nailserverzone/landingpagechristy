@@ -1034,6 +1034,20 @@ const App = () => {
   };
   return (
     <div style={{ background: T.bg, color: T.ink, minHeight: "100vh" }}>
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999,
+        background: "#1a1a1a",
+        color: "#fff",
+        textAlign: "center",
+        fontSize: 12,
+        fontWeight: 600,
+        padding: "8px 16px",
+        letterSpacing: "0.02em",
+        borderBottom: "2px solid #f5d04e",
+      }}>
+        ⚠️ Concept design © 2026 Noor Naila Himam – draft demo, not final client site.
+      </div>
+      <div style={{ paddingTop: 37 }}>
       <Nav T={T} onCta={scrollToForm} />
       <Hero T={T} ctaLabel={tweaks.ctaLabel} onCta={scrollToForm} />
       <TrustStrip T={T} />
@@ -1045,6 +1059,7 @@ const App = () => {
       <FinalCTA T={T} ctaLabel={tweaks.ctaLabel} />
       <Footer T={T} />
 
+      </div>
       <TweaksPanel title="Tweaks">
         <TweakSection title="Visual">
           <TweakRadio
