@@ -528,6 +528,98 @@ const WhyChristy = ({ T }) => {
   );
 };
 
+// ---- TESTIMONIALS (placeholder) ----
+const phStyle = (T) => ({
+  background: "repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.03) 6px, rgba(0,0,0,0.03) 12px)",
+  border: `2px dashed ${T.line}`,
+  borderRadius: 16,
+  padding: 28,
+  color: T.inkSoft,
+  fontStyle: "italic",
+});
+
+const Testimonials = ({ T }) => (
+  <section style={{ padding: "120px 0", background: T.bgAlt, position: "relative", overflow: "hidden" }}>
+    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
+      <Reveal>
+        <div style={{ textAlign: "center", marginBottom: 56 }}>
+          <div style={{
+            display: "inline-block",
+            background: T.yellow, color: T.deep,
+            fontSize: 11, fontWeight: 800,
+            letterSpacing: "0.16em", textTransform: "uppercase",
+            padding: "5px 14px", borderRadius: 999, marginBottom: 16,
+          }}>Placeholder section</div>
+          <h2 style={{
+            fontSize: "clamp(32px, 4vw, 48px)",
+            lineHeight: 1.05, fontWeight: 800,
+            letterSpacing: "-0.02em",
+            margin: 0, color: T.deep,
+          }}>What clients are saying</h2>
+        </div>
+      </Reveal>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+        {[1, 2, 3].map((n) => (
+          <Reveal key={n} delay={n * 80}>
+            <div style={phStyle(T)}>
+              <div style={{ fontSize: 40, lineHeight: 0.8, marginBottom: 16, opacity: 0.3 }}>"</div>
+              <div style={{ fontSize: 15, lineHeight: 1.6, marginBottom: 20, color: T.inkSoft }}>
+                [Testimonial {n} goes here — client quote about their coaching experience with Christy.]
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: "50%",
+                  background: T.line,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 700, color: T.inkSoft,
+                }}>PHOTO</div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: T.deep, fontStyle: "normal" }}>
+                    [Client Name {n}]
+                  </div>
+                  <div style={{ fontSize: 12, color: T.inkSoft }}>[Title / Location]</div>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+
+      <Reveal delay={80}>
+        <div style={{ marginTop: 72, paddingTop: 48, borderTop: `1px dashed ${T.line}` }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <div style={{
+              display: "inline-block",
+              background: T.yellow, color: T.deep,
+              fontSize: 11, fontWeight: 800,
+              letterSpacing: "0.16em", textTransform: "uppercase",
+              padding: "5px 14px", borderRadius: 999, marginBottom: 12,
+            }}>Placeholder section</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T.inkSoft, letterSpacing: "0.14em", textTransform: "uppercase" }}>
+              As Featured In
+            </div>
+          </div>
+          <div style={{
+            display: "flex", justifyContent: "center", alignItems: "center",
+            flexWrap: "wrap", gap: 32,
+          }}>
+            {["[Publication 1]", "[Podcast 2]", "[Media Outlet 3]", "[Magazine 4]", "[Platform 5]"].map((name) => (
+              <div key={name} style={{
+                ...phStyle(T),
+                padding: "10px 24px",
+                fontSize: 13, fontWeight: 700,
+                borderRadius: 8,
+                whiteSpace: "nowrap",
+              }}>{name}</div>
+            ))}
+          </div>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+);
+
 // ---- BRIDGE CTA ----
 const Bridge = ({ T, onCta, ctaLabel }) => (
   <section style={{ padding: "100px 0", background: T.bg, position: "relative", overflow: "hidden" }}>
@@ -945,6 +1037,17 @@ const FinalCTA = ({ T, ctaLabel }) => {
                   <div style={{ fontSize: 12, color: T.inkSoft, textAlign: "center", marginTop: 4 }}>
                     No spam. We respect your inbox.
                   </div>
+                  <div style={{
+                    marginTop: 12,
+                    padding: "10px 14px",
+                    background: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.025) 5px, rgba(0,0,0,0.025) 10px)",
+                    border: `1.5px dashed ${T.line}`,
+                    borderRadius: 8,
+                    fontSize: 11, color: T.inkSoft, fontStyle: "italic",
+                    textAlign: "center",
+                  }}>
+                    [Connect to booking system — e.g. Calendly, Acuity, or custom CRM]
+                  </div>
                 </div>
               </>
             ) : (
@@ -1053,6 +1156,7 @@ const App = () => {
       <TrustStrip T={T} />
       <About T={T} onCta={scrollToForm} ctaLabel={tweaks.ctaLabel} />
       <WhyChristy T={T} />
+      <Testimonials T={T} />
       <Bridge T={T} onCta={scrollToForm} ctaLabel={tweaks.ctaLabel} />
       <Book T={T} />
       <Song T={T} />
