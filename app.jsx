@@ -124,9 +124,11 @@ const Hero = () => (
     overflow: "hidden",
     textAlign: "center",
   }}>
+    {/* gradient orbs */}
     <div style={{ position: "absolute", top: -100, left: "20%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(${T.navyL}, transparent 70%)`, pointerEvents: "none" }} />
     <div style={{ position: "absolute", bottom: -80, right: "10%", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(rgba(201,168,76,0.12), transparent 70%)`, pointerEvents: "none" }} />
 
+    {/* Lake photo placeholder */}
     <Reveal>
       <div style={{ position: "relative", maxWidth: 900, margin: "0 auto 52px", borderRadius: 20, overflow: "hidden" }}>
         <PhBox style={{
@@ -140,6 +142,7 @@ const Hero = () => (
           <div style={{ fontWeight: 700, fontSize: 16 }}>[Lake Hamilton hero photo]</div>
           <div style={{ fontSize: 13, marginTop: 6 }}>Sunrise / lakefront / boardwalk — replace with professional photography</div>
         </PhBox>
+        {/* date badge */}
         <div style={{
           position: "absolute", top: 20, right: 20,
           background: T.gold, color: T.navy,
@@ -151,7 +154,7 @@ const Hero = () => (
 
     <Reveal delay={100}>
       <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: T.goldL, textTransform: "uppercase", marginBottom: 20 }}>
-        Be Your Own Superhero™ Retreat  ·  Lake Hamilton, Hot Springs, Arkansas
+        Be Your Own Superhero™ Retreat &nbsp;·&nbsp; Lake Hamilton, Hot Springs, Arkansas
       </div>
       <h1 style={{
         fontSize: "clamp(40px, 6vw, 80px)",
@@ -171,7 +174,7 @@ const Hero = () => (
         <Btn outline onClick={() => scrollTo("experience")}>Learn More</Btn>
       </div>
       <div style={{ marginTop: 24, fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
-        Limited to 10 women  ·  September 18–20, 2026  ·  Hot Springs, Arkansas
+        Limited to 10 women &nbsp;·&nbsp; September 18–20, 2026 &nbsp;·&nbsp; Hot Springs, Arkansas
       </div>
     </Reveal>
   </section>
@@ -188,7 +191,7 @@ const Experience = () => (
             A weekend designed entirely{" "}<Script size={56}>for you.</Script>
           </h2>
           <p style={{ fontSize: 17, lineHeight: 1.7, color: T.soft, maxWidth: 660, margin: "24px auto 0" }}>
-            This is not a conference. It’s an intimate, transformational weekend focused on healing, personal growth, rest, reflection, and authentic connection — in a small group of no more than 10 women.
+            This is not a conference. It's an intimate, transformational weekend focused on healing, personal growth, rest, reflection, and authentic connection — in a small group of no more than 10 women.
           </p>
         </div>
       </Reveal>
@@ -215,6 +218,7 @@ const Experience = () => (
         ))}
       </div>
 
+      {/* Who it's for */}
       <Reveal delay={80}>
         <div style={{
           marginTop: 72, display: "grid", gridTemplateColumns: "1fr 1fr",
@@ -254,7 +258,7 @@ const Experience = () => (
               borderRadius: 20, padding: 40,
               boxShadow: "0 30px 60px -20px rgba(21,41,75,0.4)",
             }}>
-              <div style={{ fontSize: 48, color: T.gold, fontFamily: "'Caveat', cursive", lineHeight: 0.8, marginBottom: 20 }}>&ldquo;</div>
+              <div style={{ fontSize: 48, color: T.gold, fontFamily: "'Caveat', cursive", lineHeight: 0.8, marginBottom: 20 }}>"</div>
               <p style={{ fontSize: 18, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>
                 The retreat is not about pretending to be invincible. It is about learning to stop abandoning yourself while waiting for someone else to rescue you.
               </p>
@@ -345,16 +349,16 @@ const Included = () => (
         <div style={{ textAlign: "center", marginBottom: 56 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: T.gold, textTransform: "uppercase", marginBottom: 14 }}>Everything You Need</div>
           <h2 style={{ fontSize: "clamp(30px, 4vw, 46px)", fontWeight: 800, letterSpacing: "-0.02em", margin: 0 }}>
-            What’s included in your retreat
+            What's included in your retreat
           </h2>
         </div>
       </Reveal>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 40 }}>
         {[
           ["🏠", "Two nights of lakefront accommodations"],
           ["🎓", "All retreat teaching & coaching sessions"],
           ["📔", "Retreat workbook"],
-          ["📖", "Signed copy of Christy Marvel’s book"],
+          ["📖", "Signed copy of Christy Marvel's book"],
           ["🎁", "A thoughtfully curated Be Your Own Superhero™ welcome package"],
           ["🍽️", "Meals & refreshments during the retreat"],
           ["🚤", "Lake access & planned lake activities"],
@@ -411,13 +415,13 @@ const MeetChristy = () => (
         <Reveal delay={120}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: T.gold, textTransform: "uppercase", marginBottom: 14 }}>Meet Christy</div>
           <h2 style={{ fontSize: "clamp(30px, 3.8vw, 46px)", fontWeight: 800, letterSpacing: "-0.02em", color: T.navy, margin: "0 0 24px" }}>
-            She’s been where you are — and found her way through.
+            She's been where you are — and found her way through.
           </h2>
           <p style={{ fontSize: 16, lineHeight: 1.75, color: T.soft, margin: "0 0 16px" }}>
             Christy Marvel is the author of <em>Be Your Own Superhero</em>, a Ziglar Master Coach and Trainer, keynote speaker, entrepreneur, and former architect. She is a self-made multi-millionaire and small-business owner since 2000.
           </p>
           <p style={{ fontSize: 16, lineHeight: 1.75, color: T.soft, margin: "0 0 28px" }}>
-            As a severe childhood trauma survivor, Christy knows what it means to live in survival mode — and what it takes to step out of it. Her mission is to help women heal their “Little Me,” set healthy boundaries, and unlock the power that has been within them all along.
+            As a severe childhood trauma survivor, Christy knows what it means to live in survival mode — and what it takes to step out of it. Her mission is to help women heal their "Little Me," set healthy boundaries, and unlock the power that has been within them all along.
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {["Author · Be Your Own Superhero", "Ziglar Master Coach", "Keynote Speaker", "Entrepreneur & Former Architect"].map(tag => (
@@ -470,7 +474,7 @@ const Accommodations = () => (
 
       <Reveal delay={80}>
         <PhBox style={{ textAlign: "center", marginBottom: 48, marginTop: 32 }}>
-          📸 [Professional photos of the lake houses, bedrooms, gathering spaces, lake & boardwalk — replace with Christy’s property photography]
+          📸 [Professional photos of the lake houses, bedrooms, gathering spaces, lake & boardwalk — replace with Christy's property photography]
         </PhBox>
       </Reveal>
 
@@ -480,7 +484,7 @@ const Accommodations = () => (
           padding: "12px 20px", marginBottom: 36,
           fontSize: 13, color: T.navy, fontWeight: 600, textAlign: "center",
         }}>
-          ⚠️ Prices below are working figures. Do not share publicly until Christy confirms.  <PhBadge />
+          ⚠️ Prices below are working figures. Do not share publicly until Christy confirms. &nbsp;<PhBadge />
         </div>
       </Reveal>
 
@@ -558,7 +562,7 @@ const Testimonials = () => (
         {[1, 2, 3].map(n => (
           <Reveal key={n} delay={n * 80}>
             <PhBox style={{ height: "100%" }}>
-              <div style={{ fontSize: 36, opacity: 0.3, lineHeight: 0.8, marginBottom: 14 }}>&ldquo;</div>
+              <div style={{ fontSize: 36, opacity: 0.3, lineHeight: 0.8, marginBottom: 14 }}>"</div>
               <div style={{ marginBottom: 20, lineHeight: 1.6 }}>
                 [Testimonial {n} — client quote about their experience at the retreat or working with Christy.]
               </div>
@@ -584,7 +588,7 @@ const Testimonials = () => (
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 const faqs = [
   ["May I attend by myself?", "Absolutely. Many women attend on their own and leave with meaningful new friendships. You do not need to know anyone before you arrive."],
-  ["What is included in my registration?", "Your registration includes two nights of lakefront lodging, all retreat sessions, meals and refreshments, your retreat workbook, a signed copy of Christy’s book, a curated welcome package, lake activities, bonfire gatherings, and a Sunday massage experience."],
+  ["What is included in my registration?", "Your registration includes two nights of lakefront lodging, all retreat sessions, meals and refreshments, your retreat workbook, a signed copy of Christy's book, a curated welcome package, lake activities, bonfire gatherings, and a Sunday massage experience."],
   ["Are meals included?", "Yes. Meals and refreshments are provided throughout the retreat weekend."],
   ["Can dietary restrictions be accommodated?", "Yes. Please note any dietary restrictions or food allergies in your registration form."],
   ["What should I bring?", "[Packing list to be provided to registered guests — comfortable clothes, journal, open heart.]"],
@@ -701,7 +705,7 @@ const Register = () => {
 
                 {step === 1 && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                    <label style={labelStyle}><span style={labelText}>Roommate’s name (if registering together)</span><input style={inputStyle} value={data.roommate} onChange={upd("roommate")} /></label>
+                    <label style={labelStyle}><span style={labelText}>Roommate's name (if registering together)</span><input style={inputStyle} value={data.roommate} onChange={upd("roommate")} /></label>
                     <label style={labelStyle}><span style={labelText}>Dietary restrictions / food allergies</span><input style={inputStyle} value={data.dietary} onChange={upd("dietary")} /></label>
                     <label style={labelStyle}><span style={labelText}>Accessibility or mobility considerations</span><input style={inputStyle} value={data.accessibility} onChange={upd("accessibility")} /></label>
                     <label style={labelStyle}><span style={labelText}>Massage interest</span>
@@ -733,9 +737,9 @@ const Register = () => {
             ) : (
               <div style={{ textAlign: "center", padding: "32px 0" }}>
                 <div style={{ fontSize: 52, marginBottom: 16 }}>🦸‍♀️</div>
-                <div style={{ fontSize: 24, fontWeight: 800, color: T.navy }}>You’re registered!</div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: T.navy }}>You're registered!</div>
                 <div style={{ fontSize: 15, color: T.soft, marginTop: 10, lineHeight: 1.6 }}>
-                  Check your inbox for confirmation.<br/>We’ll be in touch with next steps.
+                  Check your inbox for confirmation.<br/>We'll be in touch with next steps.
                 </div>
                 <div style={{ marginTop: 20 }}>
                   <PhBox>Payment confirmation email will be sent here automatically once payment integration is connected.</PhBox>
@@ -783,7 +787,7 @@ const Newsletter = () => {
             <Btn onClick={() => setDone(true)} style={{ whiteSpace: "nowrap", padding: "12px 24px", fontSize: 14 }}>Subscribe</Btn>
           </div>
         ) : (
-          <div style={{ color: T.navy, fontWeight: 700 }}>✓ You’re on the list!</div>
+          <div style={{ color: T.navy, fontWeight: 700 }}>✓ You're on the list!</div>
         )}
         <div style={{ marginTop: 14 }}>
           <PhBox style={{ fontSize: 12 }}>[Connect to email provider — Mailchimp / ConvertKit / Flodesk]</PhBox>
@@ -821,7 +825,7 @@ const Footer = () => (
         </div>
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: T.goldL, marginBottom: 16 }}>Retreat</div>
-          {["The Experience", "Weekend Schedule", "Accommodations", "What’s Included", "Meet Christy", "FAQ"].map(l => (
+          {["The Experience", "Weekend Schedule", "Accommodations", "What's Included", "Meet Christy", "FAQ"].map(l => (
             <div key={l} style={{ fontSize: 13, marginBottom: 8 }}>{l}</div>
           ))}
         </div>
