@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Christy Marvel — Free 1-Hour Coaching Call</title>
+<title>Christy Marvel — Free 1-Hour Coaching Call with a Ziglar Master Coach</title>
+<meta name="description" content="Book a complimentary 1-hour coaching call with Christy Marvel — Ziglar Master Coach, self-made multi-millionaire and trauma survivor. Walk away with clarity, a plan, and your next 3 steps. No cost. No pitch." />
+<meta property="og:title" content="Christy Marvel — Free 1-Hour Coaching Call" />
+<meta property="og:description" content="One hour with a Ziglar Master Coach. Clarity, a plan, and your next 3 steps. Free." />
+<meta property="og:type" content="website" />
 <link rel="icon" href="assets/logo.webp" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,9 +28,39 @@
   html { scroll-behavior: smooth; }
   nav a:hover { color: #1a1a1a; }
   button:hover { transform: translateY(-1px); transition: transform 200ms; }
+
+  /* Responsive: stack all grids on tablet/mobile */
   @media (max-width: 880px) {
     section [style*="grid-template-columns"] {
       grid-template-columns: 1fr !important;
+    }
+    section { padding-left: 0 !important; padding-right: 0 !important; }
+    section [style*="padding: \"0 32px\""] { padding-left: 20px !important; padding-right: 20px !important; }
+    /* Shrink oversized decorative background type on mobile */
+    .bg-decoration { font-size: 120px !important; }
+    /* Give the sticky mobile CTA breathing room at page bottom */
+    body { padding-bottom: 76px; }
+  }
+  @media (max-width: 640px) {
+    h1 { font-size: 42px !important; }
+    h2 { font-size: 30px !important; }
+    .desktop-only { display: none !important; }
+  }
+  @media (min-width: 641px) {
+    .mobile-only { display: none !important; }
+  }
+
+  /* nicer focus for form fields */
+  input:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid #f5d04e;
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
     }
   }
 </style>
