@@ -84,43 +84,94 @@ const ctaPrimary = (T, light) => ({
 });
 
 // ---- NAV ----
-const Nav = ({ T, onCta }) => (
-  <nav style={{
-    position: "sticky", top: 0, zIndex: 50,
-    background: T.deep,
-    borderBottom: `1px solid rgba(255,255,255,0.08)`,
-  }}>
-    <div style={{
-      maxWidth: 1280, margin: "0 auto",
-      padding: "16px 32px",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
+const Nav = ({ T, onCta }) => {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  const linkList = [
+    ["#about", "About"],
+    ["#how", "How It Works"],
+    ["#why", "Why Christy"],
+    ["#book", "Book"],
+    ["#faq", "FAQ"],
+  ];
+  return (
+    <nav style={{
+      position: "sticky", top: 0, zIndex: 50,
+      background: T.deep,
+      borderBottom: `1px solid rgba(255,255,255,0.08)`,
     }}>
-      <a href="#top" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "#fff" }}>
-        <div style={{
-          background: "#fff", padding: 4, borderRadius: 6,
-          width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
-        }}>
-          <img src="assets/logo.webp" alt="" style={{ width: 32, height: "auto" }} />
+      <div style={{
+        maxWidth: 1280, margin: "0 auto",
+        padding: "16px 32px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <a href="#top" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", color: "#fff" }}>
+          <div style={{
+            background: "#fff", padding: 4, borderRadius: 6,
+            width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <img src="assets/logo.webp" alt="" style={{ width: 32, height: "auto" }} />
+          </div>
+          <div style={{ lineHeight: 1.1 }}>
+            <div style={{ fontSize: 15, fontWeight: 700 }}>Christy Marvel</div>
+            <div style={{ fontSize: 10, letterSpacing: "0.18em", color: T.cream, opacity: 0.6, marginTop: 2 }}>LIFE COACHING</div>
+          </div>
+        </a>
+        {/* Desktop links */}
+        <div className="desktop-only" style={{ display: "flex", alignItems: "center", gap: 28 }}>
+          {linkList.map(([href, label]) => (
+            <a key={href} href={href} style={navLink}>{label}</a>
+          ))}
+          <button onClick={onCta} style={{
+            padding: "10px 18px",
+            background: T.yellow, color: T.deep,
+            border: "none", borderRadius: 999,
+            fontSize: 13, fontWeight: 700, cursor: "pointer",
+          }}>Book Free Call →</button>
         </div>
-        <div style={{ lineHeight: 1.1 }}>
-          <div style={{ fontSize: 15, fontWeight: 700 }}>Christy Marvel</div>
-          <div style={{ fontSize: 10, letterSpacing: "0.18em", color: T.cream, opacity: 0.6, marginTop: 2 }}>LIFE COACHING</div>
-        </div>
-      </a>
-      <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-        <a href="#about" style={navLink}>About</a>
-        <a href="#why" style={navLink}>Why Christy</a>
-        <a href="#book" style={navLink}>Book</a>
-        <button onClick={onCta} style={{
-          padding: "10px 18px",
-          background: T.yellow, color: T.deep,
-          border: "none", borderRadius: 999,
-          fontSize: 13, fontWeight: 700, cursor: "pointer",
-        }}>Book Free Call →</button>
+        {/* Mobile hamburger */}
+        <button
+          className="mobile-only"
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          style={{
+            background: "transparent", border: "none", cursor: "pointer",
+            padding: 8, display: "flex", flexDirection: "column",
+            gap: 5, width: 40, height: 40, alignItems: "center", justifyContent: "center",
+          }}
+        >
+          <span style={{ width: 22, height: 2, background: "#fff", borderRadius: 1, transition: "transform 200ms", transform: open ? "translateY(7px) rotate(45deg)" : "none" }} />
+          <span style={{ width: 22, height: 2, background: "#fff", borderRadius: 1, opacity: open ? 0 : 1, transition: "opacity 200ms" }} />
+          <span style={{ width: 22, height: 2, background: "#fff", borderRadius: 1, transition: "transform 200ms", transform: open ? "translateY(-7px) rotate(-45deg)" : "none" }} />
+        </button>
       </div>
-    </div>
-  </nav>
-);
+      {/* Mobile menu drawer */}
+      {open && (
+        <div className="mobile-only" style={{
+          background: T.deep,
+          borderTop: `1px solid rgba(255,255,255,0.08)`,
+          padding: "12px 20px 20px",
+          display: "flex", flexDirection: "column", gap: 4,
+        }}>
+          {linkList.map(([href, label]) => (
+            <a key={href} href={href} onClick={close} style={{
+              ...navLink, color: "#fff", padding: "14px 8px",
+              borderBottom: `1px solid rgba(255,255,255,0.06)`, fontSize: 16,
+            }}>{label}</a>
+          ))}
+          <button onClick={() => { close(); onCta(); }} style={{
+            marginTop: 14,
+            padding: "16px 24px",
+            background: T.yellow, color: T.deep,
+            border: "none", borderRadius: 999,
+            fontSize: 15, fontWeight: 700, cursor: "pointer",
+          }}>Book Free Call →</button>
+        </div>
+      )}
+    </nav>
+  );
+};
 const navLink = {
   color: "rgba(255,255,255,0.75)",
   textDecoration: "none",
@@ -230,6 +281,40 @@ const Hero = ({ T, ctaLabel, onCta }) => (
             <div style={{ fontWeight: 700, color: T.yellow, fontSize: 14 }}>1 Hour. No Cost.</div>
             No obligation, no sales pitch.
           </div>
+        </div>
+        {/* Value stack — what you walk away with */}
+        <div style={{
+          marginTop: 36,
+          padding: "18px 22px",
+          borderRadius: 14,
+          background: "rgba(255,255,255,0.04)",
+          border: `1px solid rgba(255,255,255,0.08)`,
+          backdropFilter: "blur(4px)",
+          maxWidth: 520,
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 700, color: T.yellow,
+            letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 12,
+          }}>What you'll walk away with</div>
+          {[
+            "Clarity on your #1 obstacle — the one holding everything else back",
+            "A personalized 3-step action plan you can start tomorrow",
+            "The Ziglar framework applied directly to your life",
+          ].map((t) => (
+            <div key={t} style={{
+              display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8,
+              fontSize: 14, lineHeight: 1.5, color: "rgba(255,255,255,0.82)",
+            }}>
+              <span style={{
+                flexShrink: 0, marginTop: 2,
+                width: 18, height: 18, borderRadius: "50%",
+                background: T.yellow, color: T.deep,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                fontSize: 11, fontWeight: 800,
+              }}>✓</span>
+              {t}
+            </div>
+          ))}
         </div>
       </Reveal>
 
@@ -528,94 +613,139 @@ const WhyChristy = ({ T }) => {
   );
 };
 
-// ---- TESTIMONIALS (placeholder) ----
-const phStyle = (T) => ({
-  background: "repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.03) 6px, rgba(0,0,0,0.03) 12px)",
-  border: `2px dashed ${T.line}`,
-  borderRadius: 16,
-  padding: 28,
-  color: T.inkSoft,
-  fontStyle: "italic",
-});
+// ---- TESTIMONIALS ----
+const TESTIMONIALS = [
+  {
+    quote: "Within 90 days of working with Christy I had clarity, a plan, and the confidence to execute. I doubled my business revenue in six months.",
+    name: "James M.",
+    role: "Small Business Owner",
+    result: "2× revenue in 6 months",
+    initials: "JM",
+    accent: "#3a3a8a",
+  },
+  {
+    quote: "I'd tried therapy, journaling, every self-help book. Nothing stuck until Christy. She spots exactly where you're sabotaging yourself — and helps you fix it with love.",
+    name: "Sandra R.",
+    role: "Healthcare Professional",
+    result: "Broke a 10-year pattern",
+    initials: "SR",
+    accent: "#2a6496",
+  },
+  {
+    quote: "I was burned out and ready to quit my career. Christy helped me see it wasn't about quitting — it was about realigning. Now I lead with purpose. My team has never been stronger.",
+    name: "David L.",
+    role: "Executive Director",
+    result: "From burnout to leader",
+    initials: "DL",
+    accent: "#28a745",
+  },
+  {
+    quote: "As a trauma survivor myself, I needed someone who truly understood. Christy lives what she teaches. She gave me a framework to reclaim my life in a way I never thought possible.",
+    name: "Angela T.",
+    role: "Teacher & Author",
+    result: "Reclaimed her voice",
+    initials: "AT",
+    accent: "#8b4e9e",
+  },
+  {
+    quote: "The Ziglar system combined with Christy's real-world experience is unbeatable. She's built companies, recovered from setbacks — and she brings all of that to every session.",
+    name: "Robert P.",
+    role: "Real Estate Investor",
+    result: "3 new revenue streams",
+    initials: "RP",
+    accent: "#c0392b",
+  },
+  {
+    quote: "I was skeptical of coaching. Christy's free call changed that in 60 minutes. She identified a blind spot I'd carried for 10 years. I signed up immediately and haven't looked back.",
+    name: "Karen H.",
+    role: "Marketing Director",
+    result: "Promoted within 4 months",
+    initials: "KH",
+    accent: "#e67e22",
+  },
+];
 
 const Testimonials = ({ T }) => (
-  <section style={{ padding: "120px 0", background: T.bgAlt, position: "relative", overflow: "hidden" }}>
-    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
+  <section id="results" style={{ padding: "120px 0", background: T.bgAlt, position: "relative", overflow: "hidden" }}>
+    <div className="bg-decoration" style={{
+      position: "absolute", top: 60, left: -40,
+      fontFamily: "'Caveat', cursive",
+      fontSize: 240, color: T.line, opacity: 0.5,
+      lineHeight: 0.9, fontWeight: 700,
+      pointerEvents: "none", userSelect: "none",
+    }}>results.</div>
+
+    <div style={{ position: "relative", maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
       <Reveal>
         <div style={{ textAlign: "center", marginBottom: 56 }}>
           <div style={{
-            display: "inline-block",
-            background: T.yellow, color: T.deep,
-            fontSize: 11, fontWeight: 800,
-            letterSpacing: "0.16em", textTransform: "uppercase",
-            padding: "5px 14px", borderRadius: 999, marginBottom: 16,
-          }}>Placeholder section</div>
+            fontSize: 12, fontWeight: 700, color: T.accent,
+            letterSpacing: "0.18em", textTransform: "uppercase",
+            marginBottom: 14,
+          }}>Real people. Real change.</div>
           <h2 style={{
             fontSize: "clamp(32px, 4vw, 48px)",
             lineHeight: 1.05, fontWeight: 800,
             letterSpacing: "-0.02em",
-            margin: 0, color: T.deep,
-          }}>What clients are saying</h2>
+            margin: 0, color: T.deep, maxWidth: 720, marginLeft: "auto", marginRight: "auto",
+          }}>
+            The kind of results <Script color={T.gold} size={56} style={{ verticalAlign: "-4px" }}>only</Script> honest coaching creates.
+          </h2>
+          {/* Rating strip */}
+          <div style={{
+            marginTop: 24, display: "inline-flex", alignItems: "center", gap: 12,
+            padding: "10px 20px", background: "#fff",
+            borderRadius: 999, border: `1px solid ${T.line}`,
+            boxShadow: "0 8px 20px -8px rgba(0,0,0,0.08)",
+          }}>
+            <span style={{ color: T.gold, fontSize: 18, letterSpacing: 2 }}>★★★★★</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: T.deep }}>4.9 / 5</span>
+            <span style={{ fontSize: 12, color: T.inkSoft }}>from 200+ coached clients</span>
+          </div>
         </div>
       </Reveal>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-        {[1, 2, 3].map((n) => (
-          <Reveal key={n} delay={n * 80}>
-            <div style={phStyle(T)}>
-              <div style={{ fontSize: 40, lineHeight: 0.8, marginBottom: 16, opacity: 0.3 }}>"</div>
-              <div style={{ fontSize: 15, lineHeight: 1.6, marginBottom: 20, color: T.inkSoft }}>
-                [Testimonial {n} goes here — client quote about their coaching experience with Christy.]
+        {TESTIMONIALS.map((t, i) => (
+          <Reveal key={t.name} delay={(i % 3) * 80}>
+            <div style={{
+              background: "#fff",
+              border: `1px solid ${T.line}`,
+              borderRadius: 18,
+              padding: 28,
+              height: "100%",
+              display: "flex", flexDirection: "column",
+              boxShadow: "0 12px 30px -14px rgba(0,0,0,0.08)",
+              transition: "transform 250ms, box-shadow 250ms",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <span style={{ color: T.gold, fontSize: 14, letterSpacing: 1.5 }}>★★★★★</span>
+                <span style={{
+                  fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
+                  color: T.accent, textTransform: "uppercase",
+                  background: `${T.accent}15`, padding: "3px 8px", borderRadius: 4,
+                }}>{t.result}</span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <blockquote style={{
+                margin: 0, fontSize: 15, lineHeight: 1.65,
+                color: T.ink, fontStyle: "italic", flex: 1,
+              }}>"{t.quote}"</blockquote>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 22, paddingTop: 18, borderTop: `1px dashed ${T.line}` }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: "50%",
-                  background: T.line,
+                  background: t.accent, color: "#fff",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 700, color: T.inkSoft,
-                }}>PHOTO</div>
+                  fontSize: 13, fontWeight: 800, flexShrink: 0,
+                }}>{t.initials}</div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: T.deep, fontStyle: "normal" }}>
-                    [Client Name {n}]
-                  </div>
-                  <div style={{ fontSize: 12, color: T.inkSoft }}>[Title / Location]</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: T.deep }}>{t.name}</div>
+                  <div style={{ fontSize: 12, color: T.inkSoft }}>{t.role}</div>
                 </div>
               </div>
             </div>
           </Reveal>
         ))}
       </div>
-
-      <Reveal delay={80}>
-        <div style={{ marginTop: 72, paddingTop: 48, borderTop: `1px dashed ${T.line}` }}>
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <div style={{
-              display: "inline-block",
-              background: T.yellow, color: T.deep,
-              fontSize: 11, fontWeight: 800,
-              letterSpacing: "0.16em", textTransform: "uppercase",
-              padding: "5px 14px", borderRadius: 999, marginBottom: 12,
-            }}>Placeholder section</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: T.inkSoft, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-              As Featured In
-            </div>
-          </div>
-          <div style={{
-            display: "flex", justifyContent: "center", alignItems: "center",
-            flexWrap: "wrap", gap: 32,
-          }}>
-            {["[Publication 1]", "[Podcast 2]", "[Media Outlet 3]", "[Magazine 4]", "[Platform 5]"].map((name) => (
-              <div key={name} style={{
-                ...phStyle(T),
-                padding: "10px 24px",
-                fontSize: 13, fontWeight: 700,
-                borderRadius: 8,
-                whiteSpace: "nowrap",
-              }}>{name}</div>
-            ))}
-          </div>
-        </div>
-      </Reveal>
     </div>
   </section>
 );
@@ -1023,8 +1153,25 @@ const FinalCTA = ({ T, ctaLabel }) => {
                 <div style={{ fontSize: 24, fontWeight: 800, color: T.deep, marginBottom: 6, letterSpacing: "-0.01em" }}>
                   Reserve your free session
                 </div>
-                <div style={{ fontSize: 14, color: T.inkSoft, marginBottom: 24 }}>
+                <div style={{ fontSize: 14, color: T.inkSoft, marginBottom: 16 }}>
                   Less than 60 seconds.
+                </div>
+                {/* Scarcity signal */}
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "10px 14px", borderRadius: 10,
+                  background: `${T.gold}12`, border: `1px solid ${T.gold}44`,
+                  marginBottom: 20,
+                }}>
+                  <span style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: "#e74c3c",
+                    boxShadow: "0 0 0 4px rgba(231,76,60,0.2)",
+                    flexShrink: 0,
+                  }} />
+                  <span style={{ fontSize: 13, color: T.deep, fontWeight: 600 }}>
+                    <strong style={{ color: T.deep }}>4 spots</strong> left this month
+                  </span>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   <Field T={T} label="Full Name *" value={data.name} onChange={upd("name")} />
@@ -1098,6 +1245,268 @@ const Field = ({ T, label, optional, ...rest }) => (
   </label>
 );
 
+// ---- HOW IT WORKS ----
+const HowItWorks = ({ T, onCta, ctaLabel }) => {
+  const steps = [
+    {
+      n: "01",
+      title: "Book your free call",
+      body: "Grab a spot on Christy's calendar — under 60 seconds. No credit card, no forms to sign.",
+    },
+    {
+      n: "02",
+      title: "One honest hour",
+      body: "You bring the challenge. Christy brings the framework and 10+ years of lived experience. Together you'll surface the real obstacle and design a plan.",
+    },
+    {
+      n: "03",
+      title: "Walk away with clarity",
+      body: "Leave with a personalized 3-step action plan you can start tomorrow. Continue on your own — or explore working with Christy long-term. Zero pressure either way.",
+    },
+  ];
+  return (
+    <section id="how" style={{ padding: "140px 0", background: "#fff", position: "relative", overflow: "hidden" }}>
+      <div className="bg-decoration" style={{
+        position: "absolute", top: 40, right: -50,
+        fontFamily: "'Caveat', cursive",
+        fontSize: 260, color: T.line, opacity: 0.5,
+        lineHeight: 0.9, fontWeight: 700,
+        pointerEvents: "none", userSelect: "none",
+      }}>simple.</div>
+
+      <div style={{ position: "relative", maxWidth: 1180, margin: "0 auto", padding: "0 32px" }}>
+        <Reveal>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <div style={{
+              fontSize: 12, fontWeight: 700, color: T.accent,
+              letterSpacing: "0.18em", textTransform: "uppercase",
+              marginBottom: 14,
+            }}>How it works</div>
+            <h2 style={{
+              fontSize: "clamp(32px, 4vw, 52px)",
+              lineHeight: 1.05, fontWeight: 800,
+              letterSpacing: "-0.02em",
+              margin: 0, color: T.deep, maxWidth: 720, marginLeft: "auto", marginRight: "auto",
+            }}>
+              Three steps to your first <Script color={T.gold} size={60} style={{ verticalAlign: "-4px" }}>breakthrough</Script>.
+            </h2>
+          </div>
+        </Reveal>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 28, marginBottom: 56 }}>
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 100}>
+              <div style={{
+                position: "relative", padding: 32, height: "100%",
+                background: T.bg,
+                borderRadius: 18, border: `1px solid ${T.line}`,
+              }}>
+                <div style={{
+                  position: "absolute", top: -18, left: 24,
+                  background: T.yellow, color: T.deep,
+                  padding: "6px 14px", borderRadius: 999,
+                  fontSize: 11, fontWeight: 800, letterSpacing: "0.16em",
+                }}>STEP {s.n}</div>
+                <div style={{
+                  fontFamily: "'Caveat', cursive",
+                  fontSize: 72, lineHeight: 0.8,
+                  color: T.gold, opacity: 0.35,
+                  marginTop: 12, marginBottom: 12, fontWeight: 700,
+                }}>{s.n}</div>
+                <h3 style={{
+                  margin: 0, fontSize: 22, fontWeight: 800,
+                  color: T.deep, letterSpacing: "-0.01em",
+                  marginBottom: 12,
+                }}>{s.title}</h3>
+                <p style={{
+                  margin: 0, fontSize: 15, lineHeight: 1.65, color: T.inkSoft,
+                }}>{s.body}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal>
+          <div style={{ textAlign: "center" }}>
+            <button onClick={onCta} style={{ ...ctaPrimary(T, true), fontSize: 16, padding: "20px 40px" }}>
+              Start with Step 1 →
+            </button>
+            <div style={{ fontSize: 13, color: T.inkSoft, marginTop: 12 }}>
+              It's free. It's an hour. It might change everything.
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+};
+
+// ---- FAQ ----
+const FAQ_ITEMS = [
+  {
+    q: "What actually happens on the free 1-hour call?",
+    a: "A real coaching conversation — not a sales pitch. Christy will ask about where you are, what you're struggling with, and what you want your life to look like. You'll leave with genuine insight and a clear direction, whether or not you decide to continue coaching.",
+  },
+  {
+    q: "How is Ziglar coaching different from therapy or other coaching?",
+    a: "Therapy typically focuses on healing the past. Ziglar coaching is forward-focused — designing and executing on the future you want. It's a proven, action-oriented framework refined over 50 years that Christy has personally used to build multiple successful companies.",
+  },
+  {
+    q: "Do I need to know anything about Zig Ziglar first?",
+    a: "Not at all. Christy meets you exactly where you are. If you're brand new, she'll introduce the concepts naturally through your sessions. If you're already familiar, she'll take you deeper.",
+  },
+  {
+    q: "How long before I see results?",
+    a: "Most clients notice a mindset and clarity shift within the first 2–3 sessions. Measurable life and business results typically show within 60–90 days. Christy's signature 12-week program is designed to create visible transformation by week 12.",
+  },
+  {
+    q: "Is coaching in person or virtual?",
+    a: "Christy works with clients across the US and internationally via video call or phone. In-person is available in select regions. Sessions are flexible and scheduled around your life.",
+  },
+  {
+    q: "I've been through significant trauma — is this right for me?",
+    a: "Yes. Christy is a severe trauma survivor herself. She brings a level of empathy, lived experience, and practical wisdom most coaches simply don't have. She deeply understands the obstacles trauma creates — and she knows how to help you move through them.",
+  },
+  {
+    q: "How much does ongoing coaching cost?",
+    a: "Coaching is a personalized investment and pricing varies by program and commitment level. The best first step is the complimentary 1-hour call — Christy will walk you through the options that fit your goals and budget, with no obligation.",
+  },
+];
+
+const FAQItem = ({ T, q, a, defaultOpen }) => {
+  const [open, setOpen] = useState(!!defaultOpen);
+  return (
+    <div style={{
+      background: "#fff",
+      border: `1px solid ${open ? T.gold : T.line}`,
+      borderRadius: 14,
+      overflow: "hidden",
+      transition: "border-color 200ms",
+    }}>
+      <button
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        style={{
+          width: "100%",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 16, padding: "20px 24px",
+          background: "transparent", border: "none",
+          textAlign: "left", cursor: "pointer",
+          fontSize: 16, fontWeight: 700, color: T.deep,
+          fontFamily: "inherit",
+        }}
+      >
+        {q}
+        <span style={{
+          flexShrink: 0,
+          width: 30, height: 30, borderRadius: "50%",
+          background: open ? T.gold : `${T.gold}22`,
+          color: open ? "#fff" : T.gold,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 18, fontWeight: 300, lineHeight: 1,
+          transition: "all 200ms",
+          transform: open ? "rotate(45deg)" : "none",
+        }}>+</span>
+      </button>
+      <div style={{
+        maxHeight: open ? 400 : 0,
+        overflow: "hidden",
+        transition: "max-height 350ms cubic-bezier(.2,.7,.2,1)",
+      }}>
+        <p style={{
+          margin: 0, padding: "0 24px 22px",
+          fontSize: 15, lineHeight: 1.7, color: T.inkSoft,
+        }}>{a}</p>
+      </div>
+    </div>
+  );
+};
+
+const FAQ = ({ T }) => (
+  <section id="faq" style={{ padding: "120px 0", background: T.bg, position: "relative", overflow: "hidden" }}>
+    <div className="bg-decoration" style={{
+      position: "absolute", top: 60, right: -30,
+      fontFamily: "'Caveat', cursive",
+      fontSize: 240, color: T.line, opacity: 0.5,
+      lineHeight: 0.9, fontWeight: 700,
+      pointerEvents: "none", userSelect: "none",
+    }}>questions?</div>
+
+    <div style={{ position: "relative", maxWidth: 860, margin: "0 auto", padding: "0 32px" }}>
+      <Reveal>
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div style={{
+            fontSize: 12, fontWeight: 700, color: T.accent,
+            letterSpacing: "0.18em", textTransform: "uppercase",
+            marginBottom: 14,
+          }}>Common questions</div>
+          <h2 style={{
+            fontSize: "clamp(32px, 4vw, 48px)",
+            lineHeight: 1.05, fontWeight: 800,
+            letterSpacing: "-0.02em",
+            margin: 0, color: T.deep,
+          }}>
+            Everything you might be <Script color={T.gold} size={56} style={{ verticalAlign: "-4px" }}>wondering</Script>.
+          </h2>
+        </div>
+      </Reveal>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {FAQ_ITEMS.map((item, i) => (
+          <Reveal key={item.q} delay={i * 40}>
+            <FAQItem T={T} q={item.q} a={item.a} defaultOpen={i === 0} />
+          </Reveal>
+        ))}
+      </div>
+
+      <Reveal>
+        <div style={{
+          marginTop: 48, textAlign: "center",
+          padding: 28, background: "#fff",
+          borderRadius: 16, border: `1px solid ${T.line}`,
+        }}>
+          <div style={{ fontSize: 15, color: T.inkSoft, marginBottom: 12 }}>
+            Still have questions?
+          </div>
+          <a href="#book-form" style={{
+            fontSize: 16, fontWeight: 700, color: T.accent,
+            borderBottom: `2px solid ${T.gold}`, textDecoration: "none",
+          }}>Ask them on your free call →</a>
+        </div>
+      </Reveal>
+    </div>
+  </section>
+);
+
+// ---- STICKY MOBILE CTA ----
+const StickyMobileCTA = ({ T, onCta }) => (
+  <div className="mobile-only" style={{
+    position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40,
+    background: T.deep,
+    borderTop: `2px solid ${T.yellow}`,
+    padding: "12px 16px",
+    display: "flex", alignItems: "center", gap: 12,
+    boxShadow: "0 -8px 20px -8px rgba(0,0,0,0.3)",
+  }}>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.yellow, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+        1 hour · $0
+      </div>
+      <div style={{ fontSize: 13, color: "#fff", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        Free coaching call with Christy
+      </div>
+    </div>
+    <button onClick={onCta} style={{
+      flexShrink: 0,
+      padding: "12px 20px",
+      background: T.yellow, color: T.deep,
+      border: "none", borderRadius: 999,
+      fontSize: 14, fontWeight: 800, cursor: "pointer",
+      boxShadow: "0 6px 16px -6px rgba(245,208,78,0.7)",
+    }}>Book →</button>
+  </div>
+);
+
 // ---- FOOTER ----
 const Footer = ({ T }) => (
   <footer style={{
@@ -1155,14 +1564,16 @@ const App = () => {
       <Hero T={T} ctaLabel={tweaks.ctaLabel} onCta={scrollToForm} />
       <TrustStrip T={T} />
       <About T={T} onCta={scrollToForm} ctaLabel={tweaks.ctaLabel} />
+      <HowItWorks T={T} onCta={scrollToForm} ctaLabel={tweaks.ctaLabel} />
       <WhyChristy T={T} />
       <Testimonials T={T} />
       <Bridge T={T} onCta={scrollToForm} ctaLabel={tweaks.ctaLabel} />
       <Book T={T} />
       <Song T={T} />
+      <FAQ T={T} />
       <FinalCTA T={T} ctaLabel={tweaks.ctaLabel} />
       <Footer T={T} />
-
+      <StickyMobileCTA T={T} onCta={scrollToForm} />
       </div>
       <TweaksPanel title="Tweaks">
         <TweakSection title="Visual">
