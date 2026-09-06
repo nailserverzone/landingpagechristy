@@ -136,6 +136,23 @@ Still to do:
 
 `Status` moves `awaiting_payment` → `confirmed`, or `waitlist` for waitlisters.
 
+## When something breaks
+
+`/api/health` reports whether the site is wired up correctly:
+
+    https://your-site.vercel.app/api/health
+
+It returns `ok: true`, or a `problems` list naming exactly what is wrong — a
+rejected Airtable token, a missing base ID, payments switched on without a
+Stripe key. It actually calls Airtable, so it proves the token, base ID and
+permissions all agree rather than just checking the variables exist.
+
+It reports booleans and error text only — never the value of a token or key.
+
+**Environment variables do not take effect until the next deployment.** After
+changing any of them in Vercel, redeploy, or `/api/health` will keep reporting
+the old configuration.
+
 ## Before going live
 
 Carried over from the design handoff, plus what surfaced while building:

@@ -11,6 +11,7 @@ require("dotenv").config();
 const express = require("express");
 const { getStore } = require("./lib/store.js");
 const { paymentsEnabled, createRegistration, applyWebhook, lookupBySession } = require("./lib/registrations.js");
+const { diagnose } = require("./lib/health.js");
 
 const PORT = process.env.PORT || 4242;
 const ORIGIN = process.env.PUBLIC_ORIGIN || `http://localhost:${PORT}`;
@@ -29,6 +30,12 @@ app.use(express.json({ limit: "64kb" }));
 app.get("/api/config", (_req, res) => {
   res.setHeader("Cache-Control", "no-store");
   res.json({ paymentsEnabled: paymentsEnabled() });
+});
+
+app.get("/api/health", async (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  const report = await diagnose();
+  res.status(report.ok ? 200 : 503).json(report);
 });
 
 app.post("/api/checkout", async (req, res) => {
