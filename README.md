@@ -61,7 +61,7 @@ Test the full flow with card `4242 4242 4242 4242`, any future expiry, any CVC.
 | Guest submits the form | Server validates and saves the registration |
 | …with payments **off** | Saved as `awaiting_payment`, no card touched, Christy follows up |
 | …with payments **on** | Saved as `pending`, guest goes to Stripe Checkout |
-| Guest pays $300 | Stripe redirects back to `/?reserved=1` |
+| Guest pays $300 | Stripe redirects back to `/retreat.html?reserved=1` |
 | `checkout.session.completed` | Webhook flips the registration to `confirmed` and records the Stripe IDs |
 | Balance, later | Charge the saved card off-session using the stored `stripeCustomerId` |
 
@@ -74,9 +74,6 @@ Two things are deliberate and worth preserving if this moves to another host:
   to enter their details again.
 
 ## Layout
-
-The site is two pages that link to each other — the retreat, and the existing
-coaching landing page the brand already had.
 
 The coaching page is the site's front door; the retreat is a page beneath it.
 
@@ -143,9 +140,10 @@ Carried over from the design handoff, plus what surfaced while building:
 - [ ] Flip `PAYMENTS_ENABLED=true` once that account is live.
 - [ ] **Confirm the refund and cancellation policy in writing** — the handoff is
       explicit that this precedes taking any payment.
-- [ ] **Replace the JSON file store with a real database.** Capacity is checked
-      and then written in two steps, so two guests submitting at once can
-      oversell the last bed. That needs a transaction.
+- [ ] **Close the capacity race.** Capacity is checked and then written in two
+      steps, so two guests submitting at once can still oversell the last bed.
+      Airtable cannot do this atomically; it needs a conditional write or a
+      short lock. Low risk at ten guests, real at scale.
 - [ ] **Room photography.** Each room card names the shot it is waiting for.
 - [ ] Send the guest's confirmation email and notify Christy (`server.js`, in the
       webhook handler).
