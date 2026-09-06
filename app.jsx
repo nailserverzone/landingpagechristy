@@ -157,7 +157,7 @@ const Checks = ({ items, ink }) => (
 const Nav = () => (
   <nav>
     <div className="inner">
-      <a className="brand" href="#top">
+      <a className="brand" href="coaching.html">
         <span className="mark"><img src="assets/logo.webp" alt="" style={{ width: 34 }} /></span>
         <span style={{ lineHeight: 1.1 }}>
           <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>Christy Marvel</span>
@@ -671,6 +671,7 @@ const Footer = () => (
       <div>
         <h4>Connect</h4>
         <ul>
+          <li><a href="coaching.html">Coaching</a></li>
           <li><a href="#christy">About Christy</a></li>
           <li><a href="#gallery">Gallery</a></li>
           <li><a href="#reserve">Contact</a></li>

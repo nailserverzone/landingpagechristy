@@ -75,10 +75,15 @@ Two things are deliberate and worth preserving if this moves to another host:
 
 ## Layout
 
+The site is two pages that link to each other — the retreat, and the existing
+coaching landing page the brand already had.
+
 | File | Purpose |
 | --- | --- |
-| `index.html` | Entry point — loads React, Babel, `rooms.js`, `app.jsx` |
-| `app.jsx` | The whole page as React components |
+| `index.html` | Retreat page — loads React, Babel, `rooms.js`, `app.jsx` |
+| `app.jsx` | The retreat page as React components |
+| `coaching.html` | Coaching page — "Free 1-Hour Coaching Call" |
+| `coaching.jsx` | The coaching page as React components |
 | `styles.css` | Design system — tokens, layout, the single 900px breakpoint |
 | `rooms.js` | **Source of truth** for rooms, prices and capacity; used by both browser and server |
 | `server.js` | Static serving, `/api/checkout`, `/api/webhook` |
