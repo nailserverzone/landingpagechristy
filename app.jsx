@@ -1,6 +1,17 @@
 /* global React */
 const { useState, useEffect, useRef } = React;
 
+// ── Global keyframes ──────────────────────────────────────────────────────────
+if (typeof document !== "undefined" && !document.getElementById("app-styles")) {
+  const s = document.createElement("style");
+  s.id = "app-styles";
+  s.textContent = `
+    @keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+    @media (prefers-reduced-motion: reduce) { @keyframes marquee { from,to { transform: none } } }
+  `;
+  document.head.appendChild(s);
+}
+
 // ── Palette ──────────────────────────────────────────────────────────────────
 const T = {
   navy:   "#15294b",
@@ -80,6 +91,34 @@ const Btn = ({ children, onClick, outline, style }) => (
 );
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+// ── CREDENTIAL MARQUEE ────────────────────────────────────────────────────────
+const Marquee = () => {
+  const items = [
+    "★ ZIGLAR MASTER COACH",
+    "★ KEYNOTE SPEAKER",
+    "★ AUTHOR · BE YOUR OWN SUPERHERO™",
+    "★ ENTREPRENEUR SINCE 2000",
+    "★ SEPT 18–20, 2026 · LAKE HAMILTON",
+    "★ LIMITED TO 10 WOMEN",
+  ];
+  const track = [...items, ...items];
+  return (
+    <div style={{ background: T.gold, padding: "11px 0", overflow: "hidden", userSelect: "none" }}>
+      <div style={{
+        display: "flex", width: "max-content",
+        animation: "marquee 28s linear infinite",
+      }}>
+        {track.map((item, i) => (
+          <span key={i} style={{
+            fontSize: 11, fontWeight: 800, letterSpacing: "0.18em",
+            color: T.navy, padding: "0 36px", whiteSpace: "nowrap",
+          }}>{item}</span>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 const Nav = () => (
@@ -398,6 +437,19 @@ const MeetChristy = () => (
               boxShadow: "0 30px 60px -20px rgba(21,41,75,0.35)",
               display: "block",
             }} />
+            <div style={{
+              position: "absolute", top: 32, right: -8,
+              width: 88, height: 88, borderRadius: "50%",
+              background: T.gold, color: T.navy,
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center",
+              textAlign: "center", lineHeight: 1.1,
+              boxShadow: "0 8px 28px rgba(201,168,76,0.45)",
+              border: `3px solid ${T.white}`,
+            }}>
+              <span style={{ fontFamily: "'Caveat', cursive", fontSize: 26, fontWeight: 700 }}>2000</span>
+              <span style={{ fontSize: 7.5, fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase" }}>Business<br/>Owner Since</span>
+            </div>
             <div style={{
               position: "absolute", bottom: 20, right: 0,
               background: "#fff", padding: "14px 18px", borderRadius: 14,
@@ -865,6 +917,7 @@ const App = () => (
     <div style={{ paddingTop: 37 }}>
       <Nav />
       <Hero />
+      <Marquee />
       <Experience />
       <Schedule />
       <Included />
