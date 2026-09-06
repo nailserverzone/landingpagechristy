@@ -250,6 +250,20 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--gold); outl
 .done { text-align: center; padding: 36px 0; }
 .done .script { font-size: clamp(38px, 4.4vw, 58px); color: var(--gold-deep); }
 
+/* build-stage placeholder notes — remove these blocks once the page is final */
+.ph-note {
+  margin: 30px 0 0; padding: 18px 22px;
+  background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(184,138,50,.07) 8px, rgba(184,138,50,.07) 16px);
+  border: 2px dashed var(--gold-deep); border-radius: 6px;
+  color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 70ch;
+}
+.ph-note b { color: var(--navy); }
+.ph-note code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em;
+  background: rgba(21,20,58,.07); padding: 1px 6px; border-radius: 3px;
+}
+.avail.full { background: rgba(140,31,31,.12); color: #8c1f1f; }
+
 /* deposit outcome banner + form errors */
 .banner {
   position: fixed; top: var(--wm); left: 0; right: 0; z-index: 90;

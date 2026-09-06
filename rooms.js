@@ -66,6 +66,16 @@
   const WAITLIST_ID = "waitlist";
   const WAITLIST_LABEL = "Add me to the waitlist";
 
+  // PLACEHOLDER — every room is marked available because nobody has confirmed
+  // the real state yet. Set each to "hold" or "full" from Christy's actual
+  // bookings before this page goes public, or it will offer rooms that are gone.
+  const AVAILABILITY = {
+    "new-master": "available", "new-king": "available", "new-bunk": "available",
+    "old-master": "available", "old-loft": "available", "old-twin": "available",
+  };
+  const AVAILABILITY_LABELS = { available: "AVAILABLE", hold: "ON HOLD", full: "FULL" };
+  const availabilityOf = id => AVAILABILITY[id] || "available";
+
   const money = cents => `$${(cents / 100).toLocaleString("en-US")}`;
 
   // The label shown in the registration select, derived so it can never drift
@@ -76,10 +86,16 @@
 
   const findRoom = id => RETREAT_ROOMS.find(r => r.id === id) || null;
 
+  // Rooms that are full are still listed on the page, but are not offered in
+  // the form — the waitlist is the only route once a room is gone.
   const roomOptions = () => [
-    ...RETREAT_ROOMS.map(r => ({ id: r.id, label: roomLabel(r) })),
+    ...RETREAT_ROOMS.filter(r => availabilityOf(r.id) !== "full")
+                    .map(r => ({ id: r.id, label: roomLabel(r) })),
     { id: WAITLIST_ID, label: WAITLIST_LABEL },
   ];
 
-  return { DEPOSIT_CENTS, MAX_GUESTS, RETREAT_ROOMS, WAITLIST_ID, WAITLIST_LABEL, money, roomLabel, findRoom, roomOptions };
+  return {
+    DEPOSIT_CENTS, MAX_GUESTS, RETREAT_ROOMS, WAITLIST_ID, WAITLIST_LABEL,
+    AVAILABILITY_LABELS, availabilityOf, money, roomLabel, findRoom, roomOptions,
+  };
 });

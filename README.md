@@ -11,14 +11,25 @@ Lake Hamilton, Hot Springs, Arkansas.
 
 ```bash
 npm install
-cp .env.example .env       # then fill in the two keys below
+cp .env.example .env
 npm start                  # http://localhost:4242
+```
+
+**Payments are off by default.** The form collects the full registration and
+charges nothing — Christy is handed the details and arranges the deposit
+herself. That is the correct state until her Stripe account is live, so no keys
+are needed to run the site.
+
+Turn payments on only when her account is verified:
+
+```bash
+PAYMENTS_ENABLED=true      # in .env, alongside the two Stripe keys
 ```
 
 The page itself is static — React 18 + Babel standalone, no build step. The
 server exists only to price the deposit and take the payment.
 
-### Stripe keys
+### Stripe keys (only once payments go live)
 
 The environment this was built in blocks Stripe's domains, so the sandbox has
 to be created from a machine with normal network access:
@@ -47,7 +58,9 @@ Test the full flow with card `4242 4242 4242 4242`, any future expiry, any CVC.
 
 | Step | What happens |
 | --- | --- |
-| Guest submits the form | Server validates, writes the registration as `pending`, creates a Checkout Session |
+| Guest submits the form | Server validates and saves the registration |
+| …with payments **off** | Saved as `awaiting_payment`, no card touched, Christy follows up |
+| …with payments **on** | Saved as `pending`, guest goes to Stripe Checkout |
 | Guest pays $300 | Stripe redirects back to `/?reserved=1` |
 | `checkout.session.completed` | Webhook flips the registration to `confirmed` and records the Stripe IDs |
 | Balance, later | Charge the saved card off-session using the stored `stripeCustomerId` |
@@ -75,7 +88,14 @@ Two things are deliberate and worth preserving if this moves to another host:
 
 Carried over from the design handoff, plus what surfaced while building:
 
+- [ ] **Set real room availability** in `rooms.js` (`AVAILABILITY`). Everything is
+      marked available as a placeholder — publishing as-is offers rooms that may
+      already be taken.
 - [ ] **Confirm the prices.** `$795` / `$995` / `$300` are working figures.
+- [ ] **Christy creates and verifies her own Stripe account**, then invites the
+      developer as a team member. The account must be hers — the deposits land
+      in whichever bank account it is tied to.
+- [ ] Flip `PAYMENTS_ENABLED=true` once that account is live.
 - [ ] **Confirm the refund and cancellation policy in writing** — the handoff is
       explicit that this precedes taking any payment.
 - [ ] **Replace the JSON file store with a real database.** Capacity is checked

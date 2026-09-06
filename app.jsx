@@ -1,5 +1,20 @@
-/* global React, ReactDOM, RETREAT_ROOMS, WAITLIST_ID, money, roomOptions */
+/* global React, ReactDOM, RETREAT_ROOMS, WAITLIST_ID, money, roomOptions,
+   availabilityOf, AVAILABILITY_LABELS */
 const { useState, useEffect, useRef } = React;
+
+// Whether the site can take card payments yet. Defaults to false and only turns
+// on if the server says so, so static hosting or a failed call errs towards
+// "cannot take money" rather than promising a checkout that isn't there.
+const usePaymentsEnabled = () => {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    fetch("/api/config")
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => setOn(Boolean(d && d.paymentsEnabled)))
+      .catch(() => setOn(false));
+  }, []);
+  return on;
+};
 
 const IMG = "assets/retreat/web/";
 
@@ -280,6 +295,11 @@ const Rooms = ({ onSelectRoom }) => (
     <p className="lede rv" style={{ margin: "30px 0 0", maxWidth: "62ch" }}>
       Choose the room that fits how you want to spend the weekend. Premium private rooms and comfortable shared rooms are offered first; each selection shows its bed type, how many women may share it, and whether the bathroom is private. Once a room or bed is reserved it is no longer offered to another guest.
     </p>
+    <div className="ph-note rv">
+      <b>Placeholder — availability not yet confirmed.</b> Every room below is marked
+      available. Set each room's real status in <code>rooms.js</code> before this page
+      is shared publicly, or it will offer rooms that are already taken.
+    </div>
 
     {HOUSES.map(house => (
       <div className="house" key={house.name}>
@@ -299,7 +319,9 @@ const Rooms = ({ onSelectRoom }) => (
                 </dl>
                 <div className="foot">
                   <div className="pr">{money(r.priceCents)} <small>{r.unit}</small></div>
-                  <span className="avail">AVAILABLE</span>
+                  <span className={`avail ${availabilityOf(r.id)}`}>
+                    {AVAILABILITY_LABELS[availabilityOf(r.id)]}
+                  </span>
                 </div>
                 <a className="btn btn-line" style={{ marginTop: 18 }} href="#reserve"
                    onClick={() => onSelectRoom(r.id)}>{r.cta}</a>
@@ -316,9 +338,16 @@ const Rooms = ({ onSelectRoom }) => (
   </div></section>
 );
 
-const Investment = () => (
+const Investment = ({ paymentsEnabled }) => (
   <section className="pad" id="investment"><div className="wrap">
     <Heading eyebrow="Investment" title="Reserve with a deposit" />
+    {!paymentsEnabled && (
+      <div className="ph-note rv">
+        <b>Placeholder — online payment is not live yet.</b> Prices below are working
+        figures awaiting Christy's confirmation. Registrations are collected and Christy
+        arranges payment personally until her payment account is set up.
+      </div>
+    )}
     <div className="pay">
       <div className="rv">
         <div className="lb">Shared Room</div>
@@ -398,7 +427,7 @@ const Field = ({ label, children }) => (
   <label><span>{label}</span>{children}</label>
 );
 
-const Register = ({ room, setRoom }) => {
+const Register = ({ room, setRoom, paymentsEnabled }) => {
   const [sent, setSent] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -424,11 +453,11 @@ const Register = ({ room, setRoom }) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong.");
 
-      // Waitlist takes no money, so there is nothing to redirect to.
-      if (data.waitlisted) {
-        setSent({ first: String(d.get("name") || "friend").trim().split(" ")[0], waitlisted: true });
-        return;
-      }
+      // Waitlist and placeholder mode both take no money, so there is nothing
+      // to redirect to — confirm inline instead.
+      const first = String(d.get("name") || "friend").trim().split(" ")[0];
+      if (data.waitlisted) { setSent({ first, waitlisted: true }); return; }
+      if (data.deferred)   { setSent({ first, deferred: true }); return; }
       window.location.assign(data.url);
     } catch (err) {
       setError(err.message);
@@ -441,7 +470,9 @@ const Register = ({ room, setRoom }) => {
       <div className="inner wrap">
         <div>
           <div className="eyebrow rv gold">Reserve Your Place</div>
-          <h2 className="h2 rv" style={{ marginTop: 16, color: "#fff" }}>Hold your room with $300.</h2>
+          <h2 className="h2 rv" style={{ marginTop: 16, color: "#fff" }}>
+            {paymentsEnabled ? "Hold your room with $300." : "Request your place."}
+          </h2>
           <div className="rule rv" />
           <p className="rv" style={{ marginTop: 28 }}>
             Tell us how to reach you and which room you would like. You will receive an automatic confirmation, and Christy will follow up personally with your payment link, arrival details, and the property address.
@@ -457,10 +488,18 @@ const Register = ({ room, setRoom }) => {
         <div className="card rv">
           {sent ? (
             <div className="done">
-              <div className="script">You're on the list.</div>
+              <div className="script">
+                {sent.waitlisted ? "You're on the list." : "Your place is held."}
+              </div>
               <p style={{ fontSize: 19, lineHeight: 1.65, color: "var(--ink)", margin: "16px 0 0" }}>
-                Thank you, {sent.first}. No payment has been taken. You will be the first to hear
-                when a room opens, and Christy will follow up personally.
+                {sent.waitlisted ? (
+                  <>Thank you, {sent.first}. No payment has been taken. You will be the first to
+                  hear when a room opens, and Christy will follow up personally.</>
+                ) : (
+                  <>Thank you, {sent.first}. Your details are with Christy and no payment has been
+                  taken yet. She will be in touch personally to confirm your room and arrange the
+                  $300 deposit, along with arrival details and the property address.</>
+                )}
               </p>
             </div>
           ) : (
@@ -525,12 +564,16 @@ const Register = ({ room, setRoom }) => {
               {error && <p className="formerror" role="alert">{error}</p>}
               <button className="btn btn-gold" type="submit" disabled={busy}
                       style={{ width: "100%", marginTop: 12, opacity: busy ? .65 : 1 }}>
-                {busy ? "Taking you to checkout…" : room === WAITLIST_ID ? "Join the Waitlist" : "Reserve My Place"}
+                {busy ? (paymentsEnabled ? "Taking you to checkout…" : "Sending…")
+                      : room === WAITLIST_ID ? "Join the Waitlist"
+                      : paymentsEnabled ? "Reserve My Place" : "Request My Place"}
               </button>
               <p className="fine">
                 {room === WAITLIST_ID
                   ? "Joining the waitlist takes no payment. You will only be asked for a deposit if a room opens."
-                  : "A $300 deposit confirms your room and is applied to your total. The remaining balance is paid online before the retreat. Payment is handled securely by Stripe."}
+                  : paymentsEnabled
+                    ? "A $300 deposit confirms your room and is applied to your total. The remaining balance is paid online before the retreat. Payment is handled securely by Stripe."
+                    : "No payment is taken on this page. Christy will contact you personally to confirm your room and arrange the $300 deposit."}
               </p>
             </form>
           )}
@@ -745,6 +788,7 @@ const App = () => {
   const quoteBg = useRef(null);
   const bar = useRef(null);
   const [room, setRoom] = useState(ROOM_OPTIONS[0].id);
+  const paymentsEnabled = usePaymentsEnabled();
 
   useReveal();
   useScrollEffects(heroBg, quoteBg, bar);
@@ -764,11 +808,11 @@ const App = () => {
       <Weekend />
       <Included />
       <Rooms onSelectRoom={setRoom} />
-      <Investment />
+      <Investment paymentsEnabled={paymentsEnabled} />
       <Christy />
       <Quote bgRef={quoteBg} />
       <Gallery />
-      <Register room={room} setRoom={setRoom} />
+      <Register room={room} setRoom={setRoom} paymentsEnabled={paymentsEnabled} />
       <Faq />
       <Invite />
       <Newsletter />

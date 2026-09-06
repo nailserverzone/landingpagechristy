@@ -30,12 +30,17 @@ const PORT = process.env.PORT || 4242;
 const ORIGIN = process.env.PUBLIC_ORIGIN || `http://localhost:${PORT}`;
 const DATA_FILE = process.env.DATA_FILE || path.join(__dirname, "data", "registrations.json");
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.error("Missing STRIPE_SECRET_KEY. Copy .env.example to .env and fill it in.");
+// Online payment is OFF until Christy's Stripe account is live. Registrations
+// are still captured in full; she is emailed and arranges payment directly.
+// Opt in explicitly with PAYMENTS_ENABLED=true — never default this on.
+const PAYMENTS_ENABLED = process.env.PAYMENTS_ENABLED === "true";
+
+if (PAYMENTS_ENABLED && !process.env.STRIPE_SECRET_KEY) {
+  console.error("PAYMENTS_ENABLED=true but STRIPE_SECRET_KEY is missing.");
   process.exit(1);
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 const app = express();
 
 // ── tiny JSON store ───────────────────────────────────────────────────────────
@@ -73,7 +78,7 @@ const looksLikeEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 // Mounted before express.json() so the raw body survives for signature checking.
 app.post("/api/webhook", express.raw({ type: "application/json" }), (req, res) => {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!secret) return res.status(500).send("STRIPE_WEBHOOK_SECRET not configured");
+  if (!stripe || !secret) return res.status(503).send("Payments are not enabled");
 
   let event;
   try {
@@ -145,11 +150,21 @@ app.post("/api/checkout", async (req, res) => {
       return res.status(409).json({ error: `${room.name} is now full. Please choose another room or join the waitlist.` });
     }
 
-    saveRegistration({
+    const base = {
       id: registrationId, roomId: room.id, roomName: `${room.house} — ${room.name}`,
       totalCents: room.priceCents, depositDueCents: DEPOSIT_CENTS,
-      status: "pending", ...details, createdAt: new Date().toISOString(),
-    });
+      ...details, createdAt: new Date().toISOString(),
+    };
+
+    // Placeholder mode: capture everything, charge nothing, hand off to Christy.
+    if (!PAYMENTS_ENABLED) {
+      saveRegistration({ ...base, status: "awaiting_payment" });
+      console.log(`▸ registration held for ${details.name} (${room.name}) — payment to be arranged`);
+      // TODO: email Christy the registration once a mail provider is connected.
+      return res.json({ deferred: true, registrationId });
+    }
+
+    saveRegistration({ ...base, status: "pending" });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -188,8 +203,14 @@ app.post("/api/checkout", async (req, res) => {
   }
 });
 
+// The page asks on load whether it can take money. If this call fails — say the
+// site is served as plain static files — the UI stays in placeholder mode,
+// which is the safe way to be wrong.
+app.get("/api/config", (_req, res) => res.json({ paymentsEnabled: PAYMENTS_ENABLED }));
+
 // Lets the success banner name the guest without trusting the query string.
 app.get("/api/registration", async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: "Payments are not enabled" });
   const sessionId = clean(req.query.session_id);
   if (!sessionId) return res.status(400).json({ error: "session_id required" });
   try {
@@ -207,7 +228,12 @@ app.use(express.static(__dirname, { extensions: ["html"] }));
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Retreat site → ${ORIGIN}`);
-    console.log(`Webhooks     → stripe listen --forward-to ${ORIGIN}/api/webhook`);
+    if (PAYMENTS_ENABLED) {
+      console.log(`Payments     → LIVE. Webhooks: stripe listen --forward-to ${ORIGIN}/api/webhook`);
+    } else {
+      console.log("Payments     → placeholder. Registrations are captured; no card is charged.");
+      console.log("               Set PAYMENTS_ENABLED=true once Christy's Stripe account is ready.");
+    }
   });
 }
 
