@@ -1,4 +1,4 @@
-/* global React, ReactDOM */
+/* global React, ReactDOM, RETREAT_ROOMS, WAITLIST_ID, money, roomOptions */
 const { useState, useEffect, useRef } = React;
 
 const IMG = "assets/retreat/web/";
@@ -67,28 +67,15 @@ const INCLUDED = [
   "An intimate experience limited to a small group of women",
 ];
 
-// `option` is the exact text of this room's entry in the registration select.
-const HOUSES = [
-  {
-    name: "Newer Lake House", tag: "HOUSE ONE",
-    rooms: [
-      { id: "new-master", name: "Downstairs Master Suite", specs: [["Bed", "Master bed"], ["Sleeps", "1–2 women"], ["Bathroom", "Private, with walk-in closet"]], price: "$995", unit: "/ person", cta: "Reserve this room", photo: "Photo: downstairs master suite", option: "Newer House — Downstairs Master Suite · private bath · $995" },
-      { id: "new-king", name: "King Room", specs: [["Bed", "King"], ["Sleeps", "1–2 women"], ["Bathroom", "Shared, with walk-in closet"]], price: "$795", unit: "/ person", cta: "Reserve this room", photo: "Photo: king room", option: "Newer House — King Room · shared bath · $795" },
-      { id: "new-bunk", name: "Bunk Room", specs: [["Beds", "Four bunk beds"], ["Sleeps", "Up to 4 women"], ["Bathroom", "Shared"]], price: "$795", unit: "/ bed", cta: "Reserve a bed", photo: "Photo: bunk room", option: "Newer House — Bunk Room bed · shared bath · $795" },
-    ],
-  },
-  {
-    name: "Older Lake House", tag: "HOUSE TWO",
-    rooms: [
-      { id: "old-master", name: "Master Suite", specs: [["Bed", "Master bed"], ["Sleeps", "1–2 women"], ["Bathroom", "Private"]], price: "$995", unit: "/ person", cta: "Reserve this room", photo: "Photo: master suite", option: "Older House — Master Suite · private bath · $995" },
-      { id: "old-loft", name: "Loft King", specs: [["Bed", "King, in the loft"], ["Sleeps", "1–2 women"], ["Bathroom", "Shared, downstairs"]], price: "$795", unit: "/ person", cta: "Reserve this room", photo: "Photo: loft king", option: "Older House — Loft King · shared bath · $795" },
-      { id: "old-twin", name: "Full & Twin Room", specs: [["Beds", "One full, one twin"], ["Sleeps", "2 women"], ["Bathroom", "Shared"]], price: "$795", unit: "/ person", cta: "Reserve a bed", photo: "Photo: full & twin room", option: "Older House — Full & Twin Room bed · shared bath · $795" },
-    ],
-  },
-];
+// Rooms, prices and the select labels all come from rooms.js, which the server
+// prices against — so a card and its option can never quote different figures.
+const HOUSES = [...new Set(RETREAT_ROOMS.map(r => r.house))].map(house => ({
+  name: house,
+  tag: RETREAT_ROOMS.find(r => r.house === house).houseTag,
+  rooms: RETREAT_ROOMS.filter(r => r.house === house),
+}));
 
-const WAITLIST = "Add me to the waitlist";
-const ROOM_OPTIONS = [...HOUSES.flatMap(h => h.rooms.map(r => r.option)), WAITLIST];
+const ROOM_OPTIONS = roomOptions();
 
 const GALLERY = [
   ["lake-house.jpg", "Lakefront house among the trees", "The houses on the water"],
@@ -301,7 +288,7 @@ const Rooms = ({ onSelectRoom }) => (
           {house.rooms.map(r => (
             <div className="room rv" key={r.id}>
               <div className="slot">
-                <div className="drop"><b>🛏</b>{r.photo}</div>
+                <div className="drop"><b>🛏</b>{r.photoNote}</div>
               </div>
               <div className="body">
                 <div className="nm">{r.name}</div>
@@ -311,11 +298,11 @@ const Rooms = ({ onSelectRoom }) => (
                   ))}
                 </dl>
                 <div className="foot">
-                  <div className="pr">{r.price} <small>{r.unit}</small></div>
+                  <div className="pr">{money(r.priceCents)} <small>{r.unit}</small></div>
                   <span className="avail">AVAILABLE</span>
                 </div>
                 <a className="btn btn-line" style={{ marginTop: 18 }} href="#reserve"
-                   onClick={() => onSelectRoom(r.option)}>{r.cta}</a>
+                   onClick={() => onSelectRoom(r.id)}>{r.cta}</a>
               </div>
             </div>
           ))}
@@ -413,11 +400,40 @@ const Field = ({ label, children }) => (
 
 const Register = ({ room, setRoom }) => {
   const [sent, setSent] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
 
-  const submit = e => {
+  const submit = async e => {
     e.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+
     const d = new FormData(e.target);
-    setSent({ first: String(d.get("name") || "friend").trim().split(" ")[0], email: d.get("email") });
+    const payload = { roomId: room, policies: d.get("policies") === "on", media: d.get("media") === "on" };
+    for (const [k, v] of d.entries()) {
+      if (k !== "policies" && k !== "media" && k !== "room") payload[k] = v;
+    }
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong.");
+
+      // Waitlist takes no money, so there is nothing to redirect to.
+      if (data.waitlisted) {
+        setSent({ first: String(d.get("name") || "friend").trim().split(" ")[0], waitlisted: true });
+        return;
+      }
+      window.location.assign(data.url);
+    } catch (err) {
+      setError(err.message);
+      setBusy(false);
+    }
   };
 
   return (
@@ -441,10 +457,10 @@ const Register = ({ room, setRoom }) => {
         <div className="card rv">
           {sent ? (
             <div className="done">
-              <div className="script">Your place is held.</div>
+              <div className="script">You're on the list.</div>
               <p style={{ fontSize: 19, lineHeight: 1.65, color: "var(--ink)", margin: "16px 0 0" }}>
-                Thank you, {sent.first}. A confirmation is on its way to {sent.email}, and Christy will follow up
-                personally with your deposit link, arrival details, and the property address.
+                Thank you, {sent.first}. No payment has been taken. You will be the first to hear
+                when a room opens, and Christy will follow up personally.
               </p>
             </div>
           ) : (
@@ -469,7 +485,7 @@ const Register = ({ room, setRoom }) => {
                 <legend>Your room</legend>
                 <Field label="Room or bed selection">
                   <select name="room" value={room} onChange={e => setRoom(e.target.value)}>
-                    {ROOM_OPTIONS.map(o => <option key={o}>{o}</option>)}
+                    {ROOM_OPTIONS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
                   </select>
                 </Field>
                 <Field label="Roommate's name, if registering with someone">
@@ -506,11 +522,15 @@ const Register = ({ room, setRoom }) => {
                 <label htmlFor="p2"><span>Optional: I give permission for photographs and video taken at the retreat to be used by Christy Marvel.</span></label>
               </div>
 
-              <button className="btn btn-gold" type="submit" style={{ width: "100%", marginTop: 12 }}>
-                Reserve My Place
+              {error && <p className="formerror" role="alert">{error}</p>}
+              <button className="btn btn-gold" type="submit" disabled={busy}
+                      style={{ width: "100%", marginTop: 12, opacity: busy ? .65 : 1 }}>
+                {busy ? "Taking you to checkout…" : room === WAITLIST_ID ? "Join the Waitlist" : "Reserve My Place"}
               </button>
               <p className="fine">
-                A $300 deposit confirms your room and is applied to your total. The remaining balance is paid online before the retreat.
+                {room === WAITLIST_ID
+                  ? "Joining the waitlist takes no payment. You will only be asked for a deposit if a room opens."
+                  : "A $300 deposit confirms your room and is applied to your total. The remaining balance is paid online before the retreat. Payment is handled securely by Stripe."}
               </p>
             </form>
           )}
@@ -621,6 +641,44 @@ const Footer = () => (
   </div></footer>
 );
 
+// Shown when Stripe redirects back after a completed deposit. The booking is
+// confirmed by the webhook, not here — this only reports what happened.
+const Reserved = () => {
+  const [state, setState] = useState(null);
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (!q.has("reserved")) return;
+
+    if (q.get("reserved") !== "1") { setState({ cancelled: true }); return; }
+
+    const sid = q.get("session_id");
+    if (!sid) { setState({ paid: true }); return; }
+    fetch(`/api/registration?session_id=${encodeURIComponent(sid)}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => setState({ paid: true, ...d }))
+      .catch(() => setState({ paid: true }));
+  }, []);
+
+  if (!state) return null;
+
+  return (
+    <div className={`banner ${state.cancelled ? "warn" : ""}`} role="status">
+      {state.cancelled ? (
+        <span>Checkout was cancelled — no payment was taken. Your place is not yet held.</span>
+      ) : (
+        <span>
+          <b>Your place is held{state.name ? `, ${state.name.split(" ")[0]}` : ""}.</b>{" "}
+          {state.roomName ? `${state.roomName}. ` : ""}
+          A confirmation is on its way{state.email ? ` to ${state.email}` : ""}, and Christy will
+          follow up with arrival details and the property address.
+        </span>
+      )}
+      <button onClick={() => setState(null)} aria-label="Dismiss">×</button>
+    </div>
+  );
+};
+
 // ── Scroll behaviour ──────────────────────────────────────────────────────────
 // Reveal elements start invisible, so a failure to observe would render the page
 // blank. Force them visible on a timeout, on tab focus, and before printing.
@@ -686,7 +744,7 @@ const App = () => {
   const heroBg = useRef(null);
   const quoteBg = useRef(null);
   const bar = useRef(null);
-  const [room, setRoom] = useState(ROOM_OPTIONS[0]);
+  const [room, setRoom] = useState(ROOM_OPTIONS[0].id);
 
   useReveal();
   useScrollEffects(heroBg, quoteBg, bar);
@@ -696,6 +754,7 @@ const App = () => {
       <div className="wm">
         ⚠️ Concept design © 2026 Noor Naila Himam — draft demo, not the final client site.
       </div>
+      <Reserved />
       <div className="bar" ref={bar} />
       <Nav />
       <Hero bgRef={heroBg} />

@@ -1,0 +1,24 @@
+{
+  "name": "christy-marvel-retreat",
+  "version": "1.0.0",
+  "description": "Be Your Own Superhero Retreat — landing page and deposit registration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "stripe:listen": "stripe listen --forward-to http://localhost:4242/api/webhook"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nailserverzone/landingpagechristy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nailserverzone/landingpagechristy/issues"
+  },
+  "homepage": "https://github.com/nailserverzone/landingpagechristy#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "stripe": "^22.6.1"
+  },
+  "private": true
+}
