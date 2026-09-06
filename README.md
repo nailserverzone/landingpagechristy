@@ -104,27 +104,37 @@ Set these in **Project → Settings → Environment Variables**:
 | --- | --- |
 | `STORE` | `airtable` |
 | `AIRTABLE_TOKEN` | token from airtable.com/create/tokens |
-| `AIRTABLE_BASE_ID` | starts `app…`, from the base URL |
+| `AIRTABLE_BASE_ID` | `appbLQN9lRI4xjixW` |
 | `PAYMENTS_ENABLED` | `false` until Christy's Stripe account is live |
 
 Leave `PUBLIC_ORIGIN` unset on Vercel — the request host is used instead, so
 preview deployments return to themselves rather than to production.
 
-### Setting up the Airtable base
+### The Airtable base
 
-1. Create a base with one table named **Registrations**.
-2. Add these fields, spelled exactly (they are the column headers Christy sees):
-   `Registration ID`, `Status`, `Name`, `Email`, `Mobile`, `Mailing Address`,
-   `Emergency Contact`, `Room`, `Room ID`, `Total (USD)`, `Deposit Paid (USD)`,
-   `Roommate`, `Dietary`, `Accessibility`, `Health`, `Massage`, `Apparel Size`,
-   `Heard Via`, `Photo Consent`, `Stripe Customer`, `Stripe Payment`, `Created`,
-   `Confirmed`. Single line text is fine for all of them except the two USD
-   fields, which should be Number or Currency.
-3. Share the base with Christy's email as a **Collaborator**. She then sees
-   every registration in a spreadsheet view she can sort, filter and export —
-   no admin panel needed.
+Already created, in the **Christy Retreat** workspace:
 
-`Status` moves `awaiting_payment` → `confirmed` (or `waitlist` for waitlisters).
+- Base: **Be Your Own Superhero Retreat** — `appbLQN9lRI4xjixW`
+- Table: **Registrations** — `tblmRwl93fO65y2Xf`
+- https://airtable.com/appbLQN9lRI4xjixW
+
+All 23 columns match the names in `lib/store.js`. A record shaped exactly as
+that file writes was accepted with `typecast` off, so the ISO timestamps, the
+`Status` select, the currency fields and the phone format are all confirmed
+compatible.
+
+**Do not rename the columns** — `lib/store.js` addresses them by name, so a
+rename silently stops the site writing to that column. Adding columns is safe.
+
+Still to do:
+
+1. Create a personal access token at airtable.com/create/tokens with
+   `data.records:read` and `data.records:write` on this base, and set it as
+   `AIRTABLE_TOKEN` in Vercel.
+2. Share the base with Christy as a **Collaborator**, so she can read and export
+   registrations herself.
+
+`Status` moves `awaiting_payment` → `confirmed`, or `waitlist` for waitlisters.
 
 ## Before going live
 
