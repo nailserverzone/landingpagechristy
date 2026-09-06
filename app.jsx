@@ -1,5 +1,5 @@
 /* global React, ReactDOM, RETREAT_ROOMS, WAITLIST_ID, money, roomOptions,
-   availabilityOf, AVAILABILITY_LABELS */
+   availabilityOf, AVAILABILITY_LABELS, validateRegistration, firstError */
 const { useState, useEffect, useRef } = React;
 
 // Whether the site can take card payments yet. Defaults to false and only turns
@@ -157,7 +157,7 @@ const Checks = ({ items, ink }) => (
 const Nav = () => (
   <nav>
     <div className="inner">
-      <a className="brand" href="coaching.html">
+      <a className="brand" href="/">
         <span className="mark"><img src="assets/logo.webp" alt="" style={{ width: 34 }} /></span>
         <span style={{ lineHeight: 1.1 }}>
           <span style={{ display: "block", fontSize: 16, fontWeight: 700 }}>Christy Marvel</span>
@@ -423,26 +423,56 @@ const Gallery = () => (
   </div></section>
 );
 
-const Field = ({ label, children }) => (
-  <label><span>{label}</span>{children}</label>
+const Field = ({ label, children, error }) => (
+  <label className={error ? "invalid" : undefined}>
+    <span>{label}</span>
+    {children}
+    {error && <em className="fielderror">{error}</em>}
+  </label>
 );
 
 const Register = ({ room, setRoom, paymentsEnabled }) => {
   const [sent, setSent] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  // Re-check one field once it has been corrected, so an error clears as soon
+  // as it is fixed rather than lingering until the next submit.
+  const recheck = e => {
+    const { name, value } = e.target;
+    if (!fieldErrors[name]) return;
+    const errs = validateRegistration({ [name]: value, policies: true }, { requirePolicies: false });
+    setFieldErrors(prev => {
+      const next = { ...prev };
+      if (!errs[name]) delete next[name];
+      return next;
+    });
+  };
 
   const submit = async e => {
     e.preventDefault();
     if (busy) return;
-    setBusy(true);
-    setError(null);
 
     const d = new FormData(e.target);
     const payload = { roomId: room, policies: d.get("policies") === "on", media: d.get("media") === "on" };
     for (const [k, v] of d.entries()) {
       if (k !== "policies" && k !== "media" && k !== "room") payload[k] = v;
     }
+
+    // Check here for instant feedback; the server checks again and has the
+    // final say, since anything in the browser can be bypassed.
+    const errs = validateRegistration(payload, { requirePolicies: room !== WAITLIST_ID });
+    if (Object.keys(errs).length) {
+      setFieldErrors(errs);
+      setError(firstError(errs));
+      document.querySelector(".card label.invalid input, .card label.invalid textarea")?.focus();
+      return;
+    }
+
+    setBusy(true);
+    setError(null);
+    setFieldErrors({});
 
     try {
       const res = await fetch("/api/checkout", {
@@ -451,7 +481,10 @@ const Register = ({ room, setRoom, paymentsEnabled }) => {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Something went wrong.");
+      if (!res.ok) {
+        if (data.errors) setFieldErrors(data.errors);
+        throw new Error(data.error || "Something went wrong.");
+      }
 
       // Waitlist and placeholder mode both take no money, so there is nothing
       // to redirect to — confirm inline instead.
@@ -503,20 +536,36 @@ const Register = ({ room, setRoom, paymentsEnabled }) => {
               </p>
             </div>
           ) : (
-            <form onSubmit={submit}>
+            // noValidate hands validation to us: the browser's built-in messages
+            // are inconsistent across browsers and cannot express rules like
+            // "7 to 15 digits". The `required` attributes stay for screen readers.
+            <form onSubmit={submit} noValidate>
               <fieldset className="fs">
                 <legend>About you</legend>
-                <Field label="Full name"><input name="name" required /></Field>
+                <Field label="Full name" error={fieldErrors.name}>
+                  <input name="name" autoComplete="name" onBlur={recheck} onInput={recheck} required />
+                </Field>
                 <div className="row">
-                  <Field label="Email address"><input type="email" name="email" required /></Field>
-                  <Field label="Mobile number"><input name="mobile" required /></Field>
+                  <Field label="Email address" error={fieldErrors.email}>
+                    <input type="email" name="email" autoComplete="email" inputMode="email"
+                           onBlur={recheck} onInput={recheck} required />
+                  </Field>
+                  <Field label="Mobile number" error={fieldErrors.mobile}>
+                    <input type="tel" name="mobile" autoComplete="tel" inputMode="tel"
+                           onBlur={recheck} onInput={recheck} required />
+                  </Field>
                 </div>
                 <Field label="Mailing address">
                   <textarea name="address" placeholder="Street, city, state, ZIP" />
                 </Field>
                 <div className="row">
-                  <Field label="Emergency contact name"><input name="ecname" required /></Field>
-                  <Field label="Emergency contact number"><input name="ecphone" required /></Field>
+                  <Field label="Emergency contact name" error={fieldErrors.ecname}>
+                    <input name="ecname" onBlur={recheck} onInput={recheck} required />
+                  </Field>
+                  <Field label="Emergency contact number" error={fieldErrors.ecphone}>
+                    <input type="tel" name="ecphone" inputMode="tel"
+                           onBlur={recheck} onInput={recheck} required />
+                  </Field>
                 </div>
               </fieldset>
 
@@ -671,7 +720,7 @@ const Footer = () => (
       <div>
         <h4>Connect</h4>
         <ul>
-          <li><a href="coaching.html">Coaching</a></li>
+          <li><a href="/">Coaching</a></li>
           <li><a href="#christy">About Christy</a></li>
           <li><a href="#gallery">Gallery</a></li>
           <li><a href="#reserve">Contact</a></li>

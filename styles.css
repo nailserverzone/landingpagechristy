@@ -340,3 +340,10 @@ footer .base { margin-top: 52px; padding-top: 26px; border-top: 1px solid rgba(2
   .gal .ph:nth-child(1) { grid-column: auto; grid-row: auto; }
   footer .cols { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
 }
+
+/* per-field validation */
+.card label.invalid input,
+.card label.invalid textarea,
+.card label.invalid select { border-color: #be2a2a; background: rgba(190,42,42,.04); }
+.card label.invalid > span { color: #8c1f1f; }
+.fielderror { font-style: normal; font-size: 13px; font-weight: 600; color: #8c1f1f; margin-top: -2px; }

@@ -113,7 +113,7 @@ const Nav = ({ T, onCta }) => (
         <a href="#about" style={navLink}>About</a>
         <a href="#why" style={navLink}>Why Christy</a>
         <a href="#book" style={navLink}>Book</a>
-        <a href="index.html" style={navLink}>Retreat</a>
+        <a href="/retreat.html" style={navLink}>Retreat</a>
         <button onClick={onCta} style={{
           padding: "10px 18px",
           background: T.yellow, color: T.deep,
@@ -1131,6 +1131,112 @@ const Footer = ({ T }) => (
   </footer>
 );
 
+
+// ---- RETREAT PROMO ----
+// Appears once per visitor after a short delay. Dismissal is remembered so it
+// does not nag on every page view; storage can throw in private windows, so
+// every access is guarded and failure just means the popup shows again.
+const SEEN_KEY = "retreat-promo-seen";
+
+const RetreatPromo = ({ T }) => {
+  const [open, setOpen] = useState(false);
+  const closeRef = useRef(null);
+
+  useEffect(() => {
+    let seen = false;
+    try { seen = localStorage.getItem(SEEN_KEY) === "1"; } catch { /* private mode */ }
+    if (seen) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = setTimeout(() => setOpen(true), 6000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    try { localStorage.setItem(SEEN_KEY, "1"); } catch { /* nothing to do */ }
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    closeRef.current?.focus();
+    const onKey = e => { if (e.key === "Escape") dismiss(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      onClick={dismiss}
+      style={{
+        position: "fixed", inset: 0, zIndex: 10000,
+        background: "rgba(12,11,38,0.62)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 24,
+      }}
+    >
+      <div
+        role="dialog" aria-modal="true" aria-labelledby="promo-title"
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: "relative",
+          width: "min(560px, 100%)",
+          background: T.bg, color: T.ink,
+          borderRadius: 8, overflow: "hidden",
+          boxShadow: "0 40px 90px -30px rgba(0,0,0,0.6)",
+        }}
+      >
+        <img
+          src="assets/retreat/web/sunset-lake.jpg" alt=""
+          style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }}
+        />
+        <button
+          ref={closeRef} onClick={dismiss} aria-label="Close"
+          style={{
+            position: "absolute", top: 12, right: 12,
+            width: 34, height: 34, borderRadius: "50%",
+            background: "rgba(0,0,0,0.45)", color: "#fff",
+            border: "none", cursor: "pointer", fontSize: 20, lineHeight: 1,
+          }}
+        >×</button>
+
+        <div style={{ padding: "28px 32px 32px" }}>
+          <div style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: "0.2em",
+            textTransform: "uppercase", color: T.gold, marginBottom: 12,
+          }}>
+            September 18–20, 2026 · Hot Springs, Arkansas
+          </div>
+          <h2 id="promo-title" style={{
+            margin: 0, fontSize: 30, fontWeight: 800,
+            letterSpacing: "-0.03em", lineHeight: 1.1, color: T.deep,
+          }}>
+            Be Your Own Superhero<span style={{ fontSize: ".4em", verticalAlign: "super" }}>™</span> Retreat
+          </h2>
+          <p style={{ fontSize: 16, lineHeight: 1.6, color: T.inkSoft, margin: "14px 0 0" }}>
+            An intimate lakefront weekend for women ready to step out of survival mode.
+            Limited to no more than ten women.
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
+            <a href="/retreat.html" style={{ ...ctaPrimary(T, true), padding: "14px 26px", fontSize: 14 }}>
+              See the Retreat →
+            </a>
+            <button onClick={dismiss} style={{
+              padding: "14px 22px", background: "transparent",
+              border: `1px solid ${T.line}`, borderRadius: 999,
+              fontSize: 14, fontWeight: 600, color: T.inkSoft,
+              cursor: "pointer", fontFamily: "inherit",
+            }}>
+              Maybe later
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ---- APP ----
 const App = () => {
   const tweaks = TWEAKS_DEFAULTS;
@@ -1140,6 +1246,7 @@ const App = () => {
   };
   return (
     <div style={{ background: T.bg, color: T.ink, minHeight: "100vh" }}>
+      <RetreatPromo T={T} />
       <div style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999,
         background: "#1a1a1a",

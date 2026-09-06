@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "stripe:listen": "stripe listen --forward-to http://localhost:4242/api/webhook"
+    "stripe:listen": "stripe listen --forward-to http://localhost:4242/api/webhook",
+    "dev": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,8 @@
     "express": "^5.2.1",
     "stripe": "^22.6.1"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
 }

@@ -78,16 +78,56 @@ Two things are deliberate and worth preserving if this moves to another host:
 The site is two pages that link to each other — the retreat, and the existing
 coaching landing page the brand already had.
 
+The coaching page is the site's front door; the retreat is a page beneath it.
+
 | File | Purpose |
 | --- | --- |
-| `index.html` | Retreat page — loads React, Babel, `rooms.js`, `app.jsx` |
+| `index.html` | **Homepage** — the coaching page, loads `coaching.jsx` |
+| `coaching.jsx` | Coaching page, plus the retreat popup |
+| `retreat.html` | Retreat page, loads `rooms.js`, `validate.js`, `app.jsx` |
 | `app.jsx` | The retreat page as React components |
-| `coaching.html` | Coaching page — "Free 1-Hour Coaching Call" |
-| `coaching.jsx` | The coaching page as React components |
 | `styles.css` | Design system — tokens, layout, the single 900px breakpoint |
-| `rooms.js` | **Source of truth** for rooms, prices and capacity; used by both browser and server |
-| `server.js` | Static serving, `/api/checkout`, `/api/webhook` |
+| `rooms.js` | **Source of truth** for rooms, prices, capacity and availability |
+| `validate.js` | Form rules, shared by browser and server so they cannot disagree |
+| `lib/store.js` | Storage adapter — `file` locally, `airtable` in production |
+| `lib/registrations.js` | Validation, capacity and Stripe logic |
+| `api/*.js` | Vercel serverless functions |
+| `server.js` | Local dev server; mounts the same handlers as `api/` |
+| `vercel.json` | Redirects `/coaching.html` to `/`, caches assets |
 | `assets/retreat/web/` | Lake photography, 1600px q82 |
+
+## Deploying to Vercel
+
+The site is static files plus four serverless functions. Vercel picks both up
+with no build step.
+
+Set these in **Project → Settings → Environment Variables**:
+
+| Variable | Value |
+| --- | --- |
+| `STORE` | `airtable` |
+| `AIRTABLE_TOKEN` | token from airtable.com/create/tokens |
+| `AIRTABLE_BASE_ID` | starts `app…`, from the base URL |
+| `PAYMENTS_ENABLED` | `false` until Christy's Stripe account is live |
+
+Leave `PUBLIC_ORIGIN` unset on Vercel — the request host is used instead, so
+preview deployments return to themselves rather than to production.
+
+### Setting up the Airtable base
+
+1. Create a base with one table named **Registrations**.
+2. Add these fields, spelled exactly (they are the column headers Christy sees):
+   `Registration ID`, `Status`, `Name`, `Email`, `Mobile`, `Mailing Address`,
+   `Emergency Contact`, `Room`, `Room ID`, `Total (USD)`, `Deposit Paid (USD)`,
+   `Roommate`, `Dietary`, `Accessibility`, `Health`, `Massage`, `Apparel Size`,
+   `Heard Via`, `Photo Consent`, `Stripe Customer`, `Stripe Payment`, `Created`,
+   `Confirmed`. Single line text is fine for all of them except the two USD
+   fields, which should be Number or Currency.
+3. Share the base with Christy's email as a **Collaborator**. She then sees
+   every registration in a spreadsheet view she can sort, filter and export —
+   no admin panel needed.
+
+`Status` moves `awaiting_payment` → `confirmed` (or `waitlist` for waitlisters).
 
 ## Before going live
 
