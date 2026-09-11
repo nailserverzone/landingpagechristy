@@ -23,6 +23,7 @@
       id: "new-master", house: "Newer Lake House", houseShort: "Newer House", houseTag: "HOUSE ONE",
       name: "Downstairs Master Suite", bath: "private", capacity: 2,
       priceCents: 99500, unit: "/ person", cta: "Reserve this room",
+      photo: "new-master.jpg",   // dark blue comforter
       photoNote: "Photo: downstairs master suite",
       specs: [["Bed", "Master bed"], ["Sleeps", "1–2 women"], ["Bathroom", "Private, with walk-in closet"]],
     },
@@ -30,6 +31,7 @@
       id: "new-king", house: "Newer Lake House", houseShort: "Newer House", houseTag: "HOUSE ONE",
       name: "King Room", bath: "shared", capacity: 2,
       priceCents: 79500, unit: "/ person", cta: "Reserve this room",
+      photo: "new-king.jpg",     // light green comforter
       photoNote: "Photo: king room",
       specs: [["Bed", "King"], ["Sleeps", "1–2 women"], ["Bathroom", "Shared, with walk-in closet"]],
     },
@@ -37,6 +39,7 @@
       id: "new-bunk", house: "Newer Lake House", houseShort: "Newer House", houseTag: "HOUSE ONE",
       name: "Bunk Room", bath: "shared", capacity: 4,
       priceCents: 79500, unit: "/ bed", cta: "Reserve a bed",
+      photo: "new-bunk.jpg",     // the bunks
       photoNote: "Photo: bunk room",
       specs: [["Beds", "Four bunk beds"], ["Sleeps", "Up to 4 women"], ["Bathroom", "Shared"]],
     },
@@ -44,13 +47,15 @@
       id: "old-master", house: "Older Lake House", houseShort: "Older House", houseTag: "HOUSE TWO",
       name: "Master Suite", bath: "private", capacity: 2,
       priceCents: 99500, unit: "/ person", cta: "Reserve this room",
+      photo: "old-master.jpg",   // queen/full, tan comforter
       photoNote: "Photo: master suite",
-      specs: [["Bed", "Master bed"], ["Sleeps", "1–2 women"], ["Bathroom", "Private"]],
+      specs: [["Bed", "Queen or full"], ["Sleeps", "1–2 women"], ["Bathroom", "Private"]],
     },
     {
       id: "old-loft", house: "Older Lake House", houseShort: "Older House", houseTag: "HOUSE TWO",
       name: "Loft King", bath: "shared", capacity: 2,
       priceCents: 79500, unit: "/ person", cta: "Reserve this room",
+      photo: "old-loft.jpg",     // king, tan-brown comforter
       photoNote: "Photo: loft king",
       specs: [["Bed", "King, in the loft"], ["Sleeps", "1–2 women"], ["Bathroom", "Shared, downstairs"]],
     },
@@ -58,6 +63,7 @@
       id: "old-twin", house: "Older Lake House", houseShort: "Older House", houseTag: "HOUSE TWO",
       name: "Full & Twin Room", bath: "shared", capacity: 2,
       priceCents: 79500, unit: "/ person", cta: "Reserve a bed",
+      photo: "old-twin.jpg",     // the little boat bed
       photoNote: "Photo: full & twin room",
       specs: [["Beds", "One full, one twin"], ["Sleeps", "2 women"], ["Bathroom", "Shared"]],
     },
@@ -66,9 +72,8 @@
   const WAITLIST_ID = "waitlist";
   const WAITLIST_LABEL = "Add me to the waitlist";
 
-  // PLACEHOLDER — every room is marked available because nobody has confirmed
-  // the real state yet. Set each to "hold" or "full" from Christy's actual
-  // bookings before this page goes public, or it will offer rooms that are gone.
+  // Confirmed by Danielle Russo on 8 Sept 2026: no rooms booked yet.
+  // Set a room to "hold" or "full" as bookings come in.
   const AVAILABILITY = {
     "new-master": "available", "new-king": "available", "new-bunk": "available",
     "old-master": "available", "old-loft": "available", "old-twin": "available",

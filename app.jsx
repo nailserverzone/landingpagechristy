@@ -289,17 +289,34 @@ const Included = () => (
   </section>
 );
 
+
+// Falls back to the placeholder if the photo has not been supplied yet, so a
+// missing file never renders as a broken image.
+const RoomPhoto = ({ room }) => {
+  const [failed, setFailed] = useState(false);
+  const src = room.photo ? `assets/rooms/${room.photo}` : null;
+
+  if (!src || failed) {
+    return (
+      <div className="slot">
+        <div className="drop"><b>🛏</b>{room.photoNote}</div>
+      </div>
+    );
+  }
+  return (
+    <div className="slot ph">
+      <img src={src} alt={`${room.house} — ${room.name}`}
+           loading="lazy" decoding="async" onError={() => setFailed(true)} />
+    </div>
+  );
+};
+
 const Rooms = ({ onSelectRoom }) => (
   <section className="pad alt" id="rooms"><div className="wrap">
     <Heading eyebrow="Accommodations" title="Two lake homes, ten feet apart" style={{ maxWidth: "24ch" }} />
     <p className="lede rv" style={{ margin: "30px 0 0", maxWidth: "62ch" }}>
       Choose the room that fits how you want to spend the weekend. Premium private rooms and comfortable shared rooms are offered first; each selection shows its bed type, how many women may share it, and whether the bathroom is private. Once a room or bed is reserved it is no longer offered to another guest.
     </p>
-    <div className="ph-note rv">
-      <b>Placeholder — availability not yet confirmed.</b> Every room below is marked
-      available. Set each room's real status in <code>rooms.js</code> before this page
-      is shared publicly, or it will offer rooms that are already taken.
-    </div>
 
     {HOUSES.map(house => (
       <div className="house" key={house.name}>
@@ -307,9 +324,7 @@ const Rooms = ({ onSelectRoom }) => (
         <div className="rooms">
           {house.rooms.map(r => (
             <div className="room rv" key={r.id}>
-              <div className="slot">
-                <div className="drop"><b>🛏</b>{r.photoNote}</div>
-              </div>
+              <RoomPhoto room={r} />
               <div className="body">
                 <div className="nm">{r.name}</div>
                 <dl>
