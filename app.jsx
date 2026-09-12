@@ -50,12 +50,12 @@ const TAKEAWAYS = [
 
 const DAYS = [
   {
-    photo: "boat.jpg", alt: "Boat moored on a misty lake",
+    photo: "real-dock.jpg", alt: "The boardwalk and dock on Lake Hamilton",
     label: "FRIDAY", title: "Seen, Safe, and Connected",
     items: ["Arrival and check-in", "Welcome gifts and room settling", "Welcome dinner", "Introductions and connection", "Opening teaching", "Creating an emotionally safe environment", "Naming what you want to release or change", "Evening lakefront gathering or bonfire"],
   },
   {
-    photo: "gathering-lawn.jpg", alt: "Small group gathered outdoors",
+    photo: "real-swing.jpg", alt: "Canopy swing on the lawn, looking across the lake",
     label: "SATURDAY", title: "Healing Little Me and Reclaiming Your Power",
     items: ["Breakfast", "Little Me and inner-child work", "Understanding survival mode", "Fear and the beliefs we carry", "Boundaries and self-trust", "Resilience and personal responsibility", "Leadership and intentional life design", "Lunch, reflection, and free time", "Lake activities and relaxation", "Afternoon or evening workshop, dinner, bonfire"],
   },
@@ -93,18 +93,20 @@ const HOUSES = [...new Set(RETREAT_ROOMS.map(r => r.house))].map(house => ({
 const ROOM_OPTIONS = roomOptions();
 
 const GALLERY = [
-  ["lake-house.jpg", "Lakefront house among the trees", "The houses on the water"],
+  // The property's own photographs first — the lead tile spans 2x2.
+  ["real-firepit.jpg", "Adirondack chairs around the fire pit at sunset", "Bonfire at sundown"],
+  ["real-dock.jpg", "The boardwalk and dock on the lake", "The boardwalk"],
+  ["real-patio.jpg", "Lakeside patio seating at the water's edge", "The water's edge"],
+  ["real-sign.jpg", "The Marvel Lake House sign inside the house", "The Marvel Lake House"],
+  ["real-swing.jpg", "Canopy swing on the lawn looking across the lake", "Room to do nothing"],
+  // Stock lake photography, still standing in.
   ["treeline.jpg", "Autumn treeline reflected in the lake", "Still mornings"],
-  ["deck-table.jpg", "Deck table by the water", "Long table, long talks"],
-  ["dock-chairs.jpg", "Two chairs on the dock", "Two chairs, no agenda"],
   ["ripple.jpg", "Ripple on still water", "Quiet water"],
-  ["dock-empty.jpg", "Boardwalk on the lake", "The boardwalk"],
   ["sunrise-pink.jpg", "Lake at first light", "First light"],
   ["shoreline-homes.jpg", "Lakefront homes and docks", "Lake Hamilton"],
-  ["birch-table.jpg", "Table under birch trees by the water", "A table under the birches"],
   ["swan.jpg", "Swan on still water", "Company on the water"],
-  ["lake-homes-summer.jpg", "Lake homes and docks in summer", "Neighbouring homes"],
   ["boats-lake.jpg", "Boats out on the lake", "Out on the water"],
+  ["lake-homes-summer.jpg", "Lake homes and docks in summer", "Neighbouring homes"],
   ["pebble-shore.jpg", "Pebble shoreline at dusk", "The shoreline at dusk"],
 ];
 

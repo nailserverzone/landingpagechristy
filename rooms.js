@@ -24,7 +24,7 @@
       name: "Downstairs Master Suite", bath: "private", capacity: 2,
       priceCents: 99500, unit: "/ person", cta: "Reserve this room",
       photo: "new-master.jpg",   // dark blue comforter
-      photoNote: "Photo: downstairs master suite",
+      photoNote: "Photo to come — dark blue comforter",
       specs: [["Bed", "Master bed"], ["Sleeps", "1–2 women"], ["Bathroom", "Private, with walk-in closet"]],
     },
     {
@@ -32,7 +32,7 @@
       name: "King Room", bath: "shared", capacity: 2,
       priceCents: 79500, unit: "/ person", cta: "Reserve this room",
       photo: "new-king.jpg",     // light green comforter
-      photoNote: "Photo: king room",
+      photoNote: "Photo to come — light green comforter",
       specs: [["Bed", "King"], ["Sleeps", "1–2 women"], ["Bathroom", "Shared, with walk-in closet"]],
     },
     {
