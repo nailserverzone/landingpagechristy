@@ -1,5 +1,6 @@
 /* global React, ReactDOM, RETREAT_ROOMS, WAITLIST_ID, money, roomOptions,
-   availabilityOf, AVAILABILITY_LABELS, validateRegistration, firstError */
+   availabilityOf, AVAILABILITY_LABELS, validateRegistration, firstError,
+   ASSET_V */
 const { useState, useEffect, useRef } = React;
 
 // Whether the site can take card payments yet. Defaults to false and only turns
@@ -17,6 +18,11 @@ const usePaymentsEnabled = () => {
 };
 
 const IMG = "assets/retreat/web/";
+
+// Every image URL carries the asset version, so replacing a photo under the same
+// filename always reaches the browser. It also sidesteps a stale 404 cached from
+// before a file existed, since the versioned URL has never been requested.
+const v = path => `${path}?v=${ASSET_V}`;
 
 // ── Content ───────────────────────────────────────────────────────────────────
 const PILLARS = [
@@ -132,7 +138,7 @@ const FAQS = [
 const Photo = ({ src, alt, className = "", eager, children }) => (
   <div className={`ph ${className}`.trim()}>
     <img
-      src={IMG + src}
+      src={v(IMG + src)}
       alt={alt}
       loading={eager ? undefined : "lazy"}
       decoding={eager ? undefined : "async"}
@@ -182,7 +188,7 @@ const Nav = () => (
 const Hero = ({ bgRef }) => (
   <section className="hero" id="top">
     <div className="bg" ref={bgRef}>
-      <img src={IMG + "sunset-lake.jpg"} alt="Sunset over Lake Hamilton" />
+      <img src={v(IMG + "sunset-lake.jpg")} alt="Sunset over Lake Hamilton" />
     </div>
     <div className="scrim" />
     <div className="inner"><div className="wrap">
@@ -239,7 +245,7 @@ const Experience = () => (
 
 const Who = () => (
   <section className="pad who" id="who">
-    <div className="bg"><img loading="lazy" decoding="async" src={IMG + "two-by-water.jpg"} alt="" /></div>
+    <div className="bg"><img loading="lazy" decoding="async" src={v(IMG + "two-by-water.jpg")} alt="" /></div>
     <div className="inner"><div className="wrap">
       <Heading eyebrow="Who It Is For" tone="gold" title="This weekend is for the woman who…" style={{ maxWidth: "22ch" }} />
       <div className="split">
@@ -281,7 +287,7 @@ const Weekend = () => (
 
 const Included = () => (
   <section className="pad incband">
-    <div className="bg"><img loading="lazy" decoding="async" src={IMG + "water-texture.jpg"} alt="" /></div>
+    <div className="bg"><img loading="lazy" decoding="async" src={v(IMG + "water-texture.jpg")} alt="" /></div>
     <div className="inner"><div className="wrap">
       <Heading eyebrow="What Is Included" tone="gold" title="Everything but the drive out." style={{ maxWidth: "20ch" }} />
       <div className="inc">
@@ -296,7 +302,7 @@ const Included = () => (
 // missing file never renders as a broken image.
 const RoomPhoto = ({ room }) => {
   const [failed, setFailed] = useState(false);
-  const src = room.photo ? `assets/rooms/${room.photo}` : null;
+  const src = room.photo ? v(`assets/rooms/${room.photo}`) : null;
 
   if (!src || failed) {
     return (
@@ -417,7 +423,7 @@ const Christy = () => (
 const Quote = ({ bgRef }) => (
   <section className="quote">
     <div className="bg" ref={bgRef}>
-      <img loading="lazy" decoding="async" src={IMG + "dock-sitting.jpg"} alt="A woman sitting at the end of a dock" />
+      <img loading="lazy" decoding="async" src={v(IMG + "dock-sitting.jpg")} alt="A woman sitting at the end of a dock" />
     </div>
     <div className="scrim" />
     <div className="inner"><div className="wrap">
@@ -665,7 +671,7 @@ const Faq = () => (
 
 const Invite = () => (
   <section className="invite">
-    <div className="bg"><img loading="lazy" decoding="async" src={IMG + "water-texture.jpg"} alt="" /></div>
+    <div className="bg"><img loading="lazy" decoding="async" src={v(IMG + "water-texture.jpg")} alt="" /></div>
     <div className="inner"><div className="wrap">
       <h2 className="h2 rv" style={{ color: "#fff", maxWidth: "22ch", margin: "0 auto" }}>
         You have spent enough time surviving.

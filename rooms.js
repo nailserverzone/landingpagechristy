@@ -12,6 +12,11 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   else Object.assign(root, api);
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
+  // Bump this whenever an image under assets/ is replaced. It is appended to
+  // every image URL, so a changed photo is a different URL and no browser or CDN
+  // can serve a stale copy — or a stale 404 from before the file existed.
+  const ASSET_V = "2";
+
   const DEPOSIT_CENTS = 30000; // $300 holds a room; balance is charged later
 
   // The retreat is capped at 10 women, but the rooms sleep 14 between them — so
@@ -100,7 +105,7 @@
   ];
 
   return {
-    DEPOSIT_CENTS, MAX_GUESTS, RETREAT_ROOMS, WAITLIST_ID, WAITLIST_LABEL,
+    ASSET_V, DEPOSIT_CENTS, MAX_GUESTS, RETREAT_ROOMS, WAITLIST_ID, WAITLIST_LABEL,
     AVAILABILITY_LABELS, availabilityOf, money, roomLabel, findRoom, roomOptions,
   };
 });
