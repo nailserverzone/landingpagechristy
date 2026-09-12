@@ -136,6 +136,24 @@ Still to do:
 
 `Status` moves `awaiting_payment` → `confirmed`, or `waitlist` for waitlisters.
 
+### vercel.json
+
+Vercel validates this file against a strict schema and **fails the whole
+deployment** if it contains any key the schema does not define — including a
+`comment` key, since JSON has no comments. Put explanation in this README, never
+in the file.
+
+Rules currently set:
+
+- `/assets/(.*)` revalidates hourly rather than being cached as `immutable`.
+  Nothing under `assets/` is content-hashed, so a replaced photo keeps its
+  filename; `immutable` would pin the old one in every browser for a year.
+- `/api/(.*)` is `no-store`, because `/api/config` decides whether the page
+  offers a checkout at all.
+
+Image URLs also carry `?v=` from `ASSET_V` in `rooms.js`. Bump it whenever a file
+under `assets/` is replaced.
+
 ## When something breaks
 
 `/api/health` reports whether the site is wired up correctly:

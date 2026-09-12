@@ -5,12 +5,10 @@
   ],
   "headers": [
     {
-      "comment": "Assets here are NOT content-hashed — old-loft.jpg can be replaced by a corrected photo under the same name. 'immutable' would pin a stale (or missing) file in every visitor's browser for a year, so these revalidate instead. Serve stale for a day while refreshing in the background.",
       "source": "/assets/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }]
     },
     {
-      "comment": "Never cache the API — /api/config decides whether the page offers a checkout.",
       "source": "/api/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "no-store" }]
     }
