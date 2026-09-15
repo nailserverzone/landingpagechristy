@@ -178,13 +178,17 @@ Carried over from the design handoff, plus what surfaced while building:
 - [ ] **Set real room availability** in `rooms.js` (`AVAILABILITY`). Everything is
       marked available as a placeholder — publishing as-is offers rooms that may
       already be taken.
+- [ ] **Announce the new dates.** The September 18–20 2026 retreat was postponed
+      on 15 September. Set `RETREAT_DATES` in `rooms.js` — `announced: true` plus
+      the label — and every date on the site updates from that one place.
 - [ ] **Confirm the prices.** `$795` / `$995` / `$300` are working figures.
 - [ ] **Christy creates and verifies her own Stripe account**, then invites the
       developer as a team member. The account must be hers — the deposits land
       in whichever bank account it is tied to.
 - [ ] Flip `PAYMENTS_ENABLED=true` once that account is live.
-- [ ] **Confirm the refund and cancellation policy in writing** — the handoff is
-      explicit that this precedes taking any payment.
+- [x] ~~Confirm the refund and cancellation policy~~ — supplied by Danielle Russo
+      on 15 September 2026 and now live in `REFUND_POLICY` in `rooms.js`, shown
+      both in the Investment section and the FAQ.
 - [ ] **Close the capacity race.** Capacity is checked and then written in two
       steps, so two guests submitting at once can still oversell the last bed.
       Airtable cannot do this atomically; it needs a conditional write or a

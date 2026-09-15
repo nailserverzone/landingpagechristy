@@ -1206,7 +1206,7 @@ const RetreatPromo = ({ T }) => {
             fontSize: 12, fontWeight: 700, letterSpacing: "0.2em",
             textTransform: "uppercase", color: T.gold, marginBottom: 12,
           }}>
-            September 18–20, 2026 · Hot Springs, Arkansas
+            New dates coming soon · Hot Springs, Arkansas
           </div>
           <h2 id="promo-title" style={{
             margin: 0, fontSize: 30, fontWeight: 800,

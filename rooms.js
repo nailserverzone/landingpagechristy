@@ -1,4 +1,6 @@
-/* Room inventory and pricing — the single source of truth.
+/* Retreat configuration — rooms, pricing, dates and refund terms.
+ *
+ * The single source of truth.
  *
  * Loaded both by the browser (as a plain script, exposing globals) and by the
  * server (via require). The server prices every checkout from this file; the
@@ -17,6 +19,30 @@
   // can serve a stale copy — or a stale 404 from before the file existed.
   const ASSET_V = "2";
 
+  // The September 18–20 2026 retreat was postponed on 15 September 2026.
+  // Christy is choosing new dates. Until then the site must not advertise a
+  // date — set `announced: true` and fill in `label` and `iso` when confirmed.
+  const RETREAT_DATES = {
+    announced: false,
+    label: "New dates coming soon",
+    short: "To be announced",
+    place: "Lake Hamilton, Hot Springs, Arkansas",
+  };
+
+  // The guest-facing date line. `label` carries the difference between an
+  // announced date and "coming soon", so callers need no branching.
+  const dateLine = () => `${RETREAT_DATES.label} · ${RETREAT_DATES.place}`;
+
+  // Christy's refund terms, confirmed by Danielle Russo on 15 September 2026.
+  // Measured from the first day of the retreat.
+  const REFUND_POLICY = [
+    ["90 or more days before the retreat", "Full refund"],
+    ["60 or more days before", "50% refund"],
+    ["30 or more days before", "No refund, but your payment can be credited toward a future retreat"],
+    ["Fewer than 30 days before", "No refund or credit"],
+    ["If the retreat is cancelled by us", "Full refund"],
+  ];
+
   const DEPOSIT_CENTS = 30000; // $300 holds a room; balance is charged later
 
   // The retreat is capped at 10 women, but the rooms sleep 14 between them — so
@@ -30,7 +56,7 @@
       priceCents: 99500, unit: "/ person", cta: "Reserve this room",
       photo: "new-master.jpg",   // dark blue comforter
       photoNote: "Photo to come — dark blue comforter",
-      specs: [["Bed", "Master bed"], ["Sleeps", "1–2 women"], ["Bathroom", "Private, with walk-in closet"]],
+      specs: [["Bed", "King"], ["Sleeps", "1–2 women"], ["Bathroom", "Private, with walk-in closet"]],
     },
     {
       id: "new-king", house: "Newer Lake House", houseShort: "Newer House", houseTag: "HOUSE ONE",
@@ -105,7 +131,8 @@
   ];
 
   return {
-    ASSET_V, DEPOSIT_CENTS, MAX_GUESTS, RETREAT_ROOMS, WAITLIST_ID, WAITLIST_LABEL,
+    ASSET_V, DEPOSIT_CENTS, MAX_GUESTS, RETREAT_DATES, REFUND_POLICY, dateLine,
+    RETREAT_ROOMS, WAITLIST_ID, WAITLIST_LABEL,
     AVAILABILITY_LABELS, availabilityOf, money, roomLabel, findRoom, roomOptions,
   };
 });

@@ -1,6 +1,6 @@
 /* global React, ReactDOM, RETREAT_ROOMS, WAITLIST_ID, money, roomOptions,
    availabilityOf, AVAILABILITY_LABELS, validateRegistration, firstError,
-   ASSET_V */
+   ASSET_V, RETREAT_DATES, REFUND_POLICY, dateLine */
 const { useState, useEffect, useRef } = React;
 
 // Whether the site can take card payments yet. Defaults to false and only turns
@@ -126,7 +126,7 @@ const FAQS = [
   ["Are the activities physically demanding?", "No. Sessions are seated, and lake activities are optional. Note any mobility or health considerations on the form so we can plan around them."],
   ["Is the retreat faith-based?", "The weekend is open to every woman regardless of background. Whether it is described as explicitly faith-based is still being finalized; details will be confirmed before registration closes."],
   ["How are roommates assigned?", "You choose your room or bed at registration. If you are coming with someone, name her on the form and you will be placed together. Shared rooms show how many women may occupy them."],
-  ["What is the cancellation policy?", "The cancellation and transfer policy, including whether the deposit is refundable, is being finalized and will be provided in writing before any payment is taken."],
+  ["What is the cancellation policy?", "Measured from the first day of the retreat: 90 or more days before, a full refund. 60 or more days before, a 50% refund. 30 or more days before, no refund, but your payment can be credited toward a future retreat. Fewer than 30 days before, no refund or credit. If we cancel the retreat, you receive a full refund."],
   ["When is the remaining balance due?", "The balance is paid online before the retreat. The exact deadline is being finalized and will be included in your confirmation."],
   ["When will I receive the exact address?", "The property address is shared only with registered guests, along with arrival instructions."],
   ["Is transportation provided? What airport is closest?", "Travel arrangements are still being confirmed. Airport and directions information will be sent to registered guests well before the weekend."],
@@ -192,7 +192,7 @@ const Hero = ({ bgRef }) => (
     </div>
     <div className="scrim" />
     <div className="inner"><div className="wrap">
-      <div className="eyebrow rv gold">September 18–20, 2026 · Hot Springs, Arkansas</div>
+      <div className="eyebrow rv gold">{dateLine()}</div>
       <h1 className="rv" style={{ marginTop: 20 }}>
         Be Your Own Superhero<span className="tm">™</span> Retreat
       </h1>
@@ -202,7 +202,7 @@ const Hero = ({ bgRef }) => (
         <a className="btn btn-ghost" href="#experience">Learn More</a>
       </div>
       <div className="meta rv">
-        <div><div className="k">DATES</div><div className="v">September 18–20, 2026</div></div>
+        <div><div className="k">DATES</div><div className="v">{RETREAT_DATES.short}</div></div>
         <div><div className="k">SETTING</div><div className="v">Lake Hamilton, Hot Springs, Arkansas</div></div>
         <div><div className="k">GROUP SIZE</div><div className="v">No more than 10 women</div></div>
       </div>
@@ -388,8 +388,22 @@ const Investment = ({ paymentsEnabled }) => (
         <p>Due at registration to hold your room. Applied to your total; the remaining balance is paid online before the retreat.</p>
       </div>
     </div>
+    <div className="refunds rv">
+      <h3 className="h3">Cancellation and refunds</h3>
+      <p className="fine" style={{ margin: "10px 0 0" }}>
+        Measured from the first day of the retreat.
+      </p>
+      <dl>
+        {REFUND_POLICY.map(([when, what]) => (
+          <React.Fragment key={when}>
+            <dt>{when}</dt><dd>{what}</dd>
+          </React.Fragment>
+        ))}
+      </dl>
+    </div>
+
     <p className="fine rv" style={{ maxWidth: "70ch" }}>
-      Payment is made securely online — deposit now, remaining balance later. You will receive an automatic confirmation email as soon as your registration is received. Balance deadline, refund terms, and the cancellation and transfer policy are being finalized and will be confirmed in writing before any payment is taken.
+      Payment is made securely online — deposit now, remaining balance later. You will receive an automatic confirmation email as soon as your registration is received. The balance due date is confirmed once the retreat dates are announced.
     </p>
   </div></section>
 );
@@ -717,7 +731,7 @@ const Footer = () => (
           <span style={{ color: "#fff", fontWeight: 700, fontSize: 17 }}>Christy Marvel</span>
         </div>
         <p style={{ margin: "18px 0 0", maxWidth: "34ch", lineHeight: 1.6 }}>
-          Be Your Own Superhero™ Retreat · September 18–20, 2026 · Lake Hamilton, Hot Springs, Arkansas.
+          Be Your Own Superhero™ Retreat · {dateLine()}.
         </p>
         <p style={{ margin: "14px 0 0" }}><a href="mailto:hello@christymarvel.com">hello@christymarvel.com</a></p>
       </div>

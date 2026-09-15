@@ -351,3 +351,23 @@ footer .base { margin-top: 52px; padding-top: 26px; border-top: 1px solid rgba(2
 /* real room photography, once supplied */
 .room .slot.ph { background: var(--hair); }
 .room .slot.ph img { width: 100%; height: 100%; object-fit: cover; }
+
+/* cancellation and refund terms */
+.refunds { margin-top: 48px; padding-top: 34px; border-top: 1px solid var(--hair); }
+.refunds dl {
+  display: grid; grid-template-columns: minmax(0, 22em) minmax(0, 1fr);
+  gap: 0 clamp(20px, 4vw, 56px); margin: 22px 0 0;
+}
+.refunds dt {
+  padding: 14px 0; font-weight: 700; color: var(--navy);
+  border-top: 1px solid var(--hair); font-size: 16px;
+}
+.refunds dd {
+  padding: 14px 0; margin: 0; color: var(--muted);
+  border-top: 1px solid var(--hair); font-size: 16px; line-height: 1.5;
+}
+@media (max-width: 900px) {
+  .refunds dl { grid-template-columns: minmax(0, 1fr); }
+  .refunds dt { padding-bottom: 2px; }
+  .refunds dd { padding-top: 2px; border-top: none; }
+}
