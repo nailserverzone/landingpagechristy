@@ -17,7 +17,7 @@
   // Bump this whenever an image under assets/ is replaced. It is appended to
   // every image URL, so a changed photo is a different URL and no browser or CDN
   // can serve a stale copy — or a stale 404 from before the file existed.
-  const ASSET_V = "2";
+  const ASSET_V = "3";
 
   // The September 18–20 2026 retreat was postponed on 15 September 2026.
   // Christy is choosing new dates. Until then the site must not advertise a
@@ -55,7 +55,7 @@
       name: "Downstairs Master Suite", bath: "private", capacity: 2,
       priceCents: 99500, unit: "/ person", cta: "Reserve this room",
       photo: "new-master.jpg",   // dark blue comforter
-      photoNote: "Photo to come — dark blue comforter",
+      photoNote: "Photo: downstairs master suite",
       specs: [["Bed", "King"], ["Sleeps", "1–2 women"], ["Bathroom", "Private, with walk-in closet"]],
     },
     {
@@ -63,7 +63,7 @@
       name: "King Room", bath: "shared", capacity: 2,
       priceCents: 79500, unit: "/ person", cta: "Reserve this room",
       photo: "new-king.jpg",     // light green comforter
-      photoNote: "Photo to come — light green comforter",
+      photoNote: "Photo: king room",
       specs: [["Bed", "King"], ["Sleeps", "1–2 women"], ["Bathroom", "Shared, with walk-in closet"]],
     },
     {

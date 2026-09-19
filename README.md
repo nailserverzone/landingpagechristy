@@ -193,7 +193,9 @@ Carried over from the design handoff, plus what surfaced while building:
       steps, so two guests submitting at once can still oversell the last bed.
       Airtable cannot do this atomically; it needs a conditional write or a
       short lock. Low risk at ten guests, real at scale.
-- [ ] **Room photography.** Each room card names the shot it is waiting for.
+- [x] ~~Room photography~~ — all six rooms have real photographs as of
+      19 September 2026. `old-master` and `old-loft` were matched by judgement
+      and are still worth confirming with Danielle.
 - [ ] Send the guest's confirmation email and notify Christy (`server.js`, in the
       webhook handler).
 - [ ] Wire the newsletter form to a real provider.
