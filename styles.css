@@ -15,18 +15,16 @@
   --field: #dcd3bd;
   --hero-cream: #f6efdd;
   --nav-h: 74px;
-  --wm: 34px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + var(--wm)); }
+html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); }
 body {
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--cream);
   color: var(--navy);
   font-size: 18px;
-  padding-top: var(--wm);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
@@ -59,19 +57,8 @@ p { text-wrap: pretty; }
 .rv { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
 .rv.in { opacity: 1; transform: none; }
 
-/* concept watermark */
-.wm {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: var(--wm);
-  display: flex; align-items: center; justify-content: center;
-  background: #121212; color: #fff;
-  font-size: 12px; font-weight: 600; letter-spacing: .01em;
-  padding: 0 16px; text-align: center;
-  border-bottom: 2px solid var(--gold);
-}
-
 /* nav */
-nav { position: sticky; top: var(--wm); z-index: 60; background: rgba(21,20,58,.93); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,.08); }
+nav { position: sticky; top: 0; z-index: 60; background: rgba(21,20,58,.93); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,.08); }
 nav .inner { max-width: 1320px; margin: 0 auto; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 nav .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
 nav .mark { background: #fff; padding: 4px; border-radius: 6px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; }
@@ -80,7 +67,7 @@ nav .links a { color: rgba(255,255,255,.78); text-decoration: none; font-size: 1
 nav .links a:not(.btn)::after { content: ""; position: absolute; left: 0; right: 100%; bottom: -6px; height: 2px; background: var(--gold); transition: right .3s; }
 nav .links a:not(.btn):hover { color: #fff; }
 nav .links a:not(.btn):hover::after { right: 0; }
-.bar { position: fixed; top: var(--wm); left: 0; height: 3px; background: var(--gold); width: 0; z-index: 70; }
+.bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--gold); width: 0; z-index: 70; }
 
 /* buttons */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: none; cursor: pointer; text-decoration: none; font-family: inherit; border-radius: 999px; font-weight: 700; transition: transform 200ms, box-shadow 200ms; }
@@ -93,7 +80,7 @@ nav .links a:not(.btn):hover::after { right: 0; }
 .btn-line:hover { background: var(--navy); color: #fff; }
 
 /* hero */
-.hero { position: relative; min-height: calc(100svh - var(--nav-h) - var(--wm)); display: flex; align-items: flex-end; color: #fff; overflow: hidden; }
+.hero { position: relative; min-height: calc(100svh - var(--nav-h)); display: flex; align-items: flex-end; color: #fff; overflow: hidden; }
 .hero .bg { position: absolute; inset: -8% 0; will-change: transform; }
 .hero .bg img { width: 100%; height: 100%; object-fit: cover; }
 .hero .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,11,38,.62) 0%, rgba(12,11,38,.2) 34%, rgba(12,11,38,.9) 100%); }
@@ -266,7 +253,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--gold); outl
 
 /* deposit outcome banner + form errors */
 .banner {
-  position: fixed; top: var(--wm); left: 0; right: 0; z-index: 90;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 90;
   display: flex; align-items: center; justify-content: center; gap: 16px;
   padding: 14px 24px;
   background: #1f5c3d; color: #fff;

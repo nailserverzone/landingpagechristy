@@ -3,9 +3,9 @@
 Landing page and deposit registration for the retreat on **September 18–20, 2026**,
 Lake Hamilton, Hot Springs, Arkansas.
 
-> ⚠️ **Concept demo.** The page carries a visible watermark and is not the final
-> client site. Nothing here should take real money until the items under
-> [Before going live](#before-going-live) are settled.
+> Nothing here should take real money until the items under
+> [Before going live](#before-going-live) are settled — in particular the
+> confirmed prices and Christy's own Stripe account.
 
 ## Running it
 

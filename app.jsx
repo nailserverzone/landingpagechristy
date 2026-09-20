@@ -882,9 +882,6 @@ const App = () => {
 
   return (
     <>
-      <div className="wm">
-        ⚠️ Concept design © 2026 Noor Naila Himam — draft demo, not the final client site.
-      </div>
       <Reserved />
       <div className="bar" ref={bar} />
       <Nav />
