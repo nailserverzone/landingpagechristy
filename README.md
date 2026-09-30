@@ -1,6 +1,6 @@
 # Be Your Own Superhero™ Retreat
 
-Landing page and deposit registration for the retreat on **September 18–20, 2026**,
+Landing page and deposit registration for the retreat on **November 13–15, 2026**,
 Lake Hamilton, Hot Springs, Arkansas.
 
 > Nothing here should take real money until the items under
@@ -15,16 +15,30 @@ cp .env.example .env
 npm start                  # http://localhost:4242
 ```
 
-**Payments are off by default.** The form collects the full registration and
-charges nothing — Christy is handed the details and arranges the deposit
-herself. That is the correct state until her Stripe account is live, so no keys
-are needed to run the site.
+## The three payment modes
 
-Turn payments on only when her account is verified:
+The first one that applies wins, so switching is a matter of setting or
+clearing one variable.
 
-```bash
-PAYMENTS_ENABLED=true      # in .env, alongside the two Stripe keys
-```
+| Mode | Set this | What happens |
+| --- | --- | --- |
+| **link** | `STRIPE_PAYMENT_LINK` | Registration is saved, then the guest is redirected to a Payment Link Christy made in her own dashboard. No API key, no webhook, no access to her account. |
+| **api** | `PAYMENTS_ENABLED=true` + both keys | Full Stripe Checkout: priced server-side, webhook confirms, card saved for the balance. |
+| **none** | neither | Registration is saved, nothing is charged, Christy follows up. |
+
+**Link mode is what is live now.** It is deliberately the simpler trade: Stripe
+never reports back, so rows stay `awaiting_payment` and Christy ticks them off
+against her dashboard by hand. The registration id is passed as Stripe's
+`client_reference_id`, so each payment shows the id of the row it belongs to —
+that is what makes reconciliation a lookup rather than a guess.
+
+`STRIPE_PAYMENT_LINK` is rejected unless it is an `https://` URL on
+`buy.stripe.com` (or another `stripe.com` host). A mistyped or hijacked value
+cannot send a paying guest to somebody else's page — the site falls back to
+collecting registrations and charging nothing, and `/api/health` says so.
+
+Switching to the full integration later means adding the keys and clearing
+`STRIPE_PAYMENT_LINK`. Nothing else changes.
 
 The page itself is static — React 18 + Babel standalone, no build step. The
 server exists only to price the deposit and take the payment.
@@ -105,7 +119,8 @@ Set these in **Project → Settings → Environment Variables**:
 | `STORE` | `airtable` |
 | `AIRTABLE_TOKEN` | token from airtable.com/create/tokens |
 | `AIRTABLE_BASE_ID` | `appbLQN9lRI4xjixW` |
-| `PAYMENTS_ENABLED` | `false` until Christy's Stripe account is live |
+| `STRIPE_PAYMENT_LINK` | Christy's Payment Link, `https://buy.stripe.com/…` |
+| `PAYMENTS_ENABLED` | `false` — unused while the payment link is set |
 
 Leave `PUBLIC_ORIGIN` unset on Vercel — the request host is used instead, so
 preview deployments return to themselves rather than to production.
@@ -178,14 +193,17 @@ Carried over from the design handoff, plus what surfaced while building:
 - [ ] **Set real room availability** in `rooms.js` (`AVAILABILITY`). Everything is
       marked available as a placeholder — publishing as-is offers rooms that may
       already be taken.
-- [ ] **Announce the new dates.** The September 18–20 2026 retreat was postponed
-      on 15 September. Set `RETREAT_DATES` in `rooms.js` — `announced: true` plus
-      the label — and every date on the site updates from that one place.
-- [ ] **Confirm the prices.** `$795` / `$995` / `$300` are working figures.
-- [ ] **Christy creates and verifies her own Stripe account**, then invites the
-      developer as a team member. The account must be hers — the deposits land
-      in whichever bank account it is tied to.
-- [ ] Flip `PAYMENTS_ENABLED=true` once that account is live.
+- [x] ~~Announce the new dates~~ — November 13–15 2026, confirmed by Christy on
+      29 September 2026.
+- [ ] **Confirm the master suite price.** Danielle asked on 27 September for
+      "the master suite" to be $885, but there are two: `new-master`
+      (Downstairs Master Suite, $995) and `old-master` (Master Suite, $795).
+      Unresolved, so both are unchanged.
+- [x] ~~Twin room price~~ — $695 per bed as of 29 September 2026.
+- [ ] Set `STRIPE_PAYMENT_LINK` in Vercel to the link Christy supplied, then
+      redeploy. Until then the site collects registrations and charges nothing.
+- [ ] Optional, later: two more Payment Links so guests can pay in full up
+      front ($795 and $995 tiers), and Stripe invoices for the balance.
 - [x] ~~Confirm the refund and cancellation policy~~ — supplied by Danielle Russo
       on 15 September 2026 and now live in `REFUND_POLICY` in `rooms.js`, shown
       both in the Investment section and the FAQ.

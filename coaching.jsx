@@ -279,7 +279,7 @@ const Hero = ({ T, ctaLabel, onCta }) => (
             transform: "rotate(3deg)",
             boxShadow: "0 20px 40px -12px rgba(0,0,0,0.5)",
           }}>
-            <div style={{ fontSize: 28, fontWeight: 800, color: T.yellow, lineHeight: 1 }}>10+</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: T.yellow, lineHeight: 1 }}>16+</div>
             <div style={{ fontSize: 11, color: T.cream, letterSpacing: "0.08em", marginTop: 4, textTransform: "uppercase", fontWeight: 600 }}>Years Coaching</div>
           </div>
         </div>
@@ -303,7 +303,7 @@ const TrustStrip = ({ T }) => (
         "Ziglar See You at the Top",
         "Choose to Win Coach",
         "Master Coach",
-        "10+ Years Experience",
+        "16+ Years Experience",
         "Self-Made Multi-Millionaire",
       ].map((t) => (
         <div key={t} style={{
@@ -425,7 +425,7 @@ const About = ({ T, onCta, ctaLabel }) => (
           }}>
             <p style={{ margin: 0 }}>
               Christy is an expert in leadership and personal development with
-              over 10 years of experience. A certified Ziglar Coach and
+              over 16 years of experience. A certified Ziglar Coach and
               self-made multi-millionaire, she brings knowledge from a diverse
               background in architecture, business management, and real-world
               success.
@@ -447,7 +447,7 @@ const About = ({ T, onCta, ctaLabel }) => (
 const WhyChristy = ({ T }) => {
   const items = [
     ["01", "Extensive Professional Background", "Christy holds multiple degrees in architecture, landscape architecture, and business management. She has worked in various fields, including engineering, site planning, and construction management."],
-    ["02", "Extensive Professional Background", "With over 10 years of experience, Christy specializes in leadership, team building, time management, goal setting, and motivation, making her well-equipped to guide clients in their personal and professional growth."],
+    ["02", "Extensive Professional Background", "With over 16 years of experience, Christy specializes in leadership, team building, time management, goal setting, and motivation, making her well-equipped to guide clients in their personal and professional growth."],
     ["03", "Certified Ziglar Coach", "Christy is a Ziglar See You at the Top Coach, Ziglar Choose to Win Coach, and Ziglar Master Coach, providing her with a robust framework to help clients unlock their full potential."],
     ["04", "Real-World Success", "As a self-made multi-millionaire and small business owner since 2000, Christy has a proven track record of growing successful companies and achieving financial independence."],
     ["05", "Unique Life Experiences", "Christy has lived in over half the states in the USA and abroad in Germany. She is a world traveler and mission worker in Spanish-speaking countries, bringing a global perspective to her coaching."],
@@ -541,6 +541,27 @@ const phStyle = (T) => ({
   fontStyle: "italic",
 });
 
+// Supplied by Danielle Russo, 29 September 2026. Quoted verbatim — these are
+// real people's words, so they get edited only if she sends new wording.
+const TESTIMONIALS = [
+  {
+    name: "Gwendolyn Russo",
+    quote: "Working with Christy helped me see myself and my life from an entirely different perspective. She has an incredible ability to ask the right questions, challenge the way you've always thought about yourself, and help you recognize strengths you didn't even realize you had. I walked away with more clarity, confidence, and a much stronger sense of who I am and where I want to go. Christy doesn't just motivate you—she helps you uncover what's already inside of you and gives you the tools to actually move forward.",
+  },
+  {
+    name: "Brenda Caldwell",
+    quote: "Christy has a way of helping you see past all the noise and get to the heart of what's really holding you back. She creates a space where you feel genuinely heard, but she also challenges you to be honest with yourself and step outside of your comfort zone. Working with her helped me recognize patterns I hadn't noticed before, trust myself more, and become more intentional about the life I want to create. I left feeling more confident, empowered, and capable of making meaningful changes in my life.",
+  },
+  {
+    name: "Frank Thatcher",
+    quote: "What stood out to me most about working with Christy was how practical her approach is. She helped me stop overthinking what I wanted to change and start focusing on what I could actually do about it. She holds you accountable without making you feel judged and has a way of turning big, overwhelming goals into steps that feel manageable. I came away from our work together more focused, motivated, and prepared to follow through on the things I'd been putting off. If you're ready to make real progress instead of just talking about it, Christy is someone you want in your corner.",
+  },
+];
+
+// Stands in for a headshot until Christy has photos she's cleared to publish.
+const initials = name =>
+  name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+
 const Testimonials = ({ T }) => (
   <section style={{ padding: "120px 0", background: T.bgAlt, position: "relative", overflow: "hidden" }}>
     <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
@@ -552,7 +573,7 @@ const Testimonials = ({ T }) => (
             fontSize: 11, fontWeight: 800,
             letterSpacing: "0.16em", textTransform: "uppercase",
             padding: "5px 14px", borderRadius: 999, marginBottom: 16,
-          }}>Placeholder section</div>
+          }}>Testimonials</div>
           <h2 style={{
             fontSize: "clamp(32px, 4vw, 48px)",
             lineHeight: 1.05, fontWeight: 800,
@@ -562,27 +583,40 @@ const Testimonials = ({ T }) => (
         </div>
       </Reveal>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-        {[1, 2, 3].map((n) => (
-          <Reveal key={n} delay={n * 80}>
-            <div style={phStyle(T)}>
-              <div style={{ fontSize: 40, lineHeight: 0.8, marginBottom: 16, opacity: 0.3 }}>"</div>
-              <div style={{ fontSize: 15, lineHeight: 1.6, marginBottom: 20, color: T.inkSoft }}>
-                [Testimonial {n} goes here — client quote about their coaching experience with Christy.]
-              </div>
+      {/* auto-fit rather than a fixed 3 columns, so the cards stack on a phone
+          without needing a breakpoint of their own. */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+        gap: 24, alignItems: "stretch",
+      }}>
+        {TESTIMONIALS.map(({ quote, name }, i) => (
+          <Reveal key={name} delay={(i + 1) * 80}>
+            <div style={{
+              background: "#fff",
+              border: `1px solid ${T.line}`,
+              borderRadius: 16,
+              padding: 28,
+              height: "100%",
+              display: "flex", flexDirection: "column",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            }}>
+              <div style={{
+                fontSize: 48, lineHeight: 0.7, marginBottom: 12,
+                color: T.yellow, fontWeight: 800,
+              }} aria-hidden="true">&ldquo;</div>
+              <blockquote style={{
+                margin: 0, marginBottom: 24, flex: 1,
+                fontSize: 15, lineHeight: 1.65, color: T.inkSoft,
+              }}>{quote}</blockquote>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{
-                  width: 44, height: 44, borderRadius: "50%",
-                  background: T.line,
+                  width: 44, height: 44, borderRadius: "50%", flexShrink: 0,
+                  background: T.yellow, color: T.deep,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 700, color: T.inkSoft,
-                }}>PHOTO</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: T.deep, fontStyle: "normal" }}>
-                    [Client Name {n}]
-                  </div>
-                  <div style={{ fontSize: 12, color: T.inkSoft }}>[Title / Location]</div>
-                </div>
+                  fontSize: 14, fontWeight: 800, letterSpacing: "0.02em",
+                }} aria-hidden="true">{initials(name)}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.deep }}>{name}</div>
               </div>
             </div>
           </Reveal>

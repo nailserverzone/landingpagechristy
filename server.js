@@ -10,7 +10,7 @@ require("dotenv").config();
 
 const express = require("express");
 const { getStore } = require("./lib/store.js");
-const { paymentsEnabled, createRegistration, applyWebhook, lookupBySession } = require("./lib/registrations.js");
+const { depositMode, createRegistration, applyWebhook, lookupBySession } = require("./lib/registrations.js");
 const { diagnose } = require("./lib/health.js");
 
 const PORT = process.env.PORT || 4242;
@@ -27,10 +27,9 @@ app.post("/api/webhook", express.raw({ type: "application/json" }), async (req, 
 
 app.use(express.json({ limit: "64kb" }));
 
-app.get("/api/config", (_req, res) => {
-  res.setHeader("Cache-Control", "no-store");
-  res.json({ paymentsEnabled: paymentsEnabled() });
-});
+// Mounted from api/ rather than reimplemented, so local and deployed
+// behaviour cannot answer this question differently.
+app.get("/api/config", require("./api/config.js"));
 
 app.get("/api/health", async (_req, res) => {
   res.setHeader("Cache-Control", "no-store");
@@ -60,8 +59,11 @@ if (require.main === module) {
     console.log(`Coaching (home) → ${ORIGIN}/`);
     console.log(`Retreat         → ${ORIGIN}/retreat.html`);
     console.log(`Storage         → ${getStore().name}`);
-    if (paymentsEnabled()) {
-      console.log(`Payments        → LIVE. stripe listen --forward-to ${ORIGIN}/api/webhook`);
+    const mode = depositMode();
+    if (mode === "api") {
+      console.log(`Payments        → LIVE via Stripe API. stripe listen --forward-to ${ORIGIN}/api/webhook`);
+    } else if (mode === "link") {
+      console.log("Payments        → LIVE via Stripe Payment Link. Rows stay awaiting_payment; Christy confirms them by hand.");
     } else {
       console.log("Payments        → placeholder. Registrations captured, no card charged.");
     }

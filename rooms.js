@@ -20,12 +20,12 @@
   const ASSET_V = "3";
 
   // The September 18–20 2026 retreat was postponed on 15 September 2026.
-  // Christy is choosing new dates. Until then the site must not advertise a
-  // date — set `announced: true` and fill in `label` and `iso` when confirmed.
+  // Christy confirmed the new dates on 29 September 2026.
   const RETREAT_DATES = {
-    announced: false,
-    label: "New dates coming soon",
-    short: "To be announced",
+    announced: true,
+    label: "November 13–15, 2026",
+    short: "Nov 13–15, 2026",
+    iso: "2026-11-13",
     place: "Lake Hamilton, Hot Springs, Arkansas",
   };
 
@@ -93,7 +93,7 @@
     {
       id: "old-twin", house: "Older Lake House", houseShort: "Older House", houseTag: "HOUSE TWO",
       name: "Full & Twin Room", bath: "shared", capacity: 2,
-      priceCents: 79500, unit: "/ person", cta: "Reserve a bed",
+      priceCents: 69500, unit: "/ bed", cta: "Reserve a bed",
       photo: "old-twin.jpg",     // the little boat bed
       photoNote: "Photo: full & twin room",
       specs: [["Beds", "One full, one twin"], ["Sleeps", "2 women"], ["Bathroom", "Shared"]],
