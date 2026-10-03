@@ -261,7 +261,7 @@ const Hero = ({ T, ctaLabel, onCta }) => (
             zIndex: 3,
             transform: "rotate(-4deg)",
           }}>
-            <img src="assets/ziglar-legacy.webp" alt="" style={{ width: 44, height: 44, objectFit: "contain" }} />
+            <img src="assets/logos/ziglar-legacy-seal.webp" alt="" loading="lazy" decoding="async" style={{ width: 44, height: 44, objectFit: "contain" }} />
             <div>
               <div style={{ fontSize: 10, color: "#52514a", letterSpacing: "0.12em", fontWeight: 700 }}>CERTIFIED</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: T.deep }}>Ziglar Master Coach</div>
@@ -289,6 +289,18 @@ const Hero = ({ T, ctaLabel, onCta }) => (
 );
 
 // ---- TRUST STRIP ----
+/* The credential row. Two of these carry a badge; the rest are text only.
+ * The badge is decorative because the label beside it already says the same
+ * thing, so a screen reader would otherwise hear it twice. */
+const CREDENTIALS = [
+  { label: "Ziglar See You at the Top" },
+  { label: "Ziglar Legacy Certified", logo: "assets/logos/ziglar-legacy-seal.webp" },
+  { label: "Choose to Win Coach", logo: "assets/logos/choose-to-win.webp" },
+  { label: "Master Coach" },
+  { label: "16+ Years Experience" },
+  { label: "Self-Made Multi-Millionaire" },
+];
+
 const TrustStrip = ({ T }) => (
   <section style={{ background: "#fff", padding: "32px 0", borderBottom: `1px solid ${T.line}` }}>
     <div style={{
@@ -299,18 +311,19 @@ const TrustStrip = ({ T }) => (
       <div style={{ fontSize: 11, fontWeight: 700, color: T.inkSoft, letterSpacing: "0.18em", textTransform: "uppercase" }}>
         Certified by
       </div>
-      {[
-        "Ziglar See You at the Top",
-        "Choose to Win Coach",
-        "Master Coach",
-        "16+ Years Experience",
-        "Self-Made Multi-Millionaire",
-      ].map((t) => (
-        <div key={t} style={{
+      {CREDENTIALS.map(({ label, logo }) => (
+        <div key={label} style={{
+          display: "flex", alignItems: "center", gap: 9,
           fontSize: 13, fontWeight: 600, color: T.deep,
           opacity: 0.8,
           letterSpacing: "0.02em",
-        }}>{t}</div>
+        }}>
+          {logo && (
+            <img src={logo} alt="" loading="lazy" decoding="async"
+                 style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }} />
+          )}
+          <span>{label}</span>
+        </div>
       ))}
     </div>
   </section>
@@ -850,13 +863,186 @@ const Book = ({ T }) => (
           }}>Grab My Book on Amazon →</a>
         </Reveal>
       </div>
+
+      {/* Second book. Deliberately a compact row rather than a second hero, so
+          the flagship above keeps its weight. */}
+      <Reveal delay={80}>
+        <div style={{
+          marginTop: 96, paddingTop: 56,
+          borderTop: "1px solid rgba(255,255,255,0.14)",
+          display: "grid", gridTemplateColumns: "minmax(0, 260px) minmax(0, 1fr)",
+          gap: 48, alignItems: "center",
+        }} className="book-second">
+          <img
+            src="assets/books/little-me.webp"
+            alt="Cover of Little Me: A Little Book About Big Courage, showing two children in capes each holding a smaller doll of themselves"
+            loading="lazy"
+            decoding="async"
+            style={{
+              width: "100%", height: "auto", display: "block",
+              borderRadius: 10,
+              boxShadow: "0 30px 60px -20px rgba(0,0,0,0.6)",
+              transform: "rotate(-2deg)",
+            }}
+          />
+          <div>
+            <div style={{
+              fontSize: 12, fontWeight: 700, color: T.yellow,
+              letterSpacing: "0.18em", textTransform: "uppercase",
+              marginBottom: 14,
+            }}>Also by Christy</div>
+            <h3 style={{
+              fontSize: "clamp(28px, 3.2vw, 40px)",
+              lineHeight: 1.02, fontWeight: 900,
+              letterSpacing: "-0.02em",
+              margin: 0, color: "#fff",
+            }}>LITTLE ME.</h3>
+            <p style={{
+              fontSize: 16, lineHeight: 1.7,
+              color: "rgba(255,255,255,0.78)",
+              marginTop: 18, marginBottom: 0, maxWidth: 540,
+            }}>
+              A little book about big courage, illustrated by Dixie Terry. It takes
+              the idea at the heart of Be Your Own Superhero and turns it into
+              something you can read aloud: that the bravery you are looking for is
+              already in there, and it only takes a little to start.
+            </p>
+            {/* TODO: add the Amazon link for Little Me once Christy sends it,
+                matching the button above. No link until then rather than a
+                guessed one. */}
+          </div>
+        </div>
+      </Reveal>
     </div>
   </section>
 );
 
-// ---- SONG — "Little Me" video ----
-const Song = ({ T }) => {
+// ---- SONG AND MUSIC VIDEO ----
+/* Both are still with Christy. Nothing here renders until a value is filled in,
+ * so the live site shows no placeholder and no stand-in video.
+ *
+ * TODO: set `videoId` to the YouTube id of the music video.
+ * TODO: set `songUrl` to an embed URL (Spotify, Apple Music, SoundCloud) or to
+ *       an audio file placed under assets/music/.
+ *
+ * Each block appears on its own as soon as its own value is set, so whichever
+ * arrives first can go live without waiting for the other. The cover art is
+ * already in the repo at assets/music/ and is wired up below.
+ *
+ * `videoId` was "YI0Qm6Fv59s" in the design handoff. That was a stand-in, not
+ * Christy's video, so it has been pulled rather than left running live.
+ */
+const MEDIA = {
+  videoId: null,
+  songUrl: null,
+};
+
+const MusicVideo = ({ T }) => {
   const [playing, setPlaying] = useState(false);
+  return (
+    <div style={{
+      position: "relative",
+      aspectRatio: "16/9",
+      borderRadius: 20,
+      overflow: "hidden",
+      boxShadow: "0 40px 80px -20px rgba(0,0,0,0.4)",
+      border: `1px solid ${T.line}`,
+      background: "#000",
+    }}>
+      {playing ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${MEDIA.videoId}?autoplay=1`}
+          title="Be Your Own Superhero, the music video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          style={{ width: "100%", height: "100%", border: "none", display: "block" }}
+        />
+      ) : (
+        <button
+          onClick={() => setPlaying(true)}
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            border: "none", padding: 0, cursor: "pointer",
+            backgroundImage: `url("assets/music/superhero-cover.webp")`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+          aria-label="Play the Be Your Own Superhero music video"
+        >
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.55) 100%)",
+          }} />
+          <div style={{
+            position: "absolute", top: "50%", left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 96, height: 96,
+            borderRadius: "50%",
+            background: T.yellow,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+          }}>
+            <div style={{
+              width: 0, height: 0,
+              borderTop: "18px solid transparent",
+              borderBottom: "18px solid transparent",
+              borderLeft: `26px solid ${T.deep}`,
+              marginLeft: 6,
+            }} />
+          </div>
+          <div style={{
+            position: "absolute", bottom: 28, left: 32,
+            color: "#fff", textAlign: "left",
+            textShadow: "0 2px 12px rgba(0,0,0,0.7)",
+          }}>
+            <div style={{ fontSize: 12, letterSpacing: "0.16em", color: T.yellow, fontWeight: 700 }}>BE ONE OF THE FIRST TO HEAR IT</div>
+            <div style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Watch the full video now</div>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+};
+
+const SongPlayer = ({ T }) => (
+  <div style={{
+    display: "grid", gridTemplateColumns: "minmax(0, 220px) minmax(0, 1fr)",
+    gap: 32, alignItems: "center",
+    background: "#fff",
+    border: `1px solid ${T.line}`,
+    borderRadius: 20, padding: 28,
+    boxShadow: "0 20px 50px -24px rgba(0,0,0,0.25)",
+  }} className="song-player">
+    <img
+      src="assets/music/little-me-cover.webp"
+      alt="Cover art for the single Little Me, showing a child in a car writing the words on a fogged window"
+      loading="lazy" decoding="async"
+      style={{ width: "100%", height: "auto", display: "block", borderRadius: 12 }}
+    />
+    <div>
+      <div style={{
+        fontSize: 12, fontWeight: 700, color: T.accent,
+        letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 10,
+      }}>The single</div>
+      <h3 style={{
+        fontSize: "clamp(24px, 3vw, 34px)", lineHeight: 1.05,
+        fontWeight: 800, margin: "0 0 18px", color: T.deep,
+      }}>Little Me</h3>
+      <iframe
+        src={MEDIA.songUrl}
+        title="Listen to Little Me"
+        loading="lazy"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        style={{ width: "100%", height: 152, border: "none", borderRadius: 12, display: "block" }}
+      />
+    </div>
+  </div>
+);
+
+const Song = ({ T }) => {
+  // Nothing to show until Christy sends one or the other.
+  if (!MEDIA.videoId && !MEDIA.songUrl) return null;
   return (
     <section style={{ padding: "120px 0", background: T.bg, position: "relative", overflow: "hidden" }}>
       <div style={{
@@ -867,7 +1053,7 @@ const Song = ({ T }) => {
         lineHeight: 0.85,
         pointerEvents: "none", userSelect: "none",
         whiteSpace: "nowrap",
-      }}>♪ LISTEN</div>
+      }}>&#9834; LISTEN</div>
 
       <div style={{ position: "relative", maxWidth: 1100, margin: "0 auto", padding: "0 32px" }}>
         <Reveal>
@@ -885,74 +1071,16 @@ const Song = ({ T }) => {
               maxWidth: 760,
             }}>
               <Script color={T.gold} size={64}>"Little Me"</Script>
-              {" — "}the new release everyone's talking about.
+              {" "}and the music that came with it.
             </h2>
           </div>
         </Reveal>
-        <Reveal delay={120}>
-          <div style={{
-            position: "relative",
-            aspectRatio: "16/9",
-            borderRadius: 20,
-            overflow: "hidden",
-            boxShadow: "0 40px 80px -20px rgba(0,0,0,0.4)",
-            border: `1px solid ${T.line}`,
-            background: "#000",
-          }}>
-            {playing ? (
-              <iframe
-                src="https://www.youtube.com/embed/YI0Qm6Fv59s?autoplay=1"
-                title="Little Me — Christy Marvel"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{ width: "100%", height: "100%", border: "none", display: "block" }}
-              />
-            ) : (
-              <button
-                onClick={() => setPlaying(true)}
-                style={{
-                  position: "absolute", inset: 0,
-                  width: "100%", height: "100%",
-                  border: "none", padding: 0, cursor: "pointer",
-                  backgroundImage: `url("https://img.youtube.com/vi/YI0Qm6Fv59s/maxresdefault.jpg")`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-                aria-label="Play 'Little Me' video"
-              >
-                <div style={{
-                  position: "absolute", inset: 0,
-                  background: "linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.55) 100%)",
-                }} />
-                <div style={{
-                  position: "absolute", top: "50%", left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 96, height: 96,
-                  borderRadius: "50%",
-                  background: T.yellow,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-                }}>
-                  <div style={{
-                    width: 0, height: 0,
-                    borderTop: "18px solid transparent",
-                    borderBottom: "18px solid transparent",
-                    borderLeft: `26px solid ${T.deep}`,
-                    marginLeft: 6,
-                  }} />
-                </div>
-                <div style={{
-                  position: "absolute", bottom: 28, left: 32,
-                  color: "#fff", textAlign: "left",
-                  textShadow: "0 2px 12px rgba(0,0,0,0.7)",
-                }}>
-                  <div style={{ fontSize: 12, letterSpacing: "0.16em", color: T.yellow, fontWeight: 700 }}>BE ONE OF THE FIRST TO HEAR IT</div>
-                  <div style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>Watch the full video now</div>
-                </div>
-              </button>
-            )}
-          </div>
-        </Reveal>
+        {MEDIA.videoId && <Reveal delay={120}><MusicVideo T={T} /></Reveal>}
+        {MEDIA.songUrl && (
+          <Reveal delay={MEDIA.videoId ? 200 : 120}>
+            <div style={{ marginTop: MEDIA.videoId ? 32 : 0 }}><SongPlayer T={T} /></div>
+          </Reveal>
+        )}
       </div>
     </section>
   );
