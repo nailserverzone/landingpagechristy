@@ -19,19 +19,8 @@
   // can serve a stale copy — or a stale 404 from before the file existed.
   const ASSET_V = "3";
 
-  // The September 18–20 2026 retreat was postponed on 15 September 2026.
-  // Christy confirmed the new dates on 29 September 2026.
-  const RETREAT_DATES = {
-    announced: true,
-    label: "November 13–15, 2026",
-    short: "Nov 13–15, 2026",
-    iso: "2026-11-13",
-    place: "Lake Hamilton, Hot Springs, Arkansas",
-  };
-
-  // The guest-facing date line. `label` carries the difference between an
-  // announced date and "coming soon", so callers need no branching.
-  const dateLine = () => `${RETREAT_DATES.label} · ${RETREAT_DATES.place}`;
+  // Dates live in retreat-dates.js, which is the one file to edit when they
+  // change. They are deliberately not re-exported from here: one owner each.
 
   // Christy's refund terms, confirmed by Danielle Russo on 15 September 2026.
   // Measured from the first day of the retreat.
@@ -77,7 +66,7 @@
     {
       id: "old-master", house: "Older Lake House", houseShort: "Older House", houseTag: "HOUSE TWO",
       name: "Master Suite", bath: "private", capacity: 2,
-      priceCents: 99500, unit: "/ person", cta: "Reserve this room",
+      priceCents: 88500, unit: "/ person", cta: "Reserve this room",
       photo: "old-master.jpg",   // queen/full, tan comforter
       photoNote: "Photo: master suite",
       specs: [["Bed", "Queen or full"], ["Sleeps", "1–2 women"], ["Bathroom", "Private"]],
@@ -131,7 +120,7 @@
   ];
 
   return {
-    ASSET_V, DEPOSIT_CENTS, MAX_GUESTS, RETREAT_DATES, REFUND_POLICY, dateLine,
+    ASSET_V, DEPOSIT_CENTS, MAX_GUESTS, REFUND_POLICY,
     RETREAT_ROOMS, WAITLIST_ID, WAITLIST_LABEL,
     AVAILABILITY_LABELS, availabilityOf, money, roomLabel, findRoom, roomOptions,
   };

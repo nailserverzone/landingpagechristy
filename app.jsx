@@ -1,7 +1,14 @@
 /* global React, ReactDOM, RETREAT_ROOMS, WAITLIST_ID, money, roomOptions,
    availabilityOf, AVAILABILITY_LABELS, validateRegistration, firstError,
-   ASSET_V, RETREAT_DATES, REFUND_POLICY, dateLine */
+   ASSET_V, REFUND_POLICY, dateLine, nextOpenRetreat, otherUpcomingRetreats,
+   DEPOSIT_CENTS */
 const { useState, useEffect, useRef } = React;
+
+// The retreat the page leads with, and any later ones to list beneath it. Both
+// come from retreat-dates.js, which is the only file to edit when dates change.
+// `LEAD` is null when nothing upcoming is still open — every use must cope.
+const LEAD = nextOpenRetreat();
+const OTHER_DATES = otherUpcomingRetreats();
 
 // Whether the site can take card payments yet. Defaults to false and only turns
 // on if the server says so, so static hosting or a failed call errs towards
@@ -202,7 +209,7 @@ const Hero = ({ bgRef }) => (
         <a className="btn btn-ghost" href="#experience">Learn More</a>
       </div>
       <div className="meta rv">
-        <div><div className="k">DATES</div><div className="v">{RETREAT_DATES.short}</div></div>
+        <div><div className="k">DATES</div><div className="v">{LEAD ? LEAD.short : "To be announced"}</div></div>
         <div><div className="k">SETTING</div><div className="v">Lake Hamilton, Hot Springs, Arkansas</div></div>
         <div><div className="k">GROUP SIZE</div><div className="v">No more than 10 women</div></div>
       </div>
@@ -361,6 +368,16 @@ const Rooms = ({ onSelectRoom }) => (
   </div></section>
 );
 
+/* The two price bands, derived from rooms.js rather than written out here.
+ * Hardcoding them is how the page silently disagrees with what the server
+ * actually charges the moment a room price changes. */
+const band = rooms => {
+  const prices = [...new Set(rooms.map(r => r.priceCents))].sort((a, b) => a - b);
+  return prices.length === 1 ? money(prices[0]) : `${money(prices[0])}–${money(prices[prices.length - 1])}`;
+};
+const SHARED_ROOMS = RETREAT_ROOMS.filter(r => r.bath === "shared");
+const PRIVATE_ROOMS = RETREAT_ROOMS.filter(r => r.bath === "private");
+
 const Investment = ({ paymentsEnabled }) => (
   <section className="pad" id="investment"><div className="wrap">
     <Heading eyebrow="Investment" title="Reserve with a deposit" />
@@ -374,20 +391,36 @@ const Investment = ({ paymentsEnabled }) => (
     <div className="pay">
       <div className="rv">
         <div className="lb">Shared Room</div>
-        <div className="big" style={{ marginTop: 14 }}>$795</div>
+        <div className="big" style={{ marginTop: 14 }}>{band(SHARED_ROOMS)}</div>
         <p>Per person, for the full weekend — lodging, sessions, meals, workbook, signed book, and welcome package.</p>
       </div>
       <div className="rv">
         <div className="lb">Private Room</div>
-        <div className="big" style={{ marginTop: 14 }}>$995</div>
+        <div className="big" style={{ marginTop: 14 }}>{band(PRIVATE_ROOMS)}</div>
         <p>Per person, with a private bathroom. Limited to the two master suites.</p>
       </div>
       <div className="rv dark">
         <div className="lb">Deposit</div>
-        <div className="big" style={{ marginTop: 14 }}>$300</div>
+        <div className="big" style={{ marginTop: 14 }}>{money(DEPOSIT_CENTS)}</div>
         <p>Due at registration to hold your room. Applied to your total; the remaining balance is paid online before the retreat.</p>
       </div>
     </div>
+
+    {/* Only rendered once a second retreat is added to retreat-dates.js. With
+        one date on the books this produces nothing at all. */}
+    {OTHER_DATES.length > 0 && (
+      <div className="dates rv">
+        <h3 className="h3">Other upcoming dates</h3>
+        <ul>
+          {OTHER_DATES.map(d => (
+            <li key={d.start}>
+              <span>{d.label}</span>
+              {d.isFull && <b className="full">FULL</b>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
     <div className="refunds rv">
       <h3 className="h3">Cancellation and refunds</h3>
       <p className="fine" style={{ margin: "10px 0 0" }}>
