@@ -1,7 +1,8 @@
 # Be Your Own Superhero™ Retreat
 
-Landing page and deposit registration for the retreat on **November 13–15, 2026**,
-Lake Hamilton, Hot Springs, Arkansas.
+Landing page and deposit registration for the retreat at Lake Hamilton, Hot
+Springs, Arkansas. Dates live in `retreat-dates.js`; the next one is
+**November 13–15, 2026**.
 
 > Nothing here should take real money until the items under
 > [Before going live](#before-going-live) are settled — in particular the
@@ -84,8 +85,8 @@ Two things are deliberate and worth preserving if this moves to another host:
 - **The browser never sends an amount.** It sends a room `id`; the server prices
   it from `rooms.js`. A tampered request cannot change what is charged.
 - **The card is saved at deposit time** (`setup_future_usage: "off_session"`),
-  so the remaining $495 or $695 can be charged later without asking the guest
-  to enter their details again.
+  so the balance can be charged later without asking the guest to enter their
+  details again.
 
 ## Layout
 
@@ -95,9 +96,10 @@ The coaching page is the site's front door; the retreat is a page beneath it.
 | --- | --- |
 | `index.html` | **Homepage** — the coaching page, loads `coaching.jsx` |
 | `coaching.jsx` | Coaching page, plus the retreat popup |
-| `retreat.html` | Retreat page, loads `rooms.js`, `validate.js`, `app.jsx` |
+| `retreat.html` | Retreat page, loads `retreat-dates.js`, `rooms.js`, `validate.js`, `app.jsx` |
 | `app.jsx` | The retreat page as React components |
 | `styles.css` | Design system — tokens, layout, the single 900px breakpoint |
+| `retreat-dates.js` | **Source of truth** for retreat dates — the one file to edit |
 | `rooms.js` | **Source of truth** for rooms, prices, capacity and availability |
 | `validate.js` | Form rules, shared by browser and server so they cannot disagree |
 | `lib/store.js` | Storage adapter — `file` locally, `airtable` in production |
@@ -105,7 +107,38 @@ The coaching page is the site's front door; the retreat is a page beneath it.
 | `api/*.js` | Vercel serverless functions |
 | `server.js` | Local dev server; mounts the same handlers as `api/` |
 | `vercel.json` | Redirects `/coaching.html` to `/`, caches assets |
+| `assets/retreat/house/` | The lake houses themselves, WebP |
 | `assets/retreat/web/` | Lake photography, 1600px q82 |
+| `assets/books/`, `assets/logos/`, `assets/music/` | Covers, credential badges, cover art |
+| `test/` | `npm test` — date logic and payment routing |
+
+## Changing the retreat dates
+
+Everything to do with dates is in `retreat-dates.js`, and nothing else needs
+touching.
+
+```js
+const RETREAT_DATES = [
+  { start: "2026-11-13", end: "2026-11-15", status: "open" },
+  { start: "2027-03-05", end: "2027-03-07", status: "open" },
+];
+```
+
+- **Add a retreat** — add a line. The page leads with the soonest one still
+  open and lists the rest beneath it under "Other upcoming dates".
+- **Close one off** — change its `status` to `"full"`. It is skipped as the
+  headline date but still listed, so a guest can see the retreat is running
+  again rather than assuming it has stopped.
+- **A retreat that has been and gone** needs no action. Dates disappear once
+  they have passed, and a retreat stays current through its own final day, so
+  the page does not go blank on the Sunday morning of the retreat itself.
+
+When the list is empty, or every upcoming retreat is full, the page reads
+"New dates coming soon" rather than showing a blank or a stale date.
+
+Dates are parsed at noon, not midnight. A date-only string is UTC midnight,
+which in Arkansas is still the previous evening, so a retreat would otherwise
+read as past several hours early.
 
 ## Deploying to Vercel
 
@@ -194,14 +227,19 @@ Carried over from the design handoff, plus what surfaced while building:
       marked available as a placeholder — publishing as-is offers rooms that may
       already be taken.
 - [x] ~~Announce the new dates~~ — November 13–15 2026, confirmed by Christy on
-      29 September 2026.
-- [ ] **Confirm the master suite price.** Danielle asked on 27 September for
-      "the master suite" to be $885, but there are two: `new-master`
-      (Downstairs Master Suite, $995) and `old-master` (Master Suite, $795).
-      Unresolved, so both are unchanged.
+      29 September 2026. Dates now live in `retreat-dates.js` and support a list.
+- [x] ~~Confirm the master suite price~~ — `old-master` (Older House Master
+      Suite) is $885, down from $995. `new-master` stays at $995.
 - [x] ~~Twin room price~~ — $695 per bed as of 29 September 2026.
-- [ ] Set `STRIPE_PAYMENT_LINK` in Vercel to the link Christy supplied, then
-      redeploy. Until then the site collects registrations and charges nothing.
+- [ ] **Set `STRIPE_PAYMENT_LINK` in Vercel** to the link Christy supplied on
+      29 September, then redeploy. Until then the site collects registrations
+      and charges nothing. The link is not committed: it belongs in config, not
+      in a public repo.
+- [ ] **Amazon link for Little Me** — the cover is live, the button is not,
+      because no link was supplied. See the TODO in `coaching.jsx`.
+- [ ] **The song and the music video** — both sit behind `MEDIA` in
+      `coaching.jsx` and render nothing until filled in. Cover art is already
+      in `assets/music/`.
 - [ ] Optional, later: two more Payment Links so guests can pay in full up
       front ($795 and $995 tiers), and Stripe invoices for the balance.
 - [x] ~~Confirm the refund and cancellation policy~~ — supplied by Danielle Russo
