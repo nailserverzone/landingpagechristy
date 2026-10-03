@@ -105,22 +105,39 @@ const HOUSES = [...new Set(RETREAT_ROOMS.map(r => r.house))].map(house => ({
 
 const ROOM_OPTIONS = roomOptions();
 
+const HOUSE = "assets/retreat/house/";
+
+/* [dir, file, alt, caption]. The property's own photographs come first — the
+ * lead tile spans 2x2 — and the stock lake set trails behind as filler. Alt
+ * text describes what is in the frame; the caption underneath is the mood line,
+ * so the two are deliberately not the same words. */
 const GALLERY = [
-  // The property's own photographs first — the lead tile spans 2x2.
-  ["real-firepit.jpg", "Adirondack chairs around the fire pit at sunset", "Bonfire at sundown"],
-  ["real-dock.jpg", "The boardwalk and dock on the lake", "The boardwalk"],
-  ["real-patio.jpg", "Lakeside patio seating at the water's edge", "The water's edge"],
-  ["real-sign.jpg", "The Marvel Lake House sign inside the house", "The Marvel Lake House"],
-  ["real-swing.jpg", "Canopy swing on the lawn looking across the lake", "Room to do nothing"],
+  // The lake houses themselves.
+  [HOUSE, "exterior-night.webp", "The lake house lit by string lights at night, with a fire pit and loungers on the patio", "Evenings on the patio"],
+  [HOUSE, "porch-lake-view.webp", "View from the screened porch across the lawn to mist rising off the lake", "Mornings on the porch"],
+  [HOUSE, "living-room.webp", "Open-plan living room with MARVEL LAKE HOUSE lettering above the windows", "The gathering room"],
+  [HOUSE, "kitchen.webp", "Kitchen with white cabinets, granite counters and lake-themed decoration", "The kitchen"],
+  [HOUSE, "dining-room.webp", "Round dining table set for six beneath a ring of pendant lights", "Where we eat together"],
+  [HOUSE, "game-room.webp", "Games room with a pool table, electric fireplace and open kitchen beyond", "The games room"],
+  [HOUSE, "lounge-games.webp", "Lounge with bean bags, a wall-mounted television, foosball and air hockey", "Somewhere to flop"],
+  [HOUSE, "patio-day.webp", "Covered brick patio with an umbrella and outdoor dining set in the sunshine", "The covered patio"],
+  [HOUSE, "bathroom.webp", "Bathroom with a double vanity, marble counter and embroidered lake house towels", "Room to get ready"],
+  [HOUSE, "bikes-lakeside.webp", "Two bicycles on the lawn above the lake on a clear summer day", "Bikes by the water"],
+  // The property's earlier photographs.
+  [IMG, "real-firepit.jpg", "Adirondack chairs around the fire pit at sunset", "Bonfire at sundown"],
+  [IMG, "real-dock.jpg", "The boardwalk and dock on the lake", "The boardwalk"],
+  [IMG, "real-patio.jpg", "Lakeside patio seating at the water's edge", "The water's edge"],
+  [IMG, "real-sign.jpg", "The Marvel Lake House sign inside the house", "The Marvel Lake House"],
+  [IMG, "real-swing.jpg", "Canopy swing on the lawn looking across the lake", "Room to do nothing"],
   // Stock lake photography, still standing in.
-  ["treeline.jpg", "Autumn treeline reflected in the lake", "Still mornings"],
-  ["ripple.jpg", "Ripple on still water", "Quiet water"],
-  ["sunrise-pink.jpg", "Lake at first light", "First light"],
-  ["shoreline-homes.jpg", "Lakefront homes and docks", "Lake Hamilton"],
-  ["swan.jpg", "Swan on still water", "Company on the water"],
-  ["boats-lake.jpg", "Boats out on the lake", "Out on the water"],
-  ["lake-homes-summer.jpg", "Lake homes and docks in summer", "Neighbouring homes"],
-  ["pebble-shore.jpg", "Pebble shoreline at dusk", "The shoreline at dusk"],
+  [IMG, "treeline.jpg", "Autumn treeline reflected in the lake", "Still mornings"],
+  [IMG, "ripple.jpg", "Ripple on still water", "Quiet water"],
+  [IMG, "sunrise-pink.jpg", "Lake at first light", "First light"],
+  [IMG, "shoreline-homes.jpg", "Lakefront homes and docks", "Lake Hamilton"],
+  [IMG, "swan.jpg", "Swan on still water", "Company on the water"],
+  [IMG, "boats-lake.jpg", "Boats out on the lake", "Out on the water"],
+  [IMG, "lake-homes-summer.jpg", "Lake homes and docks in summer", "Neighbouring homes"],
+  [IMG, "pebble-shore.jpg", "Pebble shoreline at dusk", "The shoreline at dusk"],
 ];
 
 const FAQS = [
@@ -142,10 +159,12 @@ const FAQS = [
 ];
 
 // ── Building blocks ───────────────────────────────────────────────────────────
-const Photo = ({ src, alt, className = "", eager, children }) => (
+// `dir` lets a caller point outside the default folder — the gallery mixes the
+// property's own photographs with the older stock set, which live apart.
+const Photo = ({ src, alt, className = "", eager, children, dir = IMG }) => (
   <div className={`ph ${className}`.trim()}>
     <img
-      src={v(IMG + src)}
+      src={v(dir + src)}
       alt={alt}
       loading={eager ? undefined : "lazy"}
       decoding={eager ? undefined : "async"}
@@ -371,6 +390,7 @@ const Rooms = ({ onSelectRoom }) => (
 /* The two price bands, derived from rooms.js rather than written out here.
  * Hardcoding them is how the page silently disagrees with what the server
  * actually charges the moment a room price changes. */
+const isRange = rooms => new Set(rooms.map(r => r.priceCents)).size > 1;
 const band = rooms => {
   const prices = [...new Set(rooms.map(r => r.priceCents))].sort((a, b) => a - b);
   return prices.length === 1 ? money(prices[0]) : `${money(prices[0])}–${money(prices[prices.length - 1])}`;
@@ -391,12 +411,12 @@ const Investment = ({ paymentsEnabled }) => (
     <div className="pay">
       <div className="rv">
         <div className="lb">Shared Room</div>
-        <div className="big" style={{ marginTop: 14 }}>{band(SHARED_ROOMS)}</div>
+        <div className={`big ${isRange(SHARED_ROOMS) ? "range" : ""}`.trim()} style={{ marginTop: 14 }}>{band(SHARED_ROOMS)}</div>
         <p>Per person, for the full weekend — lodging, sessions, meals, workbook, signed book, and welcome package.</p>
       </div>
       <div className="rv">
         <div className="lb">Private Room</div>
-        <div className="big" style={{ marginTop: 14 }}>{band(PRIVATE_ROOMS)}</div>
+        <div className={`big ${isRange(PRIVATE_ROOMS) ? "range" : ""}`.trim()} style={{ marginTop: 14 }}>{band(PRIVATE_ROOMS)}</div>
         <p>Per person, with a private bathroom. Limited to the two master suites.</p>
       </div>
       <div className="rv dark">
@@ -484,8 +504,8 @@ const Gallery = () => (
   <section className="pad" id="gallery"><div className="wrap">
     <Heading eyebrow="The Place" title="Lake, boardwalk, firelight." />
     <div className="gal">
-      {GALLERY.map(([src, alt, cap]) => (
-        <Photo key={src} className="rv" src={src} alt={alt}>
+      {GALLERY.map(([dir, src, alt, cap]) => (
+        <Photo key={dir + src} className="rv" dir={dir} src={src} alt={alt}>
           <div className="cap">{cap}</div>
         </Photo>
       ))}

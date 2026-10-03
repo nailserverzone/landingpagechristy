@@ -184,6 +184,9 @@ nav .links a:not(.btn):hover::after { right: 0; }
 .pay { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: clamp(18px, 2.4vw, 30px); margin-top: 52px; }
 .pay > div { border: 1px solid var(--hair); background: #fff; padding: 34px; }
 .pay .big { font-size: clamp(40px, 4.4vw, 60px); font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+/* A price band like "$695–$795" is twice the characters of a single figure and
+   breaks across two lines at the headline size. Step it down so it holds one. */
+.pay .big.range { font-size: clamp(30px, 3.2vw, 44px); }
 .pay .lb { font-size: 12px; letter-spacing: .2em; font-weight: 700; color: var(--gold-deep); text-transform: uppercase; }
 .pay p { font-size: 16px; line-height: 1.5; color: var(--muted); margin: 14px 0 0; }
 .pay .dark { background: var(--navy); color: #fff; border-color: var(--navy); }
