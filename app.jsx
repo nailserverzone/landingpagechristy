@@ -113,6 +113,7 @@ const HOUSE = "assets/retreat/house/";
  * so the two are deliberately not the same words. */
 const GALLERY = [
   // The lake houses themselves.
+  [HOUSE, "great-room.webp", "The great room with THE MARVEL LAKE HOUSE spelled out above the sofas, a pool table, a giant Connect Four and the kitchen beyond", "The great room"],
   [HOUSE, "exterior-night.webp", "The lake house lit by string lights at night, with a fire pit and loungers on the patio", "Evenings on the patio"],
   [HOUSE, "porch-lake-view.webp", "View from the screened porch across the lawn to mist rising off the lake", "Mornings on the porch"],
   [HOUSE, "living-room.webp", "Open-plan living room with MARVEL LAKE HOUSE lettering above the windows", "The gathering room"],
