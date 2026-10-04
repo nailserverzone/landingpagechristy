@@ -1,4 +1,4 @@
-/* global React */
+/* global React, ReactDOM, dateLine */
 const { useState, useEffect, useRef } = React;
 
 // Design-time settings, previously supplied by a floating tweaks panel.
@@ -544,16 +544,7 @@ const WhyChristy = ({ T }) => {
   );
 };
 
-// ---- TESTIMONIALS (placeholder) ----
-const phStyle = (T) => ({
-  background: "repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.03) 6px, rgba(0,0,0,0.03) 12px)",
-  border: `2px dashed ${T.line}`,
-  borderRadius: 16,
-  padding: 28,
-  color: T.inkSoft,
-  fontStyle: "italic",
-});
-
+// ---- TESTIMONIALS ----
 // Supplied by Danielle Russo, 29 September 2026. Quoted verbatim — these are
 // real people's words, so they get edited only if she sends new wording.
 const TESTIMONIALS = [
@@ -636,36 +627,6 @@ const Testimonials = ({ T }) => (
         ))}
       </div>
 
-      <Reveal delay={80}>
-        <div style={{ marginTop: 72, paddingTop: 48, borderTop: `1px dashed ${T.line}` }}>
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <div style={{
-              display: "inline-block",
-              background: T.yellow, color: T.deep,
-              fontSize: 11, fontWeight: 800,
-              letterSpacing: "0.16em", textTransform: "uppercase",
-              padding: "5px 14px", borderRadius: 999, marginBottom: 12,
-            }}>Placeholder section</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: T.inkSoft, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-              As Featured In
-            </div>
-          </div>
-          <div style={{
-            display: "flex", justifyContent: "center", alignItems: "center",
-            flexWrap: "wrap", gap: 32,
-          }}>
-            {["[Publication 1]", "[Podcast 2]", "[Media Outlet 3]", "[Magazine 4]", "[Platform 5]"].map((name) => (
-              <div key={name} style={{
-                ...phStyle(T),
-                padding: "10px 24px",
-                fontSize: 13, fontWeight: 700,
-                borderRadius: 8,
-                whiteSpace: "nowrap",
-              }}>{name}</div>
-            ))}
-          </div>
-        </div>
-      </Reveal>
     </div>
   </section>
 );
@@ -1368,7 +1329,7 @@ const RetreatPromo = ({ T }) => {
             fontSize: 12, fontWeight: 700, letterSpacing: "0.2em",
             textTransform: "uppercase", color: T.gold, marginBottom: 12,
           }}>
-            New dates coming soon · Hot Springs, Arkansas
+            {dateLine()}
           </div>
           <h2 id="promo-title" style={{
             margin: 0, fontSize: 30, fontWeight: 800,
