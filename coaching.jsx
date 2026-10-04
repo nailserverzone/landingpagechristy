@@ -559,7 +559,7 @@ const phStyle = (T) => ({
 const TESTIMONIALS = [
   {
     name: "Gwendolyn Russo",
-    quote: "Working with Christy helped me see myself and my life from an entirely different perspective. She has an incredible ability to ask the right questions, challenge the way you've always thought about yourself, and help you recognize strengths you didn't even realize you had. I walked away with more clarity, confidence, and a much stronger sense of who I am and where I want to go. Christy doesn't just motivate you—she helps you uncover what's already inside of you and gives you the tools to actually move forward.",
+    quote: "Working with Christy helped me see myself and my life from an entirely different perspective. She has an incredible ability to ask the right questions, challenge the way you've always thought about yourself, and help you recognize strengths you didn't even realize you had. I walked away with more clarity, confidence, and a much stronger sense of who I am and where I want to go. Christy doesn't just motivate you; she helps you uncover what's already inside of you and gives you the tools to actually move forward.",
   },
   {
     name: "Brenda Caldwell",
