@@ -254,17 +254,19 @@ const Hero = ({ T, ctaLabel, onCta }) => (
             position: "absolute",
             bottom: 60, left: -10,
             background: "#fff",
-            padding: "12px 16px",
-            borderRadius: 14,
-            display: "flex", alignItems: "center", gap: 10,
+            padding: "14px 20px",
+            borderRadius: 16,
+            display: "flex", alignItems: "center", gap: 14,
             boxShadow: "0 20px 40px -12px rgba(0,0,0,0.3)",
             zIndex: 3,
             transform: "rotate(-4deg)",
           }}>
-            <img src="assets/logos/ziglar-legacy-seal.webp" alt="" loading="lazy" decoding="async" style={{ width: 44, height: 44, objectFit: "contain" }} />
+            {/* The seal carries the credential, so it is sized to be read
+                rather than treated as a bullet point. */}
+            <img src="assets/logos/ziglar-legacy-seal.webp" alt="" loading="lazy" decoding="async" style={{ width: 72, height: 72, objectFit: "contain", flexShrink: 0 }} />
             <div>
-              <div style={{ fontSize: 10, color: "#52514a", letterSpacing: "0.12em", fontWeight: 700 }}>CERTIFIED</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: T.deep }}>Ziglar Master Coach</div>
+              <div style={{ fontSize: 11, color: "#52514a", letterSpacing: "0.14em", fontWeight: 700 }}>CERTIFIED</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: T.deep, lineHeight: 1.2 }}>Ziglar Master&nbsp;Coach</div>
             </div>
           </div>
           {/* small stats card */}
@@ -320,7 +322,7 @@ const TrustStrip = ({ T }) => (
         }}>
           {logo && (
             <img src={logo} alt="" loading="lazy" decoding="async"
-                 style={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }} />
+                 style={{ width: 42, height: 42, objectFit: "contain", flexShrink: 0 }} />
           )}
           <span>{label}</span>
         </div>
@@ -427,7 +429,7 @@ const About = ({ T, onCta, ctaLabel }) => (
             margin: 0,
             color: T.deep,
           }}>
-            Ten years guiding people<br/>
+            Sixteen years guiding people<br/>
             to the <Script color={T.gold} size={64} style={{ verticalAlign: "-2px", marginRight: 12, marginLeft: 4 }}>life</Script>they meant<br/>to live.
           </h2>
           <div style={{
@@ -834,18 +836,47 @@ const Book = ({ T }) => (
           display: "grid", gridTemplateColumns: "minmax(0, 260px) minmax(0, 1fr)",
           gap: 48, alignItems: "center",
         }} className="book-second">
-          <img
-            src="assets/books/little-me.webp"
-            alt="Cover of Little Me: A Little Book About Big Courage, showing two children in capes each holding a smaller doll of themselves"
-            loading="lazy"
-            decoding="async"
-            style={{
-              width: "100%", height: "auto", display: "block",
-              borderRadius: 10,
-              boxShadow: "0 30px 60px -20px rgba(0,0,0,0.6)",
+          {/* Given the same physical treatment as the flagship above: a colour
+              block behind it, a spine down the binding edge and a page edge on
+              the open side, so a flat cover image reads as a book on a shelf. */}
+          <div style={{ position: "relative", padding: "18px 0" }}>
+            <div style={{
+              position: "absolute", top: 34, left: 24,
+              width: "88%", aspectRatio: "1/1",
+              background: T.yellow,
+              borderRadius: 8,
+              transform: "rotate(-5deg)",
+              boxShadow: "0 24px 50px -18px rgba(245,208,78,0.45)",
+            }} />
+            <div style={{
+              position: "relative",
               transform: "rotate(-2deg)",
-            }}
-          />
+              borderRadius: "4px 10px 10px 4px",
+              overflow: "hidden",
+              boxShadow: "0 34px 64px -20px rgba(0,0,0,0.65), 0 2px 6px rgba(0,0,0,0.4)",
+            }}>
+              <img
+                src="assets/books/little-me.webp"
+                alt="Cover of Little Me: A Little Book About Big Courage, showing two children in capes each holding a smaller doll of themselves"
+                loading="lazy"
+                decoding="async"
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+              {/* spine shadow down the binding edge */}
+              <div style={{
+                position: "absolute", top: 0, bottom: 0, left: 0, width: 16,
+                background: "linear-gradient(90deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.16) 45%, rgba(255,255,255,0.12) 85%, rgba(0,0,0,0.06) 100%)",
+                pointerEvents: "none",
+              }} />
+              {/* page edges on the open side */}
+              <div style={{
+                position: "absolute", top: 3, bottom: 3, right: 0, width: 6,
+                background: "repeating-linear-gradient(180deg, #fdfcf8 0px, #fdfcf8 1px, #d8d3c4 1px, #d8d3c4 2px)",
+                borderRadius: "0 3px 3px 0",
+                pointerEvents: "none",
+              }} />
+            </div>
+          </div>
           <div>
             <div style={{
               fontSize: 12, fontWeight: 700, color: T.yellow,
@@ -1311,7 +1342,7 @@ const RetreatPromo = ({ T }) => {
         }}
       >
         <img
-          src="assets/retreat/web/sunset-lake.jpg" alt=""
+          src="assets/retreat/house/porch-lake-view.webp" alt=""
           style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }}
         />
         <button

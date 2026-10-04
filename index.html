@@ -28,7 +28,10 @@
     section [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
     /* Once the two-book row stacks, the cover would otherwise run the full
        width of the screen. Keep it to a sensible size and centred. */
-    .book-second img { max-width: 240px; margin: 0 auto; }
+    /* Once the two-book row stacks, the cover would otherwise run the full
+       width of the screen. Cap the whole book block, not just the image,
+       so the colour panel and spine stay aligned to it. */
+    .book-second > div:first-child { max-width: 260px; margin: 0 auto; }
     .song-player img { max-width: 220px; margin: 0 auto; }
   }
   @media (prefers-reduced-motion: reduce) {

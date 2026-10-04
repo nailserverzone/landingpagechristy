@@ -25,6 +25,7 @@ const usePaymentsEnabled = () => {
 };
 
 const IMG = "assets/retreat/web/";
+const HOUSE = "assets/retreat/house/";
 
 // Every image URL carries the asset version, so replacing a photo under the same
 // filename always reaches the browser. It also sidesteps a stale 404 cached from
@@ -73,7 +74,7 @@ const DAYS = [
     items: ["Breakfast", "Little Me and inner-child work", "Understanding survival mode", "Fear and the beliefs we carry", "Boundaries and self-trust", "Resilience and personal responsibility", "Leadership and intentional life design", "Lunch, reflection, and free time", "Lake activities and relaxation", "Afternoon or evening workshop, dinner, bonfire"],
   },
   {
-    photo: "table-spread.jpg", alt: "Breakfast table",
+    dir: HOUSE, photo: "dining-room.webp", alt: "Round dining table set for six beneath a ring of pendant lights",
     label: "SUNDAY", title: "Designing What Comes Next",
     items: ["Breakfast", "Closing teaching and reflection", "Identifying the next chapter", "Creating a practical 90-day action plan", "Sunday massage experience", "Optional lake or boat experience", "Closing celebration and departure"],
     note: "The weekend flows in this order; exact times are shared with registered guests once the final agenda is set. Lake and bonfire plans are weather permitting.",
@@ -105,7 +106,6 @@ const HOUSES = [...new Set(RETREAT_ROOMS.map(r => r.house))].map(house => ({
 
 const ROOM_OPTIONS = roomOptions();
 
-const HOUSE = "assets/retreat/house/";
 
 /* [dir, file, alt, caption]. The property's own photographs come first — the
  * lead tile spans 2x2 — and the stock lake set trails behind as filler. Alt
@@ -130,15 +130,6 @@ const GALLERY = [
   [IMG, "real-patio.jpg", "Lakeside patio seating at the water's edge", "The water's edge"],
   [IMG, "real-sign.jpg", "The Marvel Lake House sign inside the house", "The Marvel Lake House"],
   [IMG, "real-swing.jpg", "Canopy swing on the lawn looking across the lake", "Room to do nothing"],
-  // Stock lake photography, still standing in.
-  [IMG, "treeline.jpg", "Autumn treeline reflected in the lake", "Still mornings"],
-  [IMG, "ripple.jpg", "Ripple on still water", "Quiet water"],
-  [IMG, "sunrise-pink.jpg", "Lake at first light", "First light"],
-  [IMG, "shoreline-homes.jpg", "Lakefront homes and docks", "Lake Hamilton"],
-  [IMG, "swan.jpg", "Swan on still water", "Company on the water"],
-  [IMG, "boats-lake.jpg", "Boats out on the lake", "Out on the water"],
-  [IMG, "lake-homes-summer.jpg", "Lake homes and docks in summer", "Neighbouring homes"],
-  [IMG, "pebble-shore.jpg", "Pebble shoreline at dusk", "The shoreline at dusk"],
 ];
 
 const FAQS = [
@@ -215,7 +206,7 @@ const Nav = () => (
 const Hero = ({ bgRef }) => (
   <section className="hero" id="top">
     <div className="bg" ref={bgRef}>
-      <img src={v(IMG + "sunset-lake.jpg")} alt="Sunset over Lake Hamilton" />
+      <img src={v(IMG + "real-firepit.jpg")} alt="Adirondack chairs around the fire pit at sunset" />
     </div>
     <div className="scrim" />
     <div className="inner"><div className="wrap">
@@ -261,10 +252,10 @@ const Experience = () => (
       </div>
     </div>
     <div className="aboutart rv">
-      <Photo className="big" src="dock-picnic.jpg" alt="Two women talking on the dock" />
-      <Photo className="small" src="journal.jpg" alt="Journaling by the water" />
-      <Photo className="third" src="beach-group.jpg" alt="Small group gathered on the shore" />
-      <Photo className="fourth" src="lakeside-group.jpg" alt="Group sitting by the lake at dusk" />
+      <Photo className="big" dir={HOUSE} src="bikes-lakeside.webp" alt="Two bicycles on the lawn above the lake on a clear summer day" />
+      <Photo className="small" src="real-sign.jpg" alt="The Marvel Lake House sign inside the house" />
+      <Photo className="third" dir={HOUSE} src="porch-lake-view.webp" alt="View from the screened porch across the lawn to mist rising off the lake" />
+      <Photo className="fourth" dir={HOUSE} src="living-room.webp" alt="Open-plan living room with MARVEL LAKE HOUSE lettering above the windows" />
       <div className="badge script">room to breathe</div>
     </div>
   </div></section>
@@ -272,7 +263,7 @@ const Experience = () => (
 
 const Who = () => (
   <section className="pad who" id="who">
-    <div className="bg"><img loading="lazy" decoding="async" src={v(IMG + "two-by-water.jpg")} alt="" /></div>
+    <div className="bg"><img loading="lazy" decoding="async" src={v(HOUSE + "porch-lake-view.webp")} alt="" /></div>
     <div className="inner"><div className="wrap">
       <Heading eyebrow="Who It Is For" tone="gold" title="This weekend is for the woman who…" style={{ maxWidth: "22ch" }} />
       <div className="split">
@@ -300,7 +291,7 @@ const Weekend = () => (
     <div className="days">
       {DAYS.map(d => (
         <div className="day rv" key={d.label}>
-          <Photo src={d.photo} alt={d.alt} />
+          <Photo dir={d.dir} src={d.photo} alt={d.alt} />
           <div className="body">
             <div className="lbl"><i>{d.label}</i><b>{d.title}</b></div>
             <ul>{d.items.map(i => <li key={i}>{i}</li>)}</ul>
@@ -314,7 +305,7 @@ const Weekend = () => (
 
 const Included = () => (
   <section className="pad incband">
-    <div className="bg"><img loading="lazy" decoding="async" src={v(IMG + "water-texture.jpg")} alt="" /></div>
+    <div className="bg"><img loading="lazy" decoding="async" src={v(HOUSE + "exterior-night.webp")} alt="" /></div>
     <div className="inner"><div className="wrap">
       <Heading eyebrow="What Is Included" tone="gold" title="Everything but the drive out." style={{ maxWidth: "20ch" }} />
       <div className="inc">
@@ -491,7 +482,7 @@ const Christy = () => (
 const Quote = ({ bgRef }) => (
   <section className="quote">
     <div className="bg" ref={bgRef}>
-      <img loading="lazy" decoding="async" src={v(IMG + "dock-sitting.jpg")} alt="A woman sitting at the end of a dock" />
+      <img loading="lazy" decoding="async" src={v(IMG + "real-patio.jpg")} alt="Lakeside patio seating at the water's edge" />
     </div>
     <div className="scrim" />
     <div className="inner"><div className="wrap">
@@ -739,7 +730,7 @@ const Faq = () => (
 
 const Invite = () => (
   <section className="invite">
-    <div className="bg"><img loading="lazy" decoding="async" src={v(IMG + "water-texture.jpg")} alt="" /></div>
+    <div className="bg"><img loading="lazy" decoding="async" src={v(HOUSE + "exterior-night.webp")} alt="" /></div>
     <div className="inner"><div className="wrap">
       <h2 className="h2 rv" style={{ color: "#fff", maxWidth: "22ch", margin: "0 auto" }}>
         You have spent enough time surviving.
