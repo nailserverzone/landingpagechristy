@@ -58,7 +58,7 @@
     {
       id: "new-bunk", house: "Newer Lake House", houseShort: "Newer House", houseTag: "HOUSE ONE",
       name: "Bunk Room", bath: "shared", capacity: 4,
-      priceCents: 79500, unit: "/ bed", cta: "Reserve a bed",
+      priceCents: 59500, unit: "/ bed", cta: "Reserve a bed",
       photo: "new-bunk.jpg",     // the bunks
       photoNote: "Photo: bunk room",
       specs: [["Beds", "Four bunk beds"], ["Sleeps", "Up to 4 women"], ["Bathroom", "Shared"]],
