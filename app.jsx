@@ -37,46 +37,50 @@ const PILLARS = [
   ["01", "Rest and reflection", "Unhurried hours by the lake, quiet space to think, and permission to stop carrying everything for a weekend."],
   ["02", "Meaningful connection", "A small group of women in a safe, encouraging environment, where conversation stays real and no one gets lost in a crowd."],
   ["03", "Practical personal growth", "Teaching and coaching that turns reflection into a plan you can actually use when you get home."],
-  ["04", "Individual attention", "Comfortable accommodations, a peaceful lakefront setting, and time with Christy that a conference could never offer."],
 ];
 
 const WHO = [
   ["Has spent years taking care of everyone else",
    "Feels tired, overwhelmed, or stuck in survival mode",
-   "Is moving through a transition or considering a new direction",
-   "Wants to reconnect with the person she was before life became so demanding"],
-  ["Is ready to examine fears, beliefs, and boundaries",
-   "Wants a practical plan for her next chapter",
-   "Values genuine connection with a small group of women",
+   "Is moving through a transition or considering a new direction"],
+  ["Wants a practical plan for her next chapter",
    "Needs permission to rest, reflect, and begin again"],
 ];
 
 const TAKEAWAYS = [
   ["Seen, heard, and supported",
-   "More connected to your “Little Me”",
-   "Clearer about the beliefs and fears holding you back",
-   "More confident about setting healthy boundaries"],
-  ["Rested and recharged",
-   "Hopeful about your future",
-   "Equipped with a practical 90-day action plan",
-   "Ready to leave with your cape on"],
+   "Clearer about the beliefs and fears holding you back"],
+  ["Rested, recharged, and hopeful",
+   "Equipped with a practical 90-day action plan"],
 ];
 
 const DAYS = [
   {
     photo: "real-dock.jpg", alt: "The boardwalk and dock on Lake Hamilton",
     label: "FRIDAY", title: "Seen, Safe, and Connected",
-    items: ["Arrival and check-in", "Welcome gifts and room settling", "Welcome dinner", "Introductions and connection", "Opening teaching", "Creating an emotionally safe environment", "Naming what you want to release or change", "Evening lakefront gathering or bonfire"],
+    items: [
+      "Arrival, welcome gifts and settling in",
+      "Welcome dinner and introductions",
+      "Opening teaching, then a lakefront bonfire",
+    ],
   },
   {
     photo: "real-swing.jpg", alt: "Canopy swing on the lawn, looking across the lake",
     label: "SATURDAY", title: "Healing Little Me and Reclaiming Your Power",
-    items: ["Breakfast", "Little Me and inner-child work", "Understanding survival mode", "Fear and the beliefs we carry", "Boundaries and self-trust", "Resilience and personal responsibility", "Leadership and intentional life design", "Lunch, reflection, and free time", "Lake activities and relaxation", "Afternoon or evening workshop, dinner, bonfire"],
+    items: [
+      "Little Me and inner-child work",
+      "Boundaries, self-trust and life design",
+      "Lake time, dinner and an evening by the fire",
+    ],
   },
   {
     dir: HOUSE, photo: "dining-room.webp", alt: "Round dining table set for six beneath a ring of pendant lights",
     label: "SUNDAY", title: "Designing What Comes Next",
-    items: ["Breakfast", "Closing teaching and reflection", "Identifying the next chapter", "Creating a practical 90-day action plan", "Sunday massage experience", "Optional lake or boat experience", "Closing celebration and departure"],
+    items: [
+      "Closing teaching and reflection",
+      "Your practical 90 day plan",
+      "Massage, optional lake time, and farewells",
+    ],
     note: "The weekend flows in this order; exact times are shared with registered guests once the final agenda is set. Lake and bonfire plans are weather permitting.",
   },
 ];
@@ -84,16 +88,12 @@ const DAYS = [
 const INCLUDED = [
   "Two nights of lakefront accommodations",
   "All retreat teaching and coaching sessions",
-  "Retreat workbook",
-  "Signed copy of Christy Marvel's book",
-  "A thoughtfully curated Be Your Own Superhero™ welcome package",
-  "Meals and refreshments during the retreat",
-  "Lake access and planned lake activities",
-  "Bonfire gatherings, weather permitting",
-  "Sunday massage experience or massage opportunity",
-  "Optional boat experience, weather permitting",
+  "Meals and refreshments throughout",
+  "Retreat workbook and a signed copy of Christy's book",
+  "A thoughtfully curated Be Your Own Superhero\u2122 welcome package",
+  "Lake access, planned activities and bonfire gatherings",
+  "Sunday massage experience",
   "A practical 90-day action plan",
-  "An intimate experience limited to a small group of women",
 ];
 
 // Rooms, prices and the select labels all come from rooms.js, which the server
@@ -112,42 +112,30 @@ const ROOM_OPTIONS = roomOptions();
  * text describes what is in the frame; the caption underneath is the mood line,
  * so the two are deliberately not the same words. */
 const GALLERY = [
-  // The lake houses themselves.
   [HOUSE, "great-room.webp", "The great room with THE MARVEL LAKE HOUSE spelled out above the sofas, a pool table, a giant Connect Four and the kitchen beyond", "The great room"],
   [HOUSE, "exterior-night.webp", "The lake house lit by string lights at night, with a fire pit and loungers on the patio", "Evenings on the patio"],
   [HOUSE, "porch-lake-view.webp", "View from the screened porch across the lawn to mist rising off the lake", "Mornings on the porch"],
   [HOUSE, "living-room.webp", "Open-plan living room with MARVEL LAKE HOUSE lettering above the windows", "The gathering room"],
-  [HOUSE, "kitchen.webp", "Kitchen with white cabinets, granite counters and lake-themed decoration", "The kitchen"],
   [HOUSE, "dining-room.webp", "Round dining table set for six beneath a ring of pendant lights", "Where we eat together"],
   [HOUSE, "game-room.webp", "Games room with a pool table, electric fireplace and open kitchen beyond", "The games room"],
-  [HOUSE, "lounge-games.webp", "Lounge with bean bags, a wall-mounted television, foosball and air hockey", "Somewhere to flop"],
-  [HOUSE, "patio-day.webp", "Covered brick patio with an umbrella and outdoor dining set in the sunshine", "The covered patio"],
-  [HOUSE, "bathroom.webp", "Bathroom with a double vanity, marble counter and embroidered lake house towels", "Room to get ready"],
-  [HOUSE, "bikes-lakeside.webp", "Two bicycles on the lawn above the lake on a clear summer day", "Bikes by the water"],
-  // The property's earlier photographs.
   [IMG, "real-firepit.jpg", "Adirondack chairs around the fire pit at sunset", "Bonfire at sundown"],
   [IMG, "real-dock.jpg", "The boardwalk and dock on the lake", "The boardwalk"],
-  [IMG, "real-patio.jpg", "Lakeside patio seating at the water's edge", "The water's edge"],
-  [IMG, "real-sign.jpg", "The Marvel Lake House sign inside the house", "The Marvel Lake House"],
-  [IMG, "real-swing.jpg", "Canopy swing on the lawn looking across the lake", "Room to do nothing"],
+  [HOUSE, "bikes-lakeside.webp", "Two bicycles on the lawn above the lake on a clear summer day", "Bikes by the water"],
 ];
 
+/* Kept to the questions that decide whether someone books. Meals,
+ * dietary needs, how demanding the activities are, the exact address,
+ * photography and arrival times are all answered in the email a guest
+ * gets once she has registered, where they are actually useful. */
 const FAQS = [
   ["May I attend by myself?", "Yes. Most guests come on their own. The weekend is built to make that comfortable — introductions on Friday, a small group, and a setting where you are not left to figure anything out alone."],
-  ["Do I need to know another guest?", "No. You do not need to bring anyone. If you are registering with a friend, you can name her as your roommate on the form."],
   ["What is included in my registration?", "Two nights of lakefront accommodations, all teaching and coaching sessions, the retreat workbook, a signed copy of Christy's book, a curated welcome package, meals and refreshments during the retreat, lake access and planned activities, bonfire gatherings, a Sunday massage experience, an optional boat experience, and your 90-day action plan."],
-  ["Are meals included?", "Yes. Meals and refreshments during the retreat are included, beginning with Friday's welcome dinner and ending with Sunday breakfast."],
-  ["Can dietary restrictions be accommodated?", "Tell us on the registration form and we will do our best. The full menu and dietary policy are being finalized and will be shared with registered guests."],
-  ["What should I bring?", "Comfortable clothes for lake weather, something warm for evenings by the fire, and anything that helps you rest. A full packing list goes out to registered guests before the weekend."],
-  ["Are the activities physically demanding?", "No. Sessions are seated, and lake activities are optional. Note any mobility or health considerations on the form so we can plan around them."],
-  ["Is the retreat faith-based?", "No. The weekend is not tied to any particular faith, and every woman is welcome regardless of background or belief."],
   ["How are roommates assigned?", "You choose your room or bed at registration. If you are coming with someone, name her on the form and you will be placed together. Shared rooms show how many women may occupy them."],
   ["What is the cancellation policy?", "Measured from the first day of the retreat: 90 or more days before, a full refund. 60 or more days before, a 50% refund. 30 or more days before, no refund, but your payment can be credited toward a future retreat. Fewer than 30 days before, no refund or credit. If we cancel the retreat, you receive a full refund."],
   ["When is the remaining balance due?", "The balance is paid online before the retreat. The exact deadline is being finalized and will be included in your confirmation."],
-  ["When will I receive the exact address?", "The property address is shared only with registered guests, along with arrival instructions."],
+  ["Is the retreat faith-based?", "No. The weekend is not tied to any particular faith, and every woman is welcome regardless of background or belief."],
   ["Is transportation provided? What airport is closest?", "Transportation is not provided, so please plan to drive or arrange a ride. Two airports serve the area: Hot Springs is the smaller one and the closer of the two, while Little Rock is larger and about an hour away. Full directions go out to registered guests before the weekend."],
-  ["Will photographs or videos be taken?", "Some moments may be photographed. The registration form includes an optional permission checkbox, and the final photography policy will be confirmed with guests."],
-  ["What time should I arrive and depart?", "Friday afternoon arrival and Sunday afternoon departure. Exact times are shared with registered guests once the final agenda is set."],
+  ["What should I bring?", "Comfortable clothes for lake weather, something warm for evenings by the fire, and anything that helps you rest. A full packing list goes out to registered guests before the weekend."],
 ];
 
 // ── Building blocks ───────────────────────────────────────────────────────────
@@ -537,9 +525,9 @@ const Register = ({ room, setRoom, paymentsEnabled }) => {
     if (busy) return;
 
     const d = new FormData(e.target);
-    const payload = { roomId: room, policies: d.get("policies") === "on", media: d.get("media") === "on" };
+    const payload = { roomId: room, policies: d.get("policies") === "on" };
     for (const [k, v] of d.entries()) {
-      if (k !== "policies" && k !== "media" && k !== "room") payload[k] = v;
+      if (k !== "policies" && k !== "room") payload[k] = v;
     }
 
     // Check here for instant feedback; the server checks again and has the
@@ -637,9 +625,6 @@ const Register = ({ room, setRoom, paymentsEnabled }) => {
                            onBlur={recheck} onInput={recheck} required />
                   </Field>
                 </div>
-                <Field label="Mailing address">
-                  <textarea name="address" placeholder="Street, city, state, ZIP" />
-                </Field>
                 <div className="row">
                   <Field label="Emergency contact name" error={fieldErrors.ecname}>
                     <input name="ecname" onBlur={recheck} onInput={recheck} required />
@@ -658,38 +643,19 @@ const Register = ({ room, setRoom, paymentsEnabled }) => {
                     {ROOM_OPTIONS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
                   </select>
                 </Field>
-                <Field label="Roommate's name, if registering with someone">
-                  <input name="roommate" />
+                {/* One open question instead of five. Mailing address, roommate,
+                    apparel size, massage and how-they-heard are asked after she
+                    has her room, not before. Allergies and mobility needs are
+                    the only ones with real weight, so they stay, folded into
+                    this. It still writes to the Dietary column. */}
+                <Field label="Anything we should know? Dietary needs, allergies, mobility, or anything else">
+                  <textarea name="diet" rows="3" />
                 </Field>
-              </fieldset>
-
-              <fieldset className="fs">
-                <legend>Caring for you well</legend>
-                <Field label="Dietary restrictions or food allergies"><textarea name="diet" /></Field>
-                <Field label="Accessibility or mobility considerations"><textarea name="access" /></Field>
-                <Field label="Health considerations for lake or boat activities"><textarea name="health" /></Field>
-                <div className="row">
-                  <Field label="Massage interest">
-                    <select name="massage">
-                      <option>Yes, please</option><option>Maybe</option><option>No thank you</option>
-                    </select>
-                  </Field>
-                  <Field label="Apparel size">
-                    <select name="size">
-                      {["XS", "S", "M", "L", "XL", "2XL", "3XL"].map(s => <option key={s}>{s}</option>)}
-                    </select>
-                  </Field>
-                </div>
-                <Field label="How did you hear about the retreat?"><input name="source" /></Field>
               </fieldset>
 
               <div className="chk">
                 <input type="checkbox" name="policies" id="p1" required />
                 <label htmlFor="p1"><span>I agree to the cancellation and participation policies.</span></label>
-              </div>
-              <div className="chk">
-                <input type="checkbox" name="media" id="p2" />
-                <label htmlFor="p2"><span>Optional: I give permission for photographs and video taken at the retreat to be used by Christy Marvel.</span></label>
               </div>
 
               {error && <p className="formerror" role="alert">{error}</p>}

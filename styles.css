@@ -44,7 +44,9 @@ p { text-wrap: pretty; }
 .h2 { font-size: clamp(36px, 4.8vw, 68px); font-weight: 800; line-height: 1.03; }
 .h3 { font-size: clamp(24px, 2.4vw, 34px); font-weight: 800; letter-spacing: -.02em; }
 .rule { width: 80px; height: 4px; background: var(--gold); margin: 26px 0 0; }
-.pad { padding: clamp(80px, 9vw, 140px) 0; }
+/* Section rhythm. Tightened in November: the page carries a lot of sections,
+   and at the old 140px the whitespace alone ran to roughly three screens. */
+.pad { padding: clamp(56px, 6vw, 96px) 0; }
 .alt { background: #fff; }
 .lede { font-size: clamp(20px, 2.1vw, 27px); line-height: 1.5; color: var(--ink); font-weight: 500; }
 .fine { font-size: 15px; color: var(--faint); margin: 18px 0 0; line-height: 1.55; }
