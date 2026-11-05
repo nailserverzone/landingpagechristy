@@ -436,7 +436,7 @@ const Investment = ({ paymentsEnabled }) => (
     </div>
 
     <p className="fine rv" style={{ maxWidth: "70ch" }}>
-      Payment is made securely online — deposit now, remaining balance later. You will receive an automatic confirmation email as soon as your registration is received. The balance due date is confirmed once the retreat dates are announced.
+      Payment is made securely online: the $300 deposit now, the balance before the retreat. Christy confirms your room personally and lets you know when the balance is due.
     </p>
   </div></section>
 );
@@ -578,7 +578,7 @@ const Register = ({ room, setRoom, paymentsEnabled }) => {
           </h2>
           <div className="rule rv" />
           <p className="rv" style={{ marginTop: 28 }}>
-            Tell us how to reach you and which room you would like. You will receive an automatic confirmation, and Christy will follow up personally with your payment link, arrival details, and the property address.
+            Tell us how to reach you and which room you would like. Christy confirms every place personally, and follows up with your arrival details and the property address.
           </p>
           <p className="rv" style={{ marginTop: 18 }}>
             If the retreat is full, submit the form and choose the waitlist — you will be first to hear when a room opens.
