@@ -150,7 +150,7 @@ const FAQS = [
   ["May I attend by myself?", "Yes. Most guests come on their own. The weekend is built to make that comfortable — introductions on Friday, a small group, and a setting where you are not left to figure anything out alone."],
   ["What is included in my registration?", "Two nights of lakefront accommodations, all teaching and coaching sessions, the retreat workbook, a signed copy of Christy's book, a curated welcome package, meals and refreshments during the retreat, lake access and planned activities, bonfire gatherings, a Sunday massage experience, an optional boat experience, and your 90-day action plan."],
   ["How are roommates assigned?", "You choose your room or bed at registration. If you are coming with someone, name her on the form and you will be placed together. Shared rooms show how many women may occupy them."],
-  ["What is the cancellation policy?", "Measured from the first day of the retreat: 90 or more days before, a full refund. 60 or more days before, a 50% refund. 30 or more days before, no refund, but your payment can be credited toward a future retreat. Fewer than 30 days before, no refund or credit. If we cancel the retreat, you receive a full refund."],
+  ["What is the cancellation policy?", "Measured from the first day of the retreat: 90 or more days before, a full refund. 60 or more days before, a 50% refund. 30 or more days before, no refund, but your payment can be credited toward a future retreat. Fewer than 30 days before, no refund or credit. If we cancel the retreat, you receive a full refund. To cancel, email Christy at " + CONTACT_EMAIL + " with your name and which room you booked. Your refund goes back to the card you paid with, and the date we receive your email is the date the policy is measured from."],
   ["When is the remaining balance due?", "The balance is paid online before the retreat. The exact deadline is being finalized and will be included in your confirmation."],
   ["Is the retreat faith-based?", "No. The weekend is not tied to any particular faith, and every woman is welcome regardless of background or belief."],
   ["Is transportation provided? What airport is closest?", "Transportation is not provided, so please plan to drive or arrange a ride. Two airports serve the area: Hot Springs is the smaller one and the closer of the two, while Little Rock is larger and about an hour away. Full directions go out to registered guests before the weekend."],
@@ -451,7 +451,9 @@ const Investment = ({ paymentsEnabled }) => (
     <div className="refunds rv">
       <h3 className="h3">Cancellation and refunds</h3>
       <p className="fine" style={{ margin: "10px 0 0" }}>
-        Measured from the first day of the retreat.
+        Measured from the first day of the retreat. To cancel, email{" "}
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>; the date your email
+        arrives is the date the policy is measured from.
       </p>
       <dl>
         {REFUND_POLICY.map(([when, what]) => (
