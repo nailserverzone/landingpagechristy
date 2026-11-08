@@ -13,6 +13,21 @@ const OTHER_DATES = otherUpcomingRetreats();
 // Whether the site can take card payments yet. Defaults to false and only turns
 // on if the server says so, so static hosting or a failed call errs towards
 // "cannot take money" rather than promising a checkout that isn't there.
+/* Live room availability. Starts as null, meaning "not known yet", and the
+ * page falls back to the static map in rooms.js until the answer arrives or if
+ * the request fails. A wrong label here can never become a wrong booking: the
+ * server checks capacity again when the form is submitted. */
+const useAvailability = () => {
+  const [av, setAv] = useState(null);
+  useEffect(() => {
+    fetch("/api/availability")
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => setAv(d && d.rooms ? d : null))
+      .catch(() => setAv(null));
+  }, []);
+  return av;
+};
+
 const usePaymentsEnabled = () => {
   const [on, setOn] = useState(false);
   useEffect(() => {
@@ -26,6 +41,10 @@ const usePaymentsEnabled = () => {
 
 const IMG = "assets/retreat/web/";
 const HOUSE = "assets/retreat/house/";
+
+// The address guests reply to. Christy lost access to the old one in
+// November 2026; it lives here so there is a single place to change it.
+const CONTACT_EMAIL = "marvelinvestmentsllc@gmail.com";
 
 // Every image URL carries the asset version, so replacing a photo under the same
 // filename always reaches the browser. It also sidesteps a stale 404 cached from
@@ -325,7 +344,9 @@ const RoomPhoto = ({ room }) => {
   );
 };
 
-const Rooms = ({ onSelectRoom }) => (
+const Rooms = ({ onSelectRoom, av }) => {
+  const stateOf = id => (av && av.rooms[id] ? av.rooms[id].state : availabilityOf(id));
+  return (
   <section className="pad alt" id="rooms"><div className="wrap">
     <Heading eyebrow="Accommodations" title="Two lake homes, ten feet apart" style={{ maxWidth: "24ch" }} />
     <p className="lede rv" style={{ margin: "30px 0 0", maxWidth: "62ch" }}>
@@ -348,12 +369,17 @@ const Rooms = ({ onSelectRoom }) => (
                 </dl>
                 <div className="foot">
                   <div className="pr">{money(r.priceCents)} <small>{r.unit}</small></div>
-                  <span className={`avail ${availabilityOf(r.id)}`}>
-                    {AVAILABILITY_LABELS[availabilityOf(r.id)]}
+                  <span className={`avail ${stateOf(r.id)}`}>
+                    {AVAILABILITY_LABELS[stateOf(r.id)]}
                   </span>
                 </div>
-                <a className="btn btn-line" style={{ marginTop: 18 }} href="#reserve"
-                   onClick={() => onSelectRoom(r.id)}>{r.cta}</a>
+                {stateOf(r.id) === "full" ? (
+                  <a className="btn btn-line" style={{ marginTop: 18, opacity: .55 }} href="#reserve"
+                     onClick={() => onSelectRoom(WAITLIST_ID)}>Join the waitlist</a>
+                ) : (
+                  <a className="btn btn-line" style={{ marginTop: 18 }} href="#reserve"
+                     onClick={() => onSelectRoom(r.id)}>{r.cta}</a>
+                )}
               </div>
             </div>
           ))}
@@ -365,7 +391,8 @@ const Rooms = ({ onSelectRoom }) => (
       Sleeper-sofa accommodations exist in both homes and are only offered if every room has been filled and a guest asks to be added. The exact property address is provided to registered guests. Room prices are being finalized and may be set individually per room.
     </p>
   </div></section>
-);
+  );
+};
 
 /* The two price bands, derived from rooms.js rather than written out here.
  * Hardcoding them is how the page silently disagrees with what the server
@@ -501,7 +528,14 @@ const Field = ({ label, children, error }) => (
   </label>
 );
 
-const Register = ({ room, setRoom, paymentsEnabled }) => {
+const Register = ({ room, setRoom, paymentsEnabled, av }) => {
+  // If the room selected on arrival turns out to be gone once availability
+  // loads, the select would be pointing at an option that is no longer in the
+  // list, which shows as blank. Move to the waitlist instead.
+  useEffect(() => {
+    if (av && av.rooms[room] && av.rooms[room].state === "full") setRoom(WAITLIST_ID);
+  }, [av, room]);
+
   const [sent, setSent] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -640,7 +674,11 @@ const Register = ({ room, setRoom, paymentsEnabled }) => {
                 <legend>Your room</legend>
                 <Field label="Room or bed selection">
                   <select name="room" value={room} onChange={e => setRoom(e.target.value)}>
-                    {ROOM_OPTIONS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
+                    {/* A room that has gone is dropped from the list rather than
+                        shown greyed out, so the only route to it is the waitlist. */}
+                    {ROOM_OPTIONS
+                      .filter(o => !(av && av.rooms[o.id] && av.rooms[o.id].state === "full"))
+                      .map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
                   </select>
                 </Field>
                 {/* One open question instead of five. Mailing address, roommate,
@@ -744,7 +782,7 @@ const Footer = () => (
         <p style={{ margin: "18px 0 0", maxWidth: "34ch", lineHeight: 1.6 }}>
           Be Your Own Superhero™ Retreat · {dateLine()}.
         </p>
-        <p style={{ margin: "14px 0 0" }}><a href="mailto:hello@christymarvel.com">hello@christymarvel.com</a></p>
+        <p style={{ margin: "14px 0 0" }}><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
       </div>
       <div>
         <h4>Retreat</h4>
@@ -887,6 +925,7 @@ const App = () => {
   const bar = useRef(null);
   const [room, setRoom] = useState(ROOM_OPTIONS[0].id);
   const paymentsEnabled = usePaymentsEnabled();
+  const av = useAvailability();
 
   useReveal();
   useScrollEffects(heroBg, quoteBg, bar);
@@ -902,12 +941,12 @@ const App = () => {
       <TakeHome />
       <Weekend />
       <Included />
-      <Rooms onSelectRoom={setRoom} />
+      <Rooms onSelectRoom={setRoom} av={av} />
       <Investment paymentsEnabled={paymentsEnabled} />
       <Christy />
       <Quote bgRef={quoteBg} />
       <Gallery />
-      <Register room={room} setRoom={setRoom} paymentsEnabled={paymentsEnabled} />
+      <Register room={room} setRoom={setRoom} paymentsEnabled={paymentsEnabled} av={av} />
       <Faq />
       <Invite />
       <Newsletter />

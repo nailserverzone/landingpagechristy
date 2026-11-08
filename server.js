@@ -30,6 +30,7 @@ app.use(express.json({ limit: "64kb" }));
 // Mounted from api/ rather than reimplemented, so local and deployed
 // behaviour cannot answer this question differently.
 app.get("/api/config", require("./api/config.js"));
+app.get("/api/availability", require("./api/availability.js"));
 
 app.get("/api/health", async (_req, res) => {
   res.setHeader("Cache-Control", "no-store");
