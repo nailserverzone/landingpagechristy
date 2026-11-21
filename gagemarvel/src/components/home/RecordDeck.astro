@@ -312,7 +312,6 @@ const songs = await getSongs();
     async function goTo(index: number) {
       let guard = n;
       while (order[0] !== index && guard--) {
-        // eslint-disable-next-line no-await-in-loop
         await throwTop(1);
       }
     }
