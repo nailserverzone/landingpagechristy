@@ -7,6 +7,8 @@ releaseDate: 2025-06-15
 label: '℗ 2025 Marvel Records'
 cover: ../../assets/covers/you-shoulda-been-there.jpg
 coverAlt: 'Black and white photo of a young boy in a Marvel 00 baseball jersey riding on the shoulders of a man whose jersey reads Dad 00.'
+# Live light effect matched to the cover art.
+mood: film
 glow: '#b9b2a2'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1814105385

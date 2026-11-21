@@ -7,6 +7,8 @@ releaseDate: 2023-03-18
 label: '℗ 2023 Marvel Records'
 cover: ../../assets/covers/get-stuck.jpg
 coverAlt: 'Gage Marvel tosses a can from the window of a mud-covered pickup truck with Get Stuck written in the mud, parked in a field of yellow wildflowers.'
+# Live light effect matched to the cover art.
+mood: pollen
 glow: '#d9b52a'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1673654180

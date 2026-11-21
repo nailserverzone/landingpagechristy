@@ -7,6 +7,8 @@ releaseDate: 2026-04-04
 label: '℗ 2026 Marvel Records'
 cover: ../../assets/covers/if-jesus-were-a-cowboy.jpg
 coverAlt: 'A saddled horse stands beside a weathered wooden cross on a grassy hilltop, the sun setting low behind them.'
+# Live light effect matched to the cover art.
+mood: sunset
 glow: '#e5a361'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1886927026

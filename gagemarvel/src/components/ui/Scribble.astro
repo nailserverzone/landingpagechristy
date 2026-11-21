@@ -1,0 +1,52 @@
+---
+/** A handwritten marker note with a little arrow, like notes on a setlist. Decorative. */
+interface Props {
+  text: string;
+  arrow?: 'down' | 'right' | 'left';
+  class?: string;
+}
+const { text, arrow = 'down', class: className } = Astro.props;
+const paths = {
+  down: 'M10 4 C 30 20, 34 40, 22 62 M10 52 L22 64 L32 50',
+  right: 'M4 30 C 24 10, 48 12, 70 26 M58 16 L72 27 L58 36',
+  left: 'M72 30 C 52 10, 28 12, 6 26 M18 16 L4 27 L18 36',
+};
+---
+
+<span class:list={['scribble', `s-${arrow}`, className]} aria-hidden="true">
+  <span class="marker">{text}</span>
+  <svg viewBox="0 0 80 70">
+    <path d={paths[arrow]}></path>
+  </svg>
+</span>
+
+<style>
+  .scribble {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.2rem;
+    color: var(--gold);
+    transform: rotate(-4deg);
+    pointer-events: none;
+  }
+  .scribble .marker {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  .scribble svg {
+    width: 2.6rem;
+    height: 2.3rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .s-right,
+  .s-left {
+    align-items: center;
+  }
+  .s-left {
+    flex-direction: row-reverse;
+  }
+</style>

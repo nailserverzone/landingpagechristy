@@ -21,6 +21,7 @@
     "@astrojs/check": "^0.9.12",
     "@astrojs/sitemap": "^3.7.6",
     "@fontsource/big-shoulders-display": "^5.3.0",
+    "@fontsource/permanent-marker": "^5.3.0",
     "@fontsource/source-sans-3": "^5.3.1",
     "@tailwindcss/vite": "^4.3.5",
     "astro": "^7.4.13",

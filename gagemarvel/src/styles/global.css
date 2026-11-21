@@ -11,6 +11,7 @@
 @import '@fontsource/source-sans-3/latin-400-italic';
 @import '@fontsource/source-sans-3/latin-600';
 @import '@fontsource/source-sans-3/latin-700';
+@import '@fontsource/permanent-marker/latin-400';
 
 /*
  * DESIGN TOKENS
@@ -128,6 +129,12 @@
 
   [hidden] {
     display: none !important;
+  }
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
   }
 }
 
@@ -367,4 +374,64 @@
     opacity: 0.55;
     transform: translateZ(0);
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Moods: each release's own light (see src/lib/moods.ts)             */
+/* ------------------------------------------------------------------ */
+.mood-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+[data-mood='film'] .ambient {
+  filter: blur(70px) grayscale(1);
+}
+/* Right Hand Man is a neon sign; its title is one too. */
+.neon-title {
+  color: #e9fbff;
+  text-shadow:
+    0 0 6px rgb(79 214 239 / 0.9),
+    0 0 18px rgb(79 214 239 / 0.6),
+    0 0 42px rgb(255 95 168 / 0.35);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .neon-title {
+    animation: neon-buzz 6s steps(1) infinite;
+  }
+}
+@keyframes neon-buzz {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0.55;
+  }
+  72% {
+    opacity: 1;
+  }
+  73% {
+    opacity: 0.4;
+  }
+  74%,
+  90% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0.7;
+  }
+  92% {
+    opacity: 1;
+  }
+}
+
+/* Marker-pen annotations. */
+.marker {
+  font-family: 'Permanent Marker', 'Comic Sans MS', cursive;
+  text-transform: none;
+  letter-spacing: 0;
 }

@@ -7,6 +7,8 @@ releaseDate: 2023-11-09
 label: '℗ 2023 Marvel Records'
 cover: ../../assets/covers/right-hand-man.jpg
 coverAlt: 'A glowing neon sign on a brick wall shows a raised fist and the words Right-Hand Man and Gage Marvel.'
+# Live light effect matched to the cover art.
+mood: neon
 glow: '#4fb6cf'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1712977163

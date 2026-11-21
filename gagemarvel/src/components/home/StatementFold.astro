@@ -7,6 +7,7 @@
  */
 import { Image } from 'astro:assets';
 import PreviewButton from '@/components/music/PreviewButton.astro';
+import Scribble from '@/components/ui/Scribble.astro';
 import PlatformButtons from '@/components/music/PlatformButtons.astro';
 import PlayerEmbed from '@/components/music/PlayerEmbed.astro';
 import ShareButton from '@/components/music/ShareButton.astro';
@@ -19,7 +20,13 @@ const years = songs.map(releaseYear).filter(Boolean).sort();
 const count = String(songs.length).padStart(2, '0');
 ---
 
-<section id="statement" class="fold relative isolate overflow-hidden" aria-labelledby="fold-title">
+<section
+  id="statement"
+  class="fold relative isolate overflow-hidden"
+  aria-labelledby="fold-title"
+  data-mood={featured.data.mood}
+>
+  {featured.data.mood && <canvas class="mood-canvas" data-mood-canvas aria-hidden="true" />}
   <div class="disc-wrap" aria-hidden="true" data-fold-disc>
     <div class="disc" data-spin-for={featured.id}>
       <Image
@@ -58,7 +65,8 @@ const count = String(songs.length).padStart(2, '0');
         </span>
         Featured {kindLabel(featured).toLowerCase()}
       </p>
-      <h2 id="fold-title" class="text-display-md mt-3">
+      <Scribble text="the new one" arrow="down" class="mt-4 ml-1" />
+      <h2 id="fold-title" class="text-display-md">
         {featured.data.title}
       </h2>
       <p class="mt-2 text-ivory-muted">
@@ -215,6 +223,8 @@ const count = String(songs.length).padStart(2, '0');
 
 <script>
   import { scroll } from 'motion';
+  import { initMoods } from '@/lib/moods';
+  initMoods(document.querySelector('#statement') ?? document);
   const wrap = document.querySelector<HTMLElement>('[data-fold-disc]');
   const section = wrap?.closest('section');
   if (wrap && section && !matchMedia('(prefers-reduced-motion: reduce)').matches) {

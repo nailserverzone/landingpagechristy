@@ -1,0 +1,313 @@
+---
+/**
+ * A setlist taped to the stage floor, written in marker, that fans can use
+ * to request the song they most want to hear live. It's a real form
+ * (Netlify form "song-request"), so requests pile up in Netlify where the
+ * client can see what people want. Song titles come from the songs
+ * collection; it never claims these are tonight's set.
+ */
+import { getSongs } from '@/lib/content';
+
+interface Props {
+  id: string;
+  class?: string;
+}
+const { id, class: className } = Astro.props;
+const songs = (await getSongs()).flatMap((s) =>
+  s.data.tracks.length
+    ? s.data.tracks.filter((t) => !/radio edit/i.test(t.title)).map((t) => t.title)
+    : [s.data.title.replace(/\s*\(feat\..*\)/, '')],
+);
+---
+
+<div class:list={['setlist-wrap', className]}>
+  <form
+    class="paper"
+    name="song-request"
+    method="POST"
+    action="/"
+    data-netlify="true"
+    netlify-honeypot="bot-field"
+    data-song-request
+    novalidate
+  >
+    <span class="tape tape-l" aria-hidden="true"></span>
+    <span class="tape tape-r" aria-hidden="true"></span>
+    <input type="hidden" name="form-name" value="song-request" />
+    <p class="hidden" aria-hidden="true">
+      <label>
+        Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" />
+      </label>
+    </p>
+
+    <div data-fields>
+      <div class="head">
+        <p class="marker title" aria-hidden="true">
+          Setlist
+        </p>
+        <p class="label print">Gage Marvel · request line</p>
+      </div>
+
+      <fieldset>
+        <legend class="legend">Circle the song you most want to hear live</legend>
+        <ol class="songs">
+          {songs.map((t, i) => (
+            <li>
+              <label class="song">
+                <input type="radio" name="song" value={t} required data-song-radio />
+                <span class="n marker" aria-hidden="true">
+                  {i + 1}.
+                </span>
+                <span class="t marker">{t}</span>
+                <svg
+                  class="ring"
+                  viewBox="0 0 300 60"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <path d="M18 34 C 20 8, 270 4, 288 26 C 300 46, 140 58, 40 52 C 4 48, 2 30, 30 14" />
+                </svg>
+              </label>
+            </li>
+          ))}
+        </ol>
+        <p id={`${id}-error`} class="err" hidden>
+          Pick a song first.
+        </p>
+      </fieldset>
+
+      <div class="foot">
+        <label for={`${id}-city`} class="label">
+          Your city <span class="opt">(optional)</span>
+        </label>
+        <input
+          id={`${id}-city`}
+          name="city"
+          type="text"
+          autocomplete="address-level2"
+          class="line"
+          placeholder="So we know where to bring it"
+        />
+        <div class="mt-5 flex flex-wrap items-center gap-4">
+          <button type="submit" class="btn btn-dark btn-sm">
+            Send my request
+          </button>
+          <span class="text-sm" data-status role="status" aria-live="polite"></span>
+        </div>
+        <p class="note">No email needed. We only count which songs people pick and where.</p>
+      </div>
+    </div>
+
+    <div data-success hidden tabindex="-1" class="done">
+      <p class="marker big">Got it.</p>
+      <p class="marker">See you down front.</p>
+      <p class="label mt-4" data-picked></p>
+    </div>
+  </form>
+</div>
+
+<style>
+  .setlist-wrap {
+    padding: 1.25rem 0.5rem;
+  }
+  .paper {
+    position: relative;
+    padding: 2.25rem clamp(1.25rem, 3vw, 2rem) 1.75rem;
+    background:
+      repeating-linear-gradient(transparent 0 2.15rem, rgb(11 11 11 / 0.06) 2.15rem 2.2rem), #efe8d6;
+    color: #141414;
+    transform: rotate(-1.4deg);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.6) inset,
+      0 26px 50px -22px rgb(0 0 0 / 0.8);
+  }
+  .tape {
+    position: absolute;
+    top: -0.9rem;
+    width: 6.5rem;
+    height: 1.9rem;
+    background: rgb(232 222 190 / 0.72);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  }
+  .tape-l {
+    left: -0.8rem;
+    transform: rotate(-12deg);
+  }
+  .tape-r {
+    right: -0.8rem;
+    transform: rotate(10deg);
+  }
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 2px solid #141414;
+    padding-bottom: 0.4rem;
+  }
+  .title {
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+  .print {
+    font-size: 0.625rem;
+    color: #3c3c3c;
+  }
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  .legend {
+    margin: 1rem 0 0.4rem;
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+  .songs {
+    display: grid;
+  }
+  .song {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0.35rem 0.5rem;
+    cursor: pointer;
+  }
+  .song input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+  .n {
+    width: 1.6rem;
+    font-size: 1.05rem;
+    color: #555;
+  }
+  .t {
+    font-size: clamp(1.1rem, 0.95rem + 0.6vw, 1.35rem);
+    line-height: 1.15;
+  }
+  .song:hover .t {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+  .song:has(input:focus-visible) {
+    outline: 3px solid #141414;
+    outline-offset: 2px;
+  }
+  /* The red marker ring draws itself around the chosen song. */
+  .ring {
+    position: absolute;
+    inset: -0.2rem -0.4rem;
+    width: calc(100% + 0.8rem);
+    height: calc(100% + 0.4rem);
+    fill: none;
+    stroke: #b8321f;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-dasharray: 900;
+    stroke-dashoffset: 900;
+    pointer-events: none;
+  }
+  .song:has(input:checked) .ring {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 650ms cubic-bezier(0.6, 0, 0.3, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .song:has(input:checked) .ring {
+      transition: none;
+    }
+  }
+  .err {
+    margin-top: 0.4rem;
+    font-weight: 700;
+    color: #a3260f;
+  }
+  .foot {
+    margin-top: 1.25rem;
+  }
+  .opt {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  .line {
+    width: 100%;
+    min-height: 2.75rem;
+    margin-top: 0.25rem;
+    padding: 0.4rem 0.1rem;
+    border: 0;
+    border-bottom: 2px solid #141414;
+    background: transparent;
+    font: inherit;
+    color: #141414;
+  }
+  .line::placeholder {
+    color: #6b6559;
+  }
+  .line:focus-visible {
+    outline: 3px solid #141414;
+    outline-offset: 3px;
+  }
+  .note {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+    color: #45413a;
+  }
+  .paper :global(.btn-dark:focus-visible) {
+    outline-color: #141414;
+    box-shadow: none;
+  }
+  .done {
+    padding: 1rem 0 0.5rem;
+    outline: none;
+    font-size: 1.4rem;
+  }
+  .done .big {
+    font-size: 3.25rem;
+    line-height: 1;
+    color: #b8321f;
+  }
+</style>
+
+<script>
+  import { track } from '@/lib/analytics';
+  document.querySelectorAll<HTMLFormElement>('form[data-song-request]').forEach((form) => {
+    const err = form.querySelector<HTMLElement>('.err')!;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    form.addEventListener('change', () => (err.hidden = true));
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const song = String(data.get('song') ?? '');
+      if (!song) {
+        err.hidden = false;
+        form.querySelector<HTMLInputElement>('[data-song-radio]')?.focus();
+        return;
+      }
+      if (data.get('bot-field')) return;
+      status.textContent = 'Sending...';
+      try {
+        const res = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
+        });
+        if (!res.ok) throw new Error();
+        track('song_request', { song });
+        form.querySelector<HTMLElement>('[data-fields]')!.hidden = true;
+        form.querySelector<HTMLElement>('[data-picked]')!.textContent = `Your pick: ${song}`;
+        const ok = form.querySelector<HTMLElement>('[data-success]')!;
+        ok.hidden = false;
+        ok.focus();
+      } catch {
+        status.textContent = 'That did not send. Try again in a moment.';
+      }
+    });
+  });
+</script>

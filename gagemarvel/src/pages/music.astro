@@ -72,8 +72,10 @@ const recordingsLd = songs.map((s) => ({
           class="release relative isolate overflow-hidden border-t border-charcoal-2"
           aria-labelledby={`${song.id}-title`}
           style={`--glow:${d.glow ?? '#E8B830'}`}
+          data-mood={d.mood}
         >
           <img src={glows[i].src} alt="" class="ambient opacity-25!" loading="lazy" />
+          {d.mood && <canvas class="mood-canvas" data-mood-canvas aria-hidden="true" />}
           <div
             class="absolute inset-0 -z-10 bg-gradient-to-r from-black via-black/80 to-black/40"
             aria-hidden="true"
@@ -94,7 +96,10 @@ const recordingsLd = songs.map((s) => ({
                 <span>{kindLabel(song)}</span>
                 {d.featured && <span class="bg-gold px-2 py-0.5 text-black">Featured</span>}
               </p>
-              <h2 id={`${song.id}-title`} class="text-display-md mt-3">
+              <h2
+                id={`${song.id}-title`}
+                class:list={['text-display-md mt-3', d.mood === 'neon' && 'neon-title']}
+              >
                 {d.title}
               </h2>
               <p class="mt-3 text-ivory-muted">
@@ -210,3 +215,8 @@ const recordingsLd = songs.map((s) => ({
     pointer-events: none;
   }
 </style>
+
+<script>
+  import { initMoods } from '@/lib/moods';
+  initMoods();
+</script>

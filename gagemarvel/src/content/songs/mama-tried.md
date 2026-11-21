@@ -7,6 +7,8 @@ releaseDate: 2024-07-26
 label: '℗ 2024 Marvel Records'
 cover: ../../assets/covers/mama-tried.jpg
 coverAlt: 'A small boy in suspenders and khaki trousers strides past a large tree trunk at the edge of the woods.'
+# Live light effect matched to the cover art.
+mood: fireflies
 glow: '#a58a62'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1754505528

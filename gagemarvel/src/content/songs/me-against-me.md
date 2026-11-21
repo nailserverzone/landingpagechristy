@@ -7,6 +7,8 @@ releaseDate: 2023-07-13
 label: '℗ 2023 Marvel Records'
 cover: ../../assets/covers/me-against-me.jpg
 coverAlt: 'Silhouette of a man in a cap holding a guitar, walking through tall grass under a pink and orange sunset sky.'
+# Live light effect matched to the cover art.
+mood: sunset
 glow: '#e49f72'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1693749381

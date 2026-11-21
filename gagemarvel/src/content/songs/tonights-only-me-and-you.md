@@ -7,6 +7,8 @@ releaseDate: 2026-02-13
 label: '℗ 2026 Marvel Records'
 cover: ../../assets/covers/tonights-only-me-and-you.jpg
 coverAlt: 'A candlelit wooden table set for two in a dim room strung with warm lights, with a folded note on one plate.'
+# Live light effect matched to the cover art.
+mood: candle
 glow: '#c8873f'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1872419727

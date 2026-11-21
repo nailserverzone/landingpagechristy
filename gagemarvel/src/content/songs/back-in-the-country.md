@@ -7,6 +7,8 @@ releaseDate: 2024-06-06
 label: '℗ 2024 Marvel Records'
 cover: ../../assets/covers/back-in-the-country.jpg
 coverAlt: 'Gage Marvel plays an acoustic guitar beside a roaring fire pit at night.'
+# Live light effect matched to the cover art.
+mood: fire
 glow: '#d37337'
 # Apple Music track used for the 30 second preview.
 appleTrackId: 1744699239

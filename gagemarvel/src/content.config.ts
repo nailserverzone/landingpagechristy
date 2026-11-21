@@ -53,6 +53,12 @@ const songs = defineCollection({
         .string()
         .regex(/^#[0-9a-fA-F]{6}$/, 'Use a hex color like #E8B830')
         .optional(),
+      /**
+       * The live light effect for this release, matched to its cover art:
+       * sunset (golden dust), candle, film (black and white grain), fireflies,
+       * fire (embers), neon, pollen. Optional.
+       */
+      mood: z.enum(['sunset', 'candle', 'film', 'fireflies', 'fire', 'neon', 'pollen']).optional(),
       /** Short description, one or two sentences. Optional. */
       description: z.string().optional(),
       /** The featured release gets the home page spotlight and the LISTEN NOW modal. */

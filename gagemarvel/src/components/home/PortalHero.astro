@@ -231,6 +231,21 @@ const followUrl = activeLinks(social)[0]?.[1] ?? '';
     background: radial-gradient(140% 80% at 50% 50%, #1d1d1d, #111 70%), var(--charcoal);
     will-change: transform;
   }
+  /* The stage spotlight: a soft hole in the panels that shows the cover
+     underneath, following the cursor (or drifting on its own on touch). */
+  :global(.portal-live) .p-panel {
+    --sr: 0px;
+    -webkit-mask: radial-gradient(
+      circle var(--sr) at var(--sx, 50%) var(--sy, 50%),
+      transparent 0 45%,
+      #000 100%
+    );
+    mask: radial-gradient(
+      circle var(--sr) at var(--sx, 50%) var(--sy, 50%),
+      transparent 0 45%,
+      #000 100%
+    );
+  }
   :global(.portal-live) .p-left {
     left: 0;
     justify-content: flex-start;
@@ -374,15 +389,67 @@ const followUrl = activeLinks(social)[0]?.[1] ?? '';
     };
 
     render(0);
+
+    // ---- stage spotlight ----
+    let sx = window.innerWidth * 0.62;
+    let sy = window.innerHeight * 0.42;
+    let radius = 0;
+    let wantR = 0;
+    let pointer = false;
+    let progress = 0;
+    const stage = section.querySelector<HTMLElement>('.stage')!;
+    const applySpot = () => {
+      for (const panel of [left, right]) {
+        const r = panel.getBoundingClientRect();
+        panel.style.setProperty('--sx', `${sx - r.left}px`);
+        panel.style.setProperty('--sy', `${sy - r.top}px`);
+        panel.style.setProperty('--sr', `${radius}px`);
+      }
+    };
+    stage.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      pointer = true;
+      sx = e.clientX;
+      sy = e.clientY;
+      wantR = Math.min(window.innerWidth, 900) * 0.2;
+    });
+    stage.addEventListener('pointerleave', () => {
+      pointer = false;
+      wantR = 0;
+    });
+    const coarse = matchMedia('(pointer: coarse)').matches;
+    let t0 = 0;
+    let onScreen = true;
+    new IntersectionObserver(([e]) => (onScreen = e.isIntersecting)).observe(stage);
+    const spot = (ts: number) => {
+      requestAnimationFrame(spot);
+      if (!onScreen) return;
+      // On touch screens the light drifts by itself while the hero is closed.
+      if (coarse && !pointer) {
+        t0 = ts / 1000;
+        sx = window.innerWidth * (0.5 + 0.28 * Math.sin(t0 * 0.6));
+        sy = window.innerHeight * (0.45 + 0.12 * Math.sin(t0 * 0.9 + 1));
+        wantR = progress < 0.3 ? window.innerWidth * 0.32 : 0;
+      }
+      radius += (wantR - radius) * 0.12;
+      applySpot();
+    };
+    requestAnimationFrame(spot);
     // Keyboard users tabbing into the buttons before the portal has opened:
     // jump to the open state so they can see what's focused.
     cta.addEventListener('focusin', () => {
       const end = section.offsetTop + section.offsetHeight - window.innerHeight;
       if (window.scrollY < end * 0.85) window.scrollTo({ top: end, behavior: 'instant' });
     });
-    scroll((p: number) => render(p), {
-      target: section,
-      offset: ['start start', 'end end'],
-    });
+    scroll(
+      (p: number) => {
+        progress = p;
+        render(p);
+      },
+      {
+        target: section,
+        offset: ['start start', 'end end'],
+      },
+    );
   }
 </script>

@@ -2,6 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ShowList from '@/components/shows/ShowList.astro';
 import FanSignup from '@/components/ui/FanSignup.astro';
+import Setlist from '@/components/shows/Setlist.astro';
 import { getShows } from '@/lib/content';
 import { showJsonLd } from '@/lib/shows';
 import { bookingHref, features } from '@/config/site';
@@ -28,39 +29,47 @@ const { upcoming, past } = await getShows();
     </div>
   </header>
 
-  <section class="container-site pb-16 lg:pb-24" aria-labelledby="upcoming-heading">
-    <h2 id="upcoming-heading" class="label text-gold" style="font-family:var(--font-body)">
-      Upcoming{upcoming.length > 0 && ` · ${upcoming.length}`}
-    </h2>
-    {upcoming.length > 0 ? (
-      <div class="mt-4">
-        <ShowList shows={upcoming} />
-      </div>
-    ) : (
-      <div class="empty mt-6 grid gap-10 p-6 sm:p-10 lg:grid-cols-2">
-        <p class="font-display text-display-sm uppercase">
-          No shows announced right now. <span class="text-gold">Join the fan list</span> to hear
-          first.
-        </p>
-        <FanSignup id="shows-empty-signup" variant="compact" location="shows_empty" />
-      </div>
-    )}
+  <div class="container-site grid gap-14 pb-16 lg:grid-cols-12 lg:pb-24">
+    <section class="lg:col-span-8" aria-labelledby="upcoming-heading">
+      <h2 id="upcoming-heading" class="label text-gold" style="font-family:var(--font-body)">
+        Upcoming{upcoming.length > 0 && ` · ${upcoming.length}`}
+      </h2>
+      {upcoming.length > 0 ? (
+        <div class="mt-4">
+          <ShowList shows={upcoming} />
+        </div>
+      ) : (
+        <div class="empty mt-6 grid gap-10 p-6 sm:p-10 lg:grid-cols-2">
+          <p class="font-display text-display-sm uppercase">
+            No shows announced right now. <span class="text-gold">Join the fan list</span> to hear
+            first.
+          </p>
+          <FanSignup id="shows-empty-signup" variant="compact" location="shows_empty" />
+        </div>
+      )}
 
-    {features.bandsintown && features.bandsintownArtist && (
-      <div class="mt-12">
-        <h2 class="label text-ivory-muted">More dates</h2>
-        {/* Optional Bandsintown widget. Off by default; see README. */}
-        <a
-          class="bit-widget-initializer"
-          data-artist-name={features.bandsintownArtist}
-          data-background-color="#0B0B0B"
-          data-text-color="#F4EEDF"
-          data-link-color="#E8B830"
-        />
-        <script is:inline src="https://widgetv3.bandsintown.com/main.min.js" async />
-      </div>
-    )}
-  </section>
+      {features.bandsintown && features.bandsintownArtist && (
+        <div class="mt-12">
+          <h2 class="label text-ivory-muted">More dates</h2>
+          {/* Optional Bandsintown widget. Off by default; see README. */}
+          <a
+            class="bit-widget-initializer"
+            data-artist-name={features.bandsintownArtist}
+            data-background-color="#0B0B0B"
+            data-text-color="#F4EEDF"
+            data-link-color="#E8B830"
+          />
+          <script is:inline src="https://widgetv3.bandsintown.com/main.min.js" async />
+        </div>
+      )}
+    </section>
+    <aside class="lg:col-span-4" aria-labelledby="request-heading">
+      <h2 id="request-heading" class="label text-gold" style="font-family:var(--font-body)">
+        Request line
+      </h2>
+      <Setlist id="shows-setlist" class="mt-4" />
+    </aside>
+  </div>
 
   {past.length > 0 && (
     <section class="bg-charcoal py-16 lg:py-20" aria-labelledby="past-heading">
