@@ -1,0 +1,242 @@
+---
+/**
+ * JOIN THE FAN LIST signup, used site-wide.
+ *
+ * The provider is chosen by env, never hardcoded:
+ *   PUBLIC_EMAIL_PROVIDER = kit | mailchimp | netlify
+ *   PUBLIC_EMAIL_FORM_ACTION = the provider's public form URL (kit/mailchimp)
+ * With "netlify" (the default) signups are stored as a Netlify form named
+ * "fan-list" and can be exported or synced to a provider later.
+ *
+ * Consent box is never pre-checked. Double opt-in is switched on at the
+ * provider (see README), which is why the success message says to confirm.
+ */
+interface Props {
+  /** Unique per page so input ids never clash. */
+  id: string;
+  variant?: 'full' | 'compact';
+  /** Where on the site this form sits, sent with the analytics event. */
+  location: string;
+  class?: string;
+}
+const { id, variant = 'full', location, class: className } = Astro.props;
+
+const provider = (import.meta.env.PUBLIC_EMAIL_PROVIDER || 'netlify') as
+  'kit' | 'mailchimp' | 'netlify';
+const externalAction = import.meta.env.PUBLIC_EMAIL_FORM_ACTION || '';
+const useNetlify = provider === 'netlify' || !externalAction;
+
+// Field names each provider expects.
+const names = {
+  kit: { email: 'email_address', first: 'fields[first_name]', zip: 'fields[zip]' },
+  mailchimp: { email: 'EMAIL', first: 'FNAME', zip: 'ZIPCODE' },
+  netlify: { email: 'email', first: 'first_name', zip: 'zip' },
+}[useNetlify ? 'netlify' : provider];
+
+const full = variant === 'full';
+---
+
+<form
+  class:list={['fan-signup', className]}
+  name="fan-list"
+  method="POST"
+  action={useNetlify ? '/' : externalAction}
+  data-netlify={useNetlify ? 'true' : undefined}
+  netlify-honeypot={useNetlify ? 'bot-field' : undefined}
+  data-fan-signup
+  data-provider={useNetlify ? 'netlify' : provider}
+  data-location={location}
+  novalidate
+>
+  {useNetlify && <input type="hidden" name="form-name" value="fan-list" />}
+  <p class="hidden" aria-hidden="true">
+    <label>
+      Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" />
+    </label>
+  </p>
+
+  <div data-fields>
+    <div class:list={['grid gap-3', full ? 'sm:grid-cols-2' : '']}>
+      <div class={full ? 'sm:col-span-2' : ''}>
+        <label for={`${id}-email`} class="label mb-1.5 block text-ivory-muted">
+          Email <span aria-hidden="true">*</span>
+          <span class="sr-only">(required)</span>
+        </label>
+        <input
+          id={`${id}-email`}
+          name={names.email}
+          type="email"
+          required
+          autocomplete="email"
+          inputmode="email"
+          class="field"
+          aria-describedby={`${id}-email-error`}
+        />
+        <p id={`${id}-email-error`} class="field-error" data-error-for="email" hidden></p>
+      </div>
+      {full && (
+        <>
+          <div>
+            <label for={`${id}-first`} class="label mb-1.5 block text-ivory-muted">
+              First name <span class="normal-case tracking-normal">(optional)</span>
+            </label>
+            <input
+              id={`${id}-first`}
+              name={names.first}
+              type="text"
+              autocomplete="given-name"
+              class="field"
+            />
+          </div>
+          <div>
+            <label for={`${id}-zip`} class="label mb-1.5 block text-ivory-muted">
+              ZIP or postal code <span class="normal-case tracking-normal">(optional)</span>
+            </label>
+            <input
+              id={`${id}-zip`}
+              name={names.zip}
+              type="text"
+              autocomplete="postal-code"
+              class="field"
+              aria-describedby={`${id}-zip-hint`}
+            />
+            <p id={`${id}-zip-hint`} class="mt-1 text-sm text-ivory-muted">
+              So we can tell you about shows near you.
+            </p>
+          </div>
+        </>
+      )}
+    </div>
+
+    <div class="mt-4">
+      <label for={`${id}-consent`} class="flex cursor-pointer items-start gap-3">
+        <input
+          id={`${id}-consent`}
+          name="consent"
+          type="checkbox"
+          value="yes"
+          required
+          class="consent-box mt-0.5 size-6 shrink-0"
+          aria-describedby={`${id}-consent-error`}
+        />
+        <span class="text-[0.95rem] leading-snug">
+          Yes, send me new music and show announcements from Gage Marvel. I can unsubscribe anytime.
+        </span>
+      </label>
+      <p id={`${id}-consent-error`} class="field-error" data-error-for="consent" hidden></p>
+    </div>
+
+    <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+      <button type="submit" class="btn btn-gold">
+        Join the Fan List
+      </button>
+      <a
+        href="/privacy"
+        class="text-sm text-ivory-muted underline underline-offset-4 hover:text-ivory"
+      >
+        Privacy policy
+      </a>
+    </div>
+    <p class="form-status mt-3 text-sm" data-status role="status" aria-live="polite"></p>
+  </div>
+
+  <div data-success hidden tabindex="-1" class="success">
+    <p class="font-display text-display-sm text-gold uppercase">You're on the list!</p>
+    <p class="mt-2">Check your inbox to confirm.</p>
+  </div>
+</form>
+
+<style>
+  .consent-box {
+    accent-color: var(--gold);
+  }
+  .field-error {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffb4a6; /* 9.9:1 on charcoal-2, distinct from gold */
+  }
+  .field[aria-invalid='true'] {
+    border-color: #ffb4a6;
+  }
+  .success {
+    outline: none;
+  }
+</style>
+
+<script>
+  import { track } from '@/lib/analytics';
+
+  const MSG = {
+    email: 'Enter a valid email address, like name@example.com.',
+    consent: 'Please tick the box so we have your permission to email you.',
+    failed: 'Something went wrong. Please try again in a moment.',
+  };
+
+  function setError(form: HTMLFormElement, key: 'email' | 'consent', msg: string) {
+    const out = form.querySelector<HTMLElement>(`[data-error-for="${key}"]`);
+    const input = form.querySelector<HTMLInputElement>(
+      key === 'consent' ? 'input[name="consent"]' : 'input[type="email"]',
+    );
+    if (!out || !input) return;
+    out.textContent = msg;
+    out.hidden = !msg;
+    if (msg) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
+  }
+
+  document.querySelectorAll<HTMLFormElement>('form[data-fan-signup]').forEach((form) => {
+    const email = form.querySelector<HTMLInputElement>('input[type="email"]')!;
+    const consent = form.querySelector<HTMLInputElement>('input[name="consent"]')!;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+
+    email.addEventListener('blur', () => {
+      if (email.value) setError(form, 'email', email.validity.valid ? '' : MSG.email);
+    });
+    email.addEventListener('input', () => {
+      if (email.validity.valid) setError(form, 'email', '');
+    });
+    consent.addEventListener('change', () => {
+      if (consent.checked) setError(form, 'consent', '');
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailOk = email.validity.valid && email.value.trim() !== '';
+      setError(form, 'email', emailOk ? '' : MSG.email);
+      setError(form, 'consent', consent.checked ? '' : MSG.consent);
+      if (!emailOk) return email.focus();
+      if (!consent.checked) return consent.focus();
+
+      const data = new FormData(form);
+      if (data.get('bot-field')) return; // honeypot
+      button.disabled = true;
+      status.textContent = 'Signing you up...';
+
+      try {
+        const provider = form.dataset.provider;
+        if (provider === 'netlify') {
+          const res = await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
+          });
+          if (!res.ok) throw new Error(String(res.status));
+        } else {
+          // Kit and Mailchimp form endpoints do not send CORS headers, so the
+          // response is opaque. A network failure still throws.
+          await fetch(form.action, { method: 'POST', body: data, mode: 'no-cors' });
+        }
+        track('fan_signup', { location: form.dataset.location ?? '' });
+        form.querySelector<HTMLElement>('[data-fields]')!.hidden = true;
+        const ok = form.querySelector<HTMLElement>('[data-success]')!;
+        ok.hidden = false;
+        ok.focus();
+      } catch {
+        status.textContent = MSG.failed;
+        button.disabled = false;
+      }
+    });
+  });
+</script>

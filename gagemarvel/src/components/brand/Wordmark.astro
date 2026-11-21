@@ -1,0 +1,55 @@
+---
+/**
+ * The GAGE MARVEL wordmark. One component, three designs.
+ *
+ *   <Wordmark />                      live mark (site.wordmark), full lockup
+ *   <Wordmark kind="mono" />          compact GM monogram
+ *   <Wordmark option={3} />           a specific option (used on /brand)
+ *
+ * Colour comes from CSS: the letters use `currentColor`, the accent (rule,
+ * star, inner line) uses --wm-accent, which defaults to gold. On gold or white
+ * backgrounds set --wm-accent to the text colour: gold fails contrast on white
+ * and disappears on gold.
+ */
+import { marks, type WordmarkOption } from './marks';
+import { site } from '@/config/site';
+
+interface Props {
+  option?: WordmarkOption;
+  kind?: 'full' | 'mono';
+  class?: string;
+  /** Accessible name. Pass '' when the mark sits inside a link that already says "Gage Marvel". */
+  title?: string;
+}
+
+const {
+  option = site.wordmark,
+  kind = 'full',
+  class: className,
+  title = 'Gage Marvel',
+} = Astro.props;
+const m = marks[option][kind];
+const [, , vw, vh] = m.viewBox.split(' ').map(Number);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={m.viewBox}
+  class:list={['wordmark', className]}
+  role={title ? 'img' : undefined}
+  aria-label={title || undefined}
+  aria-hidden={title ? undefined : 'true'}
+  focusable="false"
+  style={`aspect-ratio: ${vw} / ${vh}`}
+>
+  <path d={m.ink} fill="currentColor"></path>
+  <path d={m.accent} style="fill: var(--wm-accent, var(--color-gold))"></path>
+</svg>
+
+<style>
+  /* :where keeps specificity at zero so size utilities (h-11, w-full) win. */
+  :where(.wordmark) {
+    display: block;
+    overflow: visible;
+  }
+</style>

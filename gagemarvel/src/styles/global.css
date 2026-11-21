@@ -1,0 +1,274 @@
+@import 'tailwindcss';
+
+/*
+ * Self-hosted fonts (no Google requests). Only the Latin subset and the
+ * weights we use are loaded.
+ */
+@import '@fontsource/big-shoulders-display/latin-700';
+@import '@fontsource/big-shoulders-display/latin-800';
+@import '@fontsource/big-shoulders-display/latin-900';
+@import '@fontsource/source-sans-3/latin-400';
+@import '@fontsource/source-sans-3/latin-400-italic';
+@import '@fontsource/source-sans-3/latin-600';
+@import '@fontsource/source-sans-3/latin-700';
+
+/*
+ * DESIGN TOKENS
+ * Tailwind v4 is configured in CSS: everything in @theme becomes both a
+ * utility (bg-gold, text-ivory, font-display ...) and a CSS custom property
+ * (var(--color-gold)). The short aliases on :root match the brief.
+ *
+ * Contrast (WCAG 2.1, checked):
+ *   ivory on black 17.0  | ivory on charcoal 15.0 | ivory on charcoal-2 13.1
+ *   ivory-muted on black 9.3 | on charcoal 8.3 | on charcoal-2 7.2
+ *   gold on black 10.6 | gold on charcoal 9.4 | black on gold 10.6
+ *   black on gold-deep 7.6
+ *   gold on white 1.85 FAILS -> never put gold text or gold marks on white.
+ */
+@theme {
+  --color-black: #0b0b0b;
+  --color-charcoal: #1a1a1a;
+  --color-charcoal-2: #262626;
+  --color-gold: #e8b830;
+  --color-gold-deep: #c99a1c;
+  --color-ivory: #f4eedf;
+  --color-ivory-muted: #b9b2a2;
+  --color-white: #ffffff;
+
+  --font-display: 'Big Shoulders Display', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+
+  /* Type scale: a 1.333 ratio for body sizes, then big fluid display sizes. */
+  --text-label: 0.8125rem;
+  --text-label--letter-spacing: 0.18em;
+  --text-display-sm: clamp(2rem, 1.6rem + 1.8vw, 2.75rem);
+  --text-display-sm--line-height: 0.95;
+  --text-display-md: clamp(2.75rem, 2rem + 3.4vw, 4.5rem);
+  --text-display-md--line-height: 0.9;
+  --text-display-lg: clamp(3.5rem, 2rem + 7vw, 8rem);
+  --text-display-lg--line-height: 0.85;
+  --text-display-xl: clamp(4.25rem, 1.5rem + 12vw, 12.5rem);
+  --text-display-xl--line-height: 0.82;
+
+  --tracking-label: 0.18em;
+  --tracking-nav: 0.14em;
+  --tracking-display: 0.01em;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --container-site: 82rem;
+}
+
+:root {
+  --black: var(--color-black);
+  --charcoal: var(--color-charcoal);
+  --charcoal-2: var(--color-charcoal-2);
+  --gold: var(--color-gold);
+  --gold-deep: var(--color-gold-deep);
+  --ivory: var(--color-ivory);
+  --ivory-muted: var(--color-ivory-muted);
+
+  --header-h: 4.5rem;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: var(--black);
+    color: var(--ivory);
+    font-family: var(--font-body);
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    background: var(--black);
+    min-height: 100dvh;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-display);
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  /* One consistent, high-visibility gold focus ring everywhere. */
+  :focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  /* Inside gold surfaces the ring switches to black so it stays visible. */
+  .on-gold :focus-visible,
+  .btn-gold:focus-visible {
+    outline-color: var(--ivory);
+    box-shadow: 0 0 0 6px var(--black);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  .container-site {
+    width: 100%;
+    max-width: var(--container-site);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+  }
+
+  /* Small all-caps label used for section eyebrows, nav and metadata. */
+  .label {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  /* The thin gold rule from wordmark Option 1, reused as a section marker. */
+  .gold-rule {
+    display: block;
+    height: 3px;
+    width: 3.5rem;
+    background: var(--gold);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    min-height: 3rem;
+    min-width: 2.75rem;
+    padding: 0.85rem 1.6rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: var(--tracking-nav);
+    text-transform: uppercase;
+    line-height: 1;
+    border: 2px solid transparent;
+    border-radius: 2px;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      border-color 160ms ease,
+      transform 200ms var(--ease-out-soft);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .btn-gold:hover {
+    background: var(--gold-deep);
+  }
+  .btn-gold:active {
+    background: var(--gold-deep);
+    transform: translateY(1px);
+  }
+  .btn-outline {
+    border-color: var(--ivory);
+    color: var(--ivory);
+  }
+  .btn-outline:hover {
+    background: var(--ivory);
+    color: var(--black);
+  }
+  .btn-dark {
+    background: var(--black);
+    color: var(--ivory);
+  }
+  .btn-dark:hover {
+    background: var(--charcoal-2);
+  }
+  .btn-sm {
+    min-height: 2.75rem;
+    padding: 0.7rem 1.1rem;
+    font-size: 0.8125rem;
+  }
+
+  .field {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0.9rem;
+    background: var(--charcoal-2);
+    color: var(--ivory);
+    border: 1px solid #3a3a3a;
+    border-radius: 2px;
+    font: inherit;
+  }
+  .field::placeholder {
+    color: var(--ivory-muted);
+  }
+  .field:focus-visible {
+    border-color: var(--gold);
+  }
+
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* Very light film grain for hero photography (kept under 5% opacity). */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+}
+
+/* Scroll reveal. Content is visible by default; the script only opts in
+   when motion is allowed, so nothing is ever hidden for no-JS or
+   reduced-motion visitors. */
+@media (prefers-reduced-motion: no-preference) {
+  .js-reveal [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 700ms var(--ease-out-soft),
+      transform 700ms var(--ease-out-soft);
+  }
+  .js-reveal [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  .lift {
+    transition: transform 260ms var(--ease-out-soft);
+  }
+  .lift:hover {
+    transform: translateY(-4px);
+  }
+}

@@ -1,0 +1,135 @@
+---
+import Wordmark from '@/components/brand/Wordmark.astro';
+import PlatformIcon from '@/components/icons/PlatformIcon.astro';
+import FanSignup from '@/components/ui/FanSignup.astro';
+import {
+  nav,
+  bookingHref,
+  social,
+  socialLabels,
+  activeLinks,
+  withUtm,
+  contact,
+  site,
+} from '@/config/site';
+
+const socials = activeLinks(social);
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-charcoal-2 bg-charcoal">
+  <div class="container-site grid gap-14 py-16 lg:grid-cols-12 lg:gap-10 lg:py-20">
+    <div class="lg:col-span-4">
+      <a href="/" class="inline-block" aria-label="Gage Marvel, home">
+        <Wordmark title="" class="h-24 w-auto" />
+      </a>
+
+      {socials.length > 0 && (
+        <div class="mt-10">
+          <h2 class="label text-ivory-muted" style="font-family: var(--font-body)">
+            Follow Gage
+          </h2>
+          <ul class="mt-3 flex flex-wrap gap-2">
+            {socials.map(([key, url]) => (
+              <li>
+                <a
+                  href={withUtm(url, 'footer')}
+                  target="_blank"
+                  rel="noopener"
+                  class="social-btn"
+                  aria-label={`${socialLabels[key]} (opens in a new tab)`}
+                  data-follow={key}
+                  data-location="footer"
+                >
+                  <PlatformIcon name={key} size={20} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+
+    <div class="lg:col-span-5">
+      <h2 class="font-display text-display-sm">Join the Fan List</h2>
+      <p class="mt-2 max-w-md text-ivory-muted">
+        New music and show dates, straight to your inbox.
+      </p>
+      <FanSignup id="footer-signup" variant="compact" location="footer" class="mt-6 max-w-md" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 lg:col-span-3 lg:grid-cols-1">
+      <nav aria-label="Footer">
+        <h2 class="label text-ivory-muted" style="font-family: var(--font-body)">
+          Explore
+        </h2>
+        <ul class="mt-3 space-y-1">
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} class="footer-link">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div>
+        <h2 class="label text-ivory-muted" style="font-family: var(--font-body)">
+          Booking
+        </h2>
+        <a href={bookingHref} class="btn btn-gold btn-sm mt-4">
+          Book Gage
+        </a>
+        {contact.bookingEmail && (
+          <p class="mt-4">
+            <a
+              href={`mailto:${contact.bookingEmail}`}
+              class="break-all underline underline-offset-4 hover:text-gold"
+            >
+              {contact.bookingEmail}
+            </a>
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-charcoal-2">
+    <div class="container-site flex flex-col gap-2 py-6 text-sm text-ivory-muted sm:flex-row sm:items-center sm:justify-between">
+      <p>
+        &copy; {year} {site.name}. All rights reserved.
+      </p>
+      <a href="/privacy" class="underline underline-offset-4 hover:text-ivory">
+        Privacy policy
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: var(--charcoal-2);
+    color: var(--ivory);
+    transition:
+      color 160ms ease,
+      background-color 160ms ease;
+  }
+  .social-btn:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--ivory);
+  }
+  .footer-link:hover {
+    color: var(--gold);
+  }
+</style>

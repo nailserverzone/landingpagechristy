@@ -1,0 +1,47 @@
+---
+/** Small UI icons, drawn on a 24px grid with a 2px stroke. Decorative. */
+interface Props {
+  name:
+    | 'menu'
+    | 'close'
+    | 'arrow-right'
+    | 'share'
+    | 'calendar'
+    | 'ticket'
+    | 'mail'
+    | 'play'
+    | 'link'
+    | 'check';
+  class?: string;
+  size?: number;
+}
+const icons: Record<Props['name'], string> = {
+  menu: 'M3 7h18M3 12h18M3 17h18',
+  close: 'M6 6l12 12M18 6L6 18',
+  'arrow-right': 'M4 12h15M13 6l6 6-6 6',
+  share: 'M12 3v12M7 8l5-5 5 5M5 13v7h14v-7',
+  calendar: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
+  ticket: 'M3 8V5h18v3a2 2 0 0 0 0 4v0a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4v0a2 2 0 0 0 0-4zM14 5v14',
+  mail: 'M3 5h18v14H3zM3 6l9 7 9-7',
+  play: 'M7 4l13 8-13 8z',
+  link: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
+  check: 'M4 12l5 5L20 6',
+};
+const { name, class: className, size = 20 } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill={name === 'play' ? 'currentColor' : 'none'}
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="square"
+  stroke-linejoin="miter"
+  aria-hidden="true"
+  focusable="false"
+  class={className}
+>
+  <path d={icons[name]}></path>
+</svg>

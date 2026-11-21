@@ -1,0 +1,50 @@
+---
+/**
+ * Phase 1 holding page: proves the layout, header-over-hero and footer.
+ * The full home page (featured single, songs, video, shows, fan list band,
+ * booking teaser) is built in Phase 2.
+ */
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Wordmark from '@/components/brand/Wordmark.astro';
+import { site, social } from '@/config/site';
+// TODO(content): replace with the real hero photo (16:9) and its 4:5 mobile crop.
+import heroWide from '@/assets/placeholders/hero-16x9.jpg';
+
+const hero = await getImage({ src: heroWide, widths: [768, 1280, 1920, 2400], format: 'webp' });
+---
+
+<BaseLayout
+  overlayHeader
+  preloadImage={{ src: hero.src, srcset: hero.srcSet.attribute, sizes: '100vw' }}
+>
+  <section class="grain relative isolate flex min-h-[100svh] items-end overflow-hidden">
+    <Image
+      src={heroWide}
+      alt=""
+      widths={[768, 1280, 1920, 2400]}
+      sizes="100vw"
+      format="webp"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 -z-10 size-full object-cover"
+    />
+    <div
+      class="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/55 to-black/10"
+      aria-hidden="true"
+    ></div>
+    <div class="container-site pt-32 pb-16 lg:pb-24">
+      <h1 class="sr-only">Gage Marvel</h1>
+      <Wordmark title="" class="w-[min(78vw,34rem)]" />
+      <p class="mt-6 max-w-xl text-lg text-ivory-muted">{site.tagline}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/music" class="btn btn-gold">
+          Listen Now
+        </a>
+        <a href={social.instagram || '/contact'} class="btn btn-outline">
+          Follow Gage
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,319 @@
+---
+/**
+ * Hidden brand review page (noindex, kept out of the sitemap).
+ * Lets the client compare the three wordmark options and see the palette and
+ * type scale. To switch the live mark, change `wordmark` in src/config/site.ts.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Wordmark from '@/components/brand/Wordmark.astro';
+import type { WordmarkOption } from '@/components/brand/marks';
+import { site } from '@/config/site';
+
+const options: { n: WordmarkOption; name: string; note: string }[] = [
+  {
+    n: 1,
+    name: 'Stacked condensed',
+    note: 'GAGE over MARVEL, both lines set to the same width, with a thin gold rule between. The strongest shape for posters and the front of a T-shirt.',
+  },
+  {
+    n: 2,
+    name: 'Single line with a mark',
+    note: 'One line, with an original "spotlight star" standing in for the space: four points, the vertical ones longer like a beam of stage light. Best for wide spaces such as banners and the website header.',
+  },
+  {
+    n: 3,
+    name: 'Badge',
+    note: 'The name inside a chamfered frame with a thin inner line and the spotlight star. Flat and geometric rather than a vintage seal. Works as a patch, sticker or hat front.',
+  },
+];
+
+const grounds = [
+  {
+    key: 'ivory-on-black',
+    label: 'Ivory on black',
+    bg: '#0B0B0B',
+    fg: '#F4EEDF',
+    accent: '#E8B830',
+  },
+  { key: 'black-on-gold', label: 'Black on gold', bg: '#E8B830', fg: '#0B0B0B', accent: '#0B0B0B' },
+  {
+    key: 'black-on-white',
+    label: 'Black on white',
+    bg: '#FFFFFF',
+    fg: '#0B0B0B',
+    accent: '#0B0B0B',
+  },
+];
+
+const palette = [
+  {
+    token: '--black',
+    hex: '#0B0B0B',
+    use: 'Page background, deepest sections',
+    text: '#F4EEDF',
+    ratio: 'Ivory text 17.0:1',
+  },
+  {
+    token: '--charcoal',
+    hex: '#1A1A1A',
+    use: 'Alternate sections, cards, solid header',
+    text: '#F4EEDF',
+    ratio: 'Ivory text 15.0:1',
+  },
+  {
+    token: '--charcoal-2',
+    hex: '#262626',
+    use: 'Borders, inputs, hover states',
+    text: '#F4EEDF',
+    ratio: 'Ivory text 13.1:1, muted 7.2:1',
+  },
+  {
+    token: '--gold',
+    hex: '#E8B830',
+    use: 'CTAs, active nav, show dates. Sparingly.',
+    text: '#0B0B0B',
+    ratio: 'Black text 10.6:1',
+  },
+  {
+    token: '--gold-deep',
+    hex: '#C99A1C',
+    use: 'CTA hover and pressed',
+    text: '#0B0B0B',
+    ratio: 'Black text 7.6:1',
+  },
+  {
+    token: '--ivory',
+    hex: '#F4EEDF',
+    use: 'Body text and headings on dark',
+    text: '#0B0B0B',
+    ratio: 'On black 17.0:1',
+  },
+  {
+    token: '--ivory-muted',
+    hex: '#B9B2A2',
+    use: 'Captions, metadata, secondary text',
+    text: '#0B0B0B',
+    ratio: 'On black 9.3:1',
+  },
+];
+
+const scale = [
+  { name: 'Display XL', cls: 'text-display-xl', sample: 'Gage Marvel', note: 'Home hero only' },
+  { name: 'Display L', cls: 'text-display-lg', sample: 'Upcoming Shows', note: 'Page titles' },
+  {
+    name: 'Display M',
+    cls: 'text-display-md',
+    sample: 'Featured Single',
+    note: 'Section headings',
+  },
+  {
+    name: 'Display S',
+    cls: 'text-display-sm',
+    sample: 'Join the Fan List',
+    note: 'Card titles, subheads',
+  },
+];
+---
+
+<BaseLayout
+  title="Brand options"
+  noindex
+  description="Wordmark options and brand basics for review."
+>
+  <section class="container-site pt-14 pb-10 lg:pt-20">
+    <p class="label text-gold">Internal review page. Not linked or indexed.</p>
+    <h1 class="text-display-lg mt-4">Brand</h1>
+    <p class="mt-5 max-w-2xl text-lg text-ivory-muted">
+      Three original wordmark directions for GAGE MARVEL, each shown on the three backgrounds it has
+      to work on, with its compact GM monogram. Option {site.wordmark} is in the live header until a
+      choice is made.
+    </p>
+    <nav aria-label="On this page" class="mt-8 flex flex-wrap gap-2">
+      {options.map((o) => (
+        <a class="btn btn-outline btn-sm" href={`#option-${o.n}`}>
+          Option {o.n}
+        </a>
+      ))}
+      <a class="btn btn-outline btn-sm" href="#palette">
+        Palette
+      </a>
+      <a class="btn btn-outline btn-sm" href="#type">
+        Type
+      </a>
+    </nav>
+  </section>
+
+  {options.map((o) => (
+    <section id={`option-${o.n}`} class="border-t border-charcoal-2 py-14 lg:py-20">
+      <div class="container-site">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="label text-ivory-muted">Option {o.n}</p>
+            <h2 class="text-display-md mt-2">{o.name}</h2>
+          </div>
+          {site.wordmark === o.n && <p class="label bg-gold px-3 py-2 text-black">Live now</p>}
+        </div>
+        <p class="mt-4 max-w-2xl text-ivory-muted">{o.note}</p>
+
+        <div class="mt-10 grid gap-4 md:grid-cols-3">
+          {grounds.map((g) => (
+            <figure>
+              <div
+                class="flex aspect-[4/3] items-center justify-center p-[12%]"
+                style={`background:${g.bg};color:${g.fg};--wm-accent:${g.accent};${g.key === 'black-on-white' ? '' : ''}`}
+              >
+                <Wordmark
+                  option={o.n}
+                  title={`Option ${o.n}, ${g.label}`}
+                  class="max-h-full w-full"
+                />
+              </div>
+              <figcaption class="mt-2 flex items-center justify-between gap-3 text-sm text-ivory-muted">
+                <span>{g.label}</span>
+                <a
+                  class="underline underline-offset-4 hover:text-ivory"
+                  href={`/brand-assets/gage-marvel-option-${o.n}-full-${g.key}.svg`}
+                  download
+                >
+                  SVG
+                </a>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <h3 class="label mt-12 text-ivory-muted" style="font-family:var(--font-body)">
+          GM monogram, including favicon sizes
+        </h3>
+        <div class="mt-4 grid gap-4 md:grid-cols-3">
+          {grounds.map((g) => (
+            <figure>
+              <div
+                class="flex flex-wrap items-center justify-center gap-5 px-5 py-8"
+                style={`background:${g.bg};color:${g.fg};--wm-accent:${g.accent}`}
+              >
+                <Wordmark
+                  option={o.n}
+                  kind="mono"
+                  title={`Option ${o.n} monogram, ${g.label}`}
+                  class="h-20 w-auto"
+                />
+                <Wordmark option={o.n} kind="mono" title="" class="h-8 w-auto" />
+                <Wordmark option={o.n} kind="mono" title="" class="h-4 w-auto" />
+              </div>
+              <figcaption class="mt-2 flex items-center justify-between gap-3 text-sm text-ivory-muted">
+                <span>{g.label}: 80px, 32px, 16px</span>
+                <a
+                  class="underline underline-offset-4 hover:text-ivory"
+                  href={`/brand-assets/gage-marvel-option-${o.n}-mono-${g.key}.svg`}
+                  download
+                >
+                  SVG
+                </a>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <div class="mt-10 grid gap-4 md:grid-cols-2">
+          <div class="bg-charcoal p-6">
+            <p class="label text-ivory-muted">In the header</p>
+            <div class="mt-4 flex h-[var(--header-h)] items-center justify-between bg-black px-4">
+              <Wordmark option={o.n} title="" class="h-11 w-auto max-w-[60%]" />
+              <span class="btn btn-gold btn-sm" aria-hidden="true">
+                Book Gage
+              </span>
+            </div>
+          </div>
+          <div class="flex items-center justify-center bg-charcoal p-6">
+            <div
+              class="relative flex aspect-[3/4] w-40 items-start justify-center rounded-sm bg-black pt-10"
+              aria-label="T-shirt print preview"
+              role="img"
+            >
+              <Wordmark option={o.n} title="" class="w-24" />
+            </div>
+            <p class="ml-6 max-w-[14rem] text-sm text-ivory-muted">
+              Chest print at roughly actual proportions. Transparent SVGs for print vendors are in
+              <code class="text-ivory">/brand-assets/</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section id="palette" class="border-t border-charcoal-2 py-14 lg:py-20">
+    <div class="container-site">
+      <p class="label text-ivory-muted">Color</p>
+      <h2 class="text-display-md mt-2">Palette</h2>
+      <p class="mt-4 max-w-2xl text-ivory-muted">
+        Black and ivory carry the site. Gold is a spotlight: buttons, the active link, show dates
+        and at most one accent per section. Every text pairing passes WCAG 2.1 AA. Gold is never
+        used on white (1.85:1), so marks on white are all black.
+      </p>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {palette.map((c) => (
+          <li class="bg-charcoal">
+            <div
+              class="flex aspect-[5/3] items-end p-4"
+              style={`background:${c.hex};color:${c.text}`}
+            >
+              <span class="font-display text-3xl font-extrabold">Aa</span>
+            </div>
+            <div class="p-4">
+              <p class="font-semibold">
+                <code>{c.token}</code> <span class="text-ivory-muted">{c.hex}</span>
+              </p>
+              <p class="mt-1 text-sm text-ivory-muted">{c.use}</p>
+              <p class="mt-2 text-sm">{c.ratio}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section id="type" class="border-t border-charcoal-2 py-14 lg:py-20">
+    <div class="container-site">
+      <p class="label text-ivory-muted">Type</p>
+      <h2 class="text-display-md mt-2">Type scale</h2>
+      <p class="mt-4 max-w-2xl text-ivory-muted">
+        Headings: Big Shoulders Display, a tall, condensed sans with a bit of industrial grit. Body:
+        Source Sans 3, open and warm at reading sizes. Both are free Google Fonts, self-hosted.
+      </p>
+      <dl class="mt-10 divide-y divide-charcoal-2 border-y border-charcoal-2">
+        {scale.map((s) => (
+          <div class="grid gap-2 py-6 md:grid-cols-[12rem_1fr] md:items-baseline">
+            <dt class="text-sm text-ivory-muted">
+              <span class="block font-semibold text-ivory">{s.name}</span>
+              {s.note}
+            </dt>
+            <dd class={`${s.cls} font-display font-extrabold uppercase`}>{s.sample}</dd>
+          </div>
+        ))}
+        <div class="grid gap-2 py-6 md:grid-cols-[12rem_1fr] md:items-baseline">
+          <dt class="text-sm text-ivory-muted">
+            <span class="block font-semibold text-ivory">Label</span>13px, tracked 0.18em
+          </dt>
+          <dd class="label text-gold">Next Show · Sat Feb 20</dd>
+        </div>
+        <div class="grid gap-2 py-6 md:grid-cols-[12rem_1fr] md:items-baseline">
+          <dt class="text-sm text-ivory-muted">
+            <span class="block font-semibold text-ivory">Body</span>17px / 1.6
+          </dt>
+          <dd class="max-w-prose">
+            Body copy sits in Source Sans 3. It stays readable on dark backgrounds at long lengths,
+            which matters for the bio and the press kit.
+          </dd>
+        </div>
+      </dl>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <span class="btn btn-gold">Listen Now</span>
+        <span class="btn btn-outline">Follow Gage</span>
+        <span class="btn btn-gold">Join the Fan List</span>
+        <span class="btn btn-gold">Book Gage</span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

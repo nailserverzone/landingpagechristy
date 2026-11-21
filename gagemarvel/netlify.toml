@@ -1,0 +1,41 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  # TODO(deploy): if this folder stays inside the landingpagechristy repo,
+  # set Base directory to "gagemarvel" in the Netlify UI.
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Sample shows are visible on deploy previews and branch deploys, never on production.
+[context.deploy-preview.environment]
+  SHOW_SAMPLE_CONTENT = "true"
+[context.branch-deploy.environment]
+  SHOW_SAMPLE_CONTENT = "true"
+[context.production.environment]
+  SHOW_SAMPLE_CONTENT = "false"
+
+# www -> apex. Netlify also does this automatically once both domains are added,
+# but keeping it explicit documents the intent.
+[[redirects]]
+  from = "https://www.gagemarvel.com/*"
+  to = "https://gagemarvel.com/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/brand"
+  [headers.values]
+    X-Robots-Tag = "noindex"

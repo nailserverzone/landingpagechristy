@@ -1,0 +1,64 @@
+---
+/**
+ * Brand icons for streaming and social platforms (from the CC0 Simple Icons
+ * set). Decorative by default: the visible label or the link's aria-label
+ * carries the name.
+ */
+import {
+  siSpotify,
+  siApplemusic,
+  siYoutubemusic,
+  siYoutube,
+  siDeezer,
+  siPandora,
+  siTidal,
+  siBandcamp,
+  siInstagram,
+  siTiktok,
+  siFacebook,
+  siX,
+  siThreads,
+} from 'simple-icons';
+
+interface Props {
+  name: string;
+  class?: string;
+  size?: number;
+}
+
+// Amazon does not allow its marks in open icon sets, so Amazon Music gets a
+// neutral music note. The visible "Amazon Music" label identifies it.
+const musicNote = 'M9 3v10.55A4 4 0 1 0 11 17V7h6V3H9zm-2 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4z';
+
+const paths: Record<string, string> = {
+  spotify: siSpotify.path,
+  appleMusic: siApplemusic.path,
+  youtubeMusic: siYoutubemusic.path,
+  youtube: siYoutube.path,
+  amazonMusic: musicNote,
+  deezer: siDeezer.path,
+  pandora: siPandora.path,
+  tidal: siTidal.path,
+  bandcamp: siBandcamp.path,
+  instagram: siInstagram.path,
+  tiktok: siTiktok.path,
+  facebook: siFacebook.path,
+  x: siX.path,
+  threads: siThreads.path,
+};
+
+const { name, class: className, size = 20 } = Astro.props;
+const d = paths[name] ?? musicNote;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+  class={className}
+>
+  <path d={d}></path>
+</svg>

@@ -1,0 +1,42 @@
+{
+  "name": "gagemarvel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Official website for Gage Marvel, independent country music artist. gagemarvel.com",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "brand": "node scripts/build-brand.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/sitemap": "^3.7.6",
+    "@fontsource/big-shoulders-display": "^5.3.0",
+    "@fontsource/source-sans-3": "^5.3.1",
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "^7.4.13",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "globals": "^17.14.0",
+    "opentype.js": "^2.0.0",
+    "prettier": "^3.10.1",
+    "prettier-plugin-astro": "^1.1.2",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "simple-icons": "^16.38.0",
+    "typescript-eslint": "^8.73.0"
+  }
+}
