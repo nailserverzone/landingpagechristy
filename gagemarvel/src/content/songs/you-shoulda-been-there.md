@@ -1,16 +1,14 @@
 ---
-# TODO(content): confirm which song is featured. Real streaming links, release date, cover art and a short
-# description from the client. Links ending in #todo-content are placeholders.
+# Release info and Apple Music link checked against Apple Music, Nov 2026.
+# TODO(content): Spotify, YouTube Music, YouTube and Amazon Music links for this release.
 title: 'You Shoulda Been There'
-# releaseDate: YYYY-MM-DD   (add once confirmed)
-cover: ../../assets/placeholders/cover-you-shoulda-been-there.jpg
-coverAlt: 'Cover art placeholder for You Shoulda Been There'
-featured: true
-order: 1
+kind: single
+releaseDate: 2025-06-15
+label: '℗ 2025 Marvel Records'
+cover: ../../assets/covers/you-shoulda-been-there.jpg
+coverAlt: 'Black and white photo of a young boy in a Marvel 00 baseball jersey riding on the shoulders of a man whose jersey reads Dad 00.'
+glow: '#b9b2a2'
+featured: false
 links:
-  spotify: https://open.spotify.com/#todo-content
-  appleMusic: https://music.apple.com/#todo-content
-  youtubeMusic: https://music.youtube.com/#todo-content
-  youtube: https://www.youtube.com/#todo-content
-  amazonMusic: https://music.amazon.com/#todo-content
+  appleMusic: https://music.apple.com/us/album/you-shoulda-been-there/1814105383?i=1814105385
 ---

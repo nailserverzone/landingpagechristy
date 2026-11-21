@@ -1,0 +1,216 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import VinylSleeve from '@/components/music/VinylSleeve.astro';
+import PlatformButtons from '@/components/music/PlatformButtons.astro';
+import PlayerEmbed from '@/components/music/PlayerEmbed.astro';
+import ShareButton from '@/components/music/ShareButton.astro';
+import FanBand from '@/components/ui/FanBand.astro';
+import { getSongs, getFeaturedSong } from '@/lib/content';
+import { formatDate, kindLabel, releaseYear } from '@/lib/music';
+import { site, withUtm } from '@/config/site';
+
+const songs = await getSongs();
+const featured = (await getFeaturedSong())!;
+const glows = await Promise.all(
+  songs.map((s) => getImage({ src: s.data.cover, width: 320, format: 'webp' })),
+);
+const og = await getImage({ src: featured.data.cover, width: 1200, format: 'jpg' });
+
+const recordingsLd = songs.map((s) => ({
+  '@context': 'https://schema.org',
+  '@type': s.data.kind === 'single' ? 'MusicRecording' : 'MusicAlbum',
+  name: s.data.title,
+  byArtist: { '@type': 'MusicGroup', name: site.name, url: site.url },
+  url: `${site.url}/music#${s.id}`,
+  ...(s.data.releaseDate ? { datePublished: s.data.releaseDate } : {}),
+  ...(s.data.tracks.length
+    ? {
+        numTracks: s.data.tracks.length,
+        track: s.data.tracks.map((t) => ({ '@type': 'MusicRecording', name: t.title })),
+      }
+    : {}),
+  sameAs: Object.values(s.data.links).filter((u) => u && !u.includes('#todo-content')),
+}));
+---
+
+<BaseLayout
+  title="Music"
+  description={`Every release from Gage Marvel, newest first: ${songs
+    .slice(0, 3)
+    .map((s) => s.data.title)
+    .join(', ')} and more. Listen on Spotify, Apple Music, YouTube and Amazon Music.`}
+  image={og.src}
+  imageAlt={featured.data.coverAlt}
+  jsonLd={recordingsLd}
+>
+  <header class="container-site pt-12 pb-10 lg:pt-20">
+    <div class="flex flex-wrap items-end justify-between gap-6 border-b border-charcoal-2 pb-8">
+      <h1 class="page-title">Music</h1>
+      <div class="max-w-sm">
+        <p class="text-ivory-muted">
+          {songs.length} releases, newest first. Pick a record, then pick where you listen.
+        </p>
+        <button type="button" class="btn btn-gold mt-5" data-listen-open>
+          Listen Now
+        </button>
+      </div>
+    </div>
+    <nav aria-label="Releases" class="mt-6">
+      <ul class="flex flex-wrap gap-x-5 gap-y-1">
+        {songs.map((s, i) => (
+          <li>
+            <a href={`#${s.id}`} class="jump">
+              <span class="text-ivory-muted tabular-nums">{String(i + 1).padStart(2, '0')}</span>{' '}
+              {s.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </header>
+
+  <div>
+    {songs.map((song, i) => {
+      const d = song.data;
+      return (
+        <article
+          id={song.id}
+          class="release relative isolate overflow-hidden border-t border-charcoal-2"
+          aria-labelledby={`${song.id}-title`}
+          style={`--glow:${d.glow ?? '#E8B830'}`}
+        >
+          <img src={glows[i].src} alt="" class="ambient opacity-25!" loading="lazy" />
+          <div
+            class="absolute inset-0 -z-10 bg-gradient-to-r from-black via-black/80 to-black/40"
+            aria-hidden="true"
+          />
+          <div
+            class="container-site grid gap-10 py-16 lg:grid-cols-12 lg:gap-14 lg:py-24"
+            data-reveal
+          >
+            <div class="sleeve-host lg:col-span-5" tabindex="-1">
+              <VinylSleeve song={song} sizes="(min-width: 1024px) 34vw, 78vw" eager={i === 0} />
+            </div>
+
+            <div class="lg:col-span-7">
+              <p class="label flex flex-wrap items-center gap-x-3 gap-y-1 text-ivory-muted">
+                <span class="text-gold tabular-nums">
+                  {String(i + 1).padStart(2, '0')} / {String(songs.length).padStart(2, '0')}
+                </span>
+                <span>{kindLabel(song)}</span>
+                {d.featured && <span class="bg-gold px-2 py-0.5 text-black">Featured</span>}
+              </p>
+              <h2 id={`${song.id}-title`} class="text-display-md mt-3">
+                {d.title}
+              </h2>
+              <p class="mt-3 text-ivory-muted">
+                {d.releaseDate ? `Released ${formatDate(d.releaseDate)}` : 'Release date to come'}
+                {d.label && <> · {d.label}</>}
+              </p>
+              {d.description && <p class="mt-5 max-w-prose text-lg">{d.description}</p>}
+
+              {d.tracks.length > 0 && (
+                <ol class="tracks mt-7 max-w-xl">
+                  {d.tracks.map((t, n) => (
+                    <li>
+                      <span class="text-ivory-muted tabular-nums">{n + 1}</span>
+                      {t.appleMusic ? (
+                        <a
+                          href={withUtm(t.appleMusic, 'music_page')}
+                          target="_blank"
+                          rel="noopener"
+                          class="hover:text-gold hover:underline"
+                          data-listen-platform="appleMusic"
+                          data-song={t.title}
+                          data-location="music_page"
+                        >
+                          {t.title}
+                          <span class="sr-only"> on Apple Music (opens in a new tab)</span>
+                        </a>
+                      ) : (
+                        <span>{t.title}</span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+
+              <PlatformButtons song={song} location="music_page" class="mt-8" />
+              <div class="mt-6 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
+                <PlayerEmbed song={song} />
+                <ShareButton title={d.title} path={`/music#${song.id}`} />
+              </div>
+
+              {d.credits.length > 0 && (
+                <dl class="mt-8 grid max-w-xl grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm">
+                  {d.credits.map((c) => (
+                    <>
+                      <dt class="text-ivory-muted">{c.role}</dt>
+                      <dd>{c.name}</dd>
+                    </>
+                  ))}
+                </dl>
+              )}
+            </div>
+          </div>
+          <span class="year" aria-hidden="true">
+            {releaseYear(song)}
+          </span>
+        </article>
+      );
+    })}
+  </div>
+
+  <FanBand
+    id="music-fan"
+    location="music_page"
+    heading="Hear It First"
+    intro="Get new releases from Gage the day they drop. Join the fan list."
+  />
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: clamp(5rem, 22vw, 18rem);
+    line-height: 0.78;
+    font-weight: 900;
+  }
+  .jump {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    min-height: 2.75rem;
+    font-weight: 600;
+  }
+  .jump:hover {
+    color: var(--gold);
+  }
+  .release {
+    scroll-margin-top: var(--header-h);
+  }
+  .tracks {
+    border-top: 1px solid var(--charcoal-2);
+  }
+  .tracks li {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    align-items: center;
+    min-height: 2.75rem;
+    border-bottom: 1px solid var(--charcoal-2);
+  }
+  /* Oversized outlined year in the corner, like a catalog stamp. */
+  .year {
+    position: absolute;
+    right: -0.04em;
+    bottom: -0.18em;
+    z-index: -1;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(7rem, 20vw, 17rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(244 238 223 / 0.09);
+    pointer-events: none;
+  }
+</style>

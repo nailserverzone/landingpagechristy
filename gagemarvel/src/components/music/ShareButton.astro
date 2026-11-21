@@ -1,0 +1,49 @@
+---
+/** Share a release: native share sheet where available, copy link otherwise. */
+import Icon from '@/components/icons/Icon.astro';
+import { site } from '@/config/site';
+
+interface Props {
+  title: string;
+  /** Path on this site, e.g. /music#mama-tried */
+  path: string;
+  class?: string;
+}
+const { title, path, class: className } = Astro.props;
+const url = new URL(path, site.url).href;
+---
+
+<button
+  type="button"
+  class:list={['btn btn-outline btn-sm', className]}
+  data-share
+  data-share-title={`${title} by Gage Marvel`}
+  data-share-url={url}
+>
+  <Icon name="share" size={16} />
+  <span data-share-label>Share</span>
+</button>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-share]').forEach((btn) => {
+    const label = btn.querySelector<HTMLElement>('[data-share-label]')!;
+    btn.addEventListener('click', async () => {
+      const data = { title: btn.dataset.shareTitle, url: btn.dataset.shareUrl };
+      if (navigator.share) {
+        try {
+          await navigator.share(data);
+        } catch {
+          /* dismissed */
+        }
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(data.url ?? '');
+        label.textContent = 'Link copied';
+      } catch {
+        window.prompt('Copy this link:', data.url);
+      }
+      setTimeout(() => (label.textContent = 'Share'), 2400);
+    });
+  });
+</script>

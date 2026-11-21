@@ -1,16 +1,14 @@
 ---
-# TODO(content): real streaming links, release date, cover art and a short
-# description from the client. Links ending in #todo-content are placeholders.
+# Release info and Apple Music link checked against Apple Music, Nov 2026.
+# TODO(content): Spotify, YouTube Music, YouTube and Amazon Music links for this release.
 title: 'If Jesus Were a Cowboy'
-# releaseDate: YYYY-MM-DD   (add once confirmed)
-cover: ../../assets/placeholders/cover-if-jesus-were-a-cowboy.jpg
-coverAlt: 'Cover art placeholder for If Jesus Were a Cowboy'
-featured: false
-order: 2
+kind: single
+releaseDate: 2026-04-04
+label: '℗ 2026 Marvel Records'
+cover: ../../assets/covers/if-jesus-were-a-cowboy.jpg
+coverAlt: 'A saddled horse stands beside a weathered wooden cross on a grassy hilltop, the sun setting low behind them.'
+glow: '#e5a361'
+featured: true
 links:
-  spotify: https://open.spotify.com/#todo-content
-  appleMusic: https://music.apple.com/#todo-content
-  youtubeMusic: https://music.youtube.com/#todo-content
-  youtube: https://www.youtube.com/#todo-content
-  amazonMusic: https://music.amazon.com/#todo-content
+  appleMusic: https://music.apple.com/us/album/if-jesus-were-a-cowboy/1886927025?i=1886927026
 ---

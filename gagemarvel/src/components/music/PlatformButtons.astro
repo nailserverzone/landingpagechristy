@@ -1,0 +1,76 @@
+---
+/** A row of streaming buttons for one release. Hidden platforms never render. */
+import PlatformIcon from '@/components/icons/PlatformIcon.astro';
+import { platformLinks, type Song } from '@/lib/music';
+import { withUtm } from '@/config/site';
+
+interface Props {
+  song: Song;
+  /** Analytics location: hero, music_page, footer, modal ... */
+  location: string;
+  /** Fall back to the artist page when the release has no link on a service. */
+  fallback?: boolean;
+  tone?: 'dark' | 'gold';
+  class?: string;
+}
+const { song, location, fallback = true, tone = 'dark', class: className } = Astro.props;
+const links = platformLinks(song, { fallback });
+---
+
+{links.length > 0 && (
+  <ul class:list={['flex flex-wrap gap-2', className]}>
+    {links.map((l) => (
+      <li>
+        <a
+          href={withUtm(l.url, location)}
+          target="_blank"
+          rel="noopener"
+          class:list={['platform-btn', tone === 'gold' && 'on-gold-btn']}
+          data-listen-platform={l.key}
+          data-song={song.data.title}
+          data-location={location}
+        >
+          <PlatformIcon name={l.key} size={18} />
+          <span>{l.label}</span>
+          <span class="sr-only">{l.direct ? '' : '(artist page)'} (opens in a new tab)</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .platform-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.95rem;
+    border: 1px solid rgb(244 238 223 / 0.22);
+    border-radius: 999px;
+    background: rgb(11 11 11 / 0.35);
+    backdrop-filter: blur(8px);
+    color: var(--ivory);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+  .platform-btn:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+  }
+  .on-gold-btn {
+    border-color: rgb(11 11 11 / 0.4);
+    background: transparent;
+    color: var(--black);
+  }
+  .on-gold-btn:hover {
+    background: var(--black);
+    border-color: var(--black);
+    color: var(--gold);
+  }
+</style>

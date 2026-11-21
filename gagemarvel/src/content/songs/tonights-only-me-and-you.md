@@ -1,16 +1,14 @@
 ---
-# TODO(content): real streaming links, release date, cover art and a short
-# description from the client. Links ending in #todo-content are placeholders.
+# Release info and Apple Music link checked against Apple Music, Nov 2026.
+# TODO(content): Spotify, YouTube Music, YouTube and Amazon Music links for this release.
 title: "Tonight's Only Me and You"
-# releaseDate: YYYY-MM-DD   (add once confirmed)
-cover: ../../assets/placeholders/cover-tonights-only-me-and-you.jpg
-coverAlt: "Cover art placeholder for Tonight's Only Me and You"
+kind: single
+releaseDate: 2026-02-13
+label: '℗ 2026 Marvel Records'
+cover: ../../assets/covers/tonights-only-me-and-you.jpg
+coverAlt: 'A candlelit wooden table set for two in a dim room strung with warm lights, with a folded note on one plate.'
+glow: '#c8873f'
 featured: false
-order: 3
 links:
-  spotify: https://open.spotify.com/#todo-content
-  appleMusic: https://music.apple.com/#todo-content
-  youtubeMusic: https://music.youtube.com/#todo-content
-  youtube: https://www.youtube.com/#todo-content
-  amazonMusic: https://music.amazon.com/#todo-content
+  appleMusic: https://music.apple.com/us/album/tonights-only-me-and-you/1872419726?i=1872419727
 ---

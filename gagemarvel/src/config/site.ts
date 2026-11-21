@@ -19,6 +19,8 @@ export const site = {
   url: 'https://gagemarvel.com',
   // TODO(content): one-line tagline from the client.
   tagline: '[TAGLINE PLACEHOLDER: client to supply]',
+  /** Record label as printed on his releases. */
+  label: 'Marvel Records',
   description:
     'The official website of Gage Marvel, independent country music artist. Listen to the music, see upcoming shows, join the fan list and book Gage for your venue or event.',
   locale: 'en_US',
@@ -59,7 +61,7 @@ export type SocialKey = 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'x' | 
 /** Artist profile pages on each streaming service. */
 export const streaming: Record<StreamingKey, string> = {
   spotify: 'https://open.spotify.com/#todo-content',
-  appleMusic: 'https://music.apple.com/#todo-content',
+  appleMusic: 'https://music.apple.com/us/artist/gage-marvel/1617484159',
   youtubeMusic: 'https://music.youtube.com/#todo-content',
   youtube: 'https://www.youtube.com/#todo-content',
   amazonMusic: 'https://music.amazon.com/#todo-content',
@@ -70,9 +72,10 @@ export const streaming: Record<StreamingKey, string> = {
 };
 
 export const social: Record<SocialKey, string> = {
-  instagram: 'https://www.instagram.com/#todo-content',
+  // Found publicly, Nov 2026. TODO(content): client to confirm both are the accounts to promote.
+  instagram: 'https://www.instagram.com/gagemarvel/',
   tiktok: 'https://www.tiktok.com/#todo-content',
-  facebook: 'https://www.facebook.com/#todo-content',
+  facebook: 'https://www.facebook.com/gage.marvel/',
   youtube: 'https://www.youtube.com/#todo-content',
   x: '',
   threads: '',

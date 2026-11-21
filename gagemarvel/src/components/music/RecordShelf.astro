@@ -1,0 +1,117 @@
+---
+/**
+ * The record folder: a gold file-folder panel holding every release as a
+ * sleeve with its record peeking out. Each links to its spot on /music.
+ * Scrolls sideways on small screens.
+ */
+import VinylSleeve from './VinylSleeve.astro';
+import { getSongs } from '@/lib/content';
+import { kindLabel, releaseYear } from '@/lib/music';
+
+interface Props {
+  title?: string;
+  headingId?: string;
+}
+const { title = 'The Records', headingId = 'records-heading' } = Astro.props;
+const songs = await getSongs();
+const years = songs.map(releaseYear).filter(Boolean).sort();
+const span = years.length ? `${years[0]}–${years[years.length - 1]}` : '';
+---
+
+<div class="folder">
+  <span class="tab label" aria-hidden="true">
+    Discography
+  </span>
+  <div class="panel on-gold paper">
+    <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+      <h2 id={headingId} class="text-display-md">
+        {title}
+      </h2>
+      <p class="label">Newest first · {songs.length} releases</p>
+    </div>
+
+    <ul class="shelf" role="list">
+      {songs.map((song, i) => (
+        <li>
+          <a href={`/music#${song.id}`} class="sleeve-host item">
+            <VinylSleeve song={song} sizes="(min-width: 1024px) 15vw, 45vw" />
+            <span class="mt-4 block font-display text-2xl leading-none font-extrabold uppercase">
+              {song.data.title}
+            </span>
+            <span class="mt-1.5 block text-sm font-semibold">
+              {releaseYear(song)} · {kindLabel(song)}
+              <span class="sr-only">. Go to this release on the music page</span>
+            </span>
+            <span class="num label" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-6 flex items-center justify-between border-t border-black/30 pt-4">
+      <p class="label">Archive</p>
+      <a href="/music" class="label underline underline-offset-4">
+        All music
+      </a>
+      <p class="label">{span}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .folder {
+    position: relative;
+    padding-top: 2.4rem;
+  }
+  .tab {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    height: 2.6rem;
+    padding: 0 2.25rem 0 1.25rem;
+    background: var(--gold);
+    color: var(--black);
+    clip-path: polygon(0 0, calc(100% - 1.6rem) 0, 100% 100%, 0 100%);
+    border-radius: 6px 0 0 0;
+  }
+  .panel {
+    border-radius: 0 10px 10px 10px;
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+  }
+  .shelf {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(13rem, 1fr);
+    gap: 1.75rem;
+    margin: 2rem calc(clamp(1.25rem, 3vw, 2.5rem) * -1) 0;
+    padding: 0.5rem clamp(1.25rem, 3vw, 2.5rem) 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--black) transparent;
+  }
+  @media (min-width: 64rem) {
+    .shelf {
+      grid-auto-columns: minmax(15rem, 1fr);
+    }
+  }
+  .item {
+    position: relative;
+    display: block;
+    scroll-snap-align: start;
+  }
+  .item:hover span:first-of-type {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .num {
+    position: absolute;
+    top: -0.15rem;
+    right: 0;
+    font-variant-numeric: tabular-nums;
+  }
+</style>

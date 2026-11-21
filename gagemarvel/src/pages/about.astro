@@ -1,0 +1,221 @@
+---
+/**
+ * About Gage. Every biographical line here is a placeholder until the client
+ * supplies it. We do not write facts about Gage's life, hometown, influences
+ * or career ourselves. The release timeline is built from the songs
+ * collection, so it is always factual.
+ */
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Wordmark from '@/components/brand/Wordmark.astro';
+import { getSongs } from '@/lib/content';
+import { kindLabel, releaseYear } from '@/lib/music';
+import { musicGroupLd } from '@/lib/seo';
+import { social, activeLinks, withUtm, bookingHref, contact } from '@/config/site';
+// TODO(content): replace with the real 4:5 portrait of Gage.
+import portrait from '@/assets/placeholders/portrait-4x5.jpg';
+
+const songs = await getSongs();
+const timeline = [...songs].reverse();
+const followUrl = activeLinks(social)[0]?.[1] ?? '';
+---
+
+<BaseLayout
+  title="About"
+  description="About Gage Marvel, independent country music artist. Bio, press kit and booking contact."
+  jsonLd={musicGroupLd()}
+>
+  <header class="container-site pt-12 lg:pt-20">
+    <h1 class="page-title border-b border-charcoal-2 pb-8">About</h1>
+  </header>
+
+  <section class="container-site grid gap-12 py-14 lg:grid-cols-12 lg:py-20" aria-label="Biography">
+    <figure class="lg:col-span-5">
+      <div class="lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
+        <Image
+          src={portrait}
+          alt="Portrait of Gage Marvel (placeholder until the real photo arrives)"
+          widths={[480, 720, 960]}
+          sizes="(min-width: 1024px) 38vw, 92vw"
+          format="webp"
+          loading="eager"
+          class="aspect-[4/5] w-full rounded-[3px] object-cover"
+        />
+        <figcaption class="label mt-3 text-ivory-muted">Photo: [credit to come]</figcaption>
+      </div>
+    </figure>
+
+    <div class="lg:col-span-7">
+      <span class="gold-rule"></span>
+      <h2 class="text-display-md mt-5">Gage Marvel</h2>
+      <p class="label mt-3 text-ivory-muted">Independent country music artist</p>
+
+      <div class="bio mt-8 max-w-prose space-y-5 text-lg">
+        <!-- TODO(content): bio from the client. Two to four short paragraphs. -->
+        <p class="placeholder">
+          [BIO PLACEHOLDER: client to supply. Opening paragraph: who Gage is and the kind of country
+          music he makes.]
+        </p>
+        <p class="placeholder">
+          [BIO PLACEHOLDER: client to supply. Where the songs come from, in Gage's own words if
+          possible.]
+        </p>
+        <p class="placeholder">
+          [BIO PLACEHOLDER: client to supply. What's happening now: latest release, shows, what fans
+          can expect next.]
+        </p>
+      </div>
+
+      <!-- TODO(content): a press quote with its source, or a line from Gage. -->
+      <blockquote class="quote mt-14">
+        <p class="font-display">"[PULL QUOTE PLACEHOLDER: press quote or a line from Gage]"</p>
+        <footer class="label mt-4 text-ivory-muted">[Source to come]</footer>
+      </blockquote>
+
+      <section class="mt-16" aria-labelledby="timeline-heading">
+        <h2 id="timeline-heading" class="label text-gold" style="font-family:var(--font-body)">
+          Releases so far
+        </h2>
+        <ol class="timeline mt-4">
+          {timeline.map((s) => (
+            <li>
+              <span class="label text-ivory-muted tabular-nums">{releaseYear(s)}</span>
+              <a href={`/music#${s.id}`} class="flex items-center gap-3 hover:text-gold">
+                <Image
+                  src={s.data.cover}
+                  alt=""
+                  width={48}
+                  height={48}
+                  format="webp"
+                  class="size-10 rounded-[2px] object-cover"
+                />
+                <span class="font-semibold">{s.data.title}</span>
+              </a>
+              <span class="text-sm text-ivory-muted">{kindLabel(s)}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <div class="mt-14 flex flex-wrap gap-3">
+        <button type="button" class="btn btn-gold" data-listen-open>
+          Listen Now
+        </button>
+        {followUrl && (
+          <a
+            href={withUtm(followUrl, 'about')}
+            target="_blank"
+            rel="noopener"
+            class="btn btn-outline"
+            data-follow="instagram"
+            data-location="about"
+          >
+            Follow Gage<span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- PRESS KIT -->
+  <section id="press" class="on-gold paper py-16 lg:py-24" aria-labelledby="press-heading">
+    <div class="container-site grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <p class="label">EPK</p>
+        <h2 id="press-heading" class="text-display-lg mt-3">
+          Press Kit
+        </h2>
+        <p class="mt-4 max-w-sm">
+          For media, venues and promoters: what you need for listings and coverage.
+        </p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:col-span-8">
+        <div class="kit">
+          <h3 class="text-2xl">Short bio</h3>
+          <!-- TODO(content): 50 to 80 word press bio. -->
+          <p class="mt-3">[SHORT BIO PLACEHOLDER: client to supply, 50 to 80 words.]</p>
+          <p class="label mt-4 opacity-70">PDF download coming soon</p>
+        </div>
+
+        <div class="kit">
+          <h3 class="text-2xl">Photos</h3>
+          <!-- TODO(content): high-res press photos, zipped, with photographer credit. -->
+          <p class="mt-3">High-resolution press photos with photographer credits.</p>
+          <p class="label mt-4 opacity-70">Download coming soon</p>
+        </div>
+
+        <div class="kit">
+          <h3 class="text-2xl">Logos</h3>
+          <p class="mt-3">The GAGE MARVEL wordmark as SVG, for posters and listings.</p>
+          <div class="mt-4 flex items-center gap-4">
+            <Wordmark title="" class="h-12 w-auto" />
+            <a
+              href="/brand-assets/gage-marvel-option-1-full-black-transparent.svg"
+              download
+              class="btn btn-dark btn-sm"
+            >
+              Download SVG
+            </a>
+          </div>
+        </div>
+
+        <div class="kit">
+          <h3 class="text-2xl">Booking</h3>
+          <p class="mt-3">Venues, festivals and private events.</p>
+          <div class="mt-4 flex flex-wrap items-center gap-3">
+            <a href={bookingHref} class="btn btn-dark btn-sm">
+              Book Gage
+            </a>
+            {contact.bookingEmail && (
+              <a href={`mailto:${contact.bookingEmail}`} class="underline underline-offset-4">
+                {contact.bookingEmail}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: clamp(5rem, 22vw, 18rem);
+    line-height: 0.78;
+    font-weight: 900;
+  }
+  .placeholder {
+    color: var(--ivory-muted);
+    border-left: 3px solid var(--charcoal-2);
+    padding-left: 1rem;
+  }
+  .quote {
+    position: relative;
+    padding: 2.5rem 0 0;
+    border-top: 3px solid var(--gold);
+  }
+  .quote p {
+    font-size: clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
+    font-weight: 800;
+    line-height: 0.98;
+    text-transform: uppercase;
+  }
+  .timeline li {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.5rem;
+    border-bottom: 1px solid var(--charcoal-2);
+  }
+  .timeline {
+    border-top: 1px solid var(--charcoal-2);
+  }
+  .kit {
+    padding: 1.5rem;
+    border: 1px solid rgb(11 11 11 / 0.35);
+    border-radius: 6px;
+    background: rgb(255 255 255 / 0.18);
+  }
+</style>

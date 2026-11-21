@@ -27,24 +27,28 @@ The production build prints a warning while any placeholder link
 
 ## Music
 
-For each song: _You Shoulda Been There_, _If Jesus Were a Cowboy_,
-_Tonight's Only Me and You_
+All eight releases are on the site with their real cover art, release dates and
+Apple Music links, taken from Apple Music in November 2026: _If Jesus Were a
+Cowboy_, _Tonight's Only Me and You_, _You Shoulda Been There_, _Mama Tried_,
+_Back In the Country (feat. Aaron Brown)_, _Right Hand Man_, _Me Against Me_
+(EP) and _Get Stuck_. Still needed:
 
-- [ ] Cover art, square, at least 1200 x 1200 px (3000 x 3000 preferred).
-- [ ] Release date.
-- [ ] Links: Spotify, Apple Music, YouTube Music, YouTube, Amazon Music, and any
-      others (Deezer, Pandora, TIDAL, Bandcamp).
-- [ ] Spotify track ID for the embedded player.
-- [ ] Optional: one or two sentence description, credits, lyrics.
-- [ ] Which song is featured on the home page (currently _You Shoulda Been There_,
-      unconfirmed).
+- [ ] Spotify, YouTube Music, YouTube and Amazon Music links for each release (the
+      buttons currently fall back to Gage's artist page on each service).
+- [ ] Spotify track IDs, if the client prefers the Spotify player over Apple Music.
+- [ ] Confirm _If Jesus Were a Cowboy_ (the newest release) as the featured song.
+- [ ] Confirm the title spelling: the client brief says "Tonight's Only Me and You";
+      streaming services list "Tonights Only Me and You" (no apostrophe). The site
+      uses the apostrophe.
+- [ ] Optional: a one or two sentence description, credits and lyrics per release.
+- [ ] Confirm all eight releases should be listed (the brief named three).
 
 ## Links and contacts (`src/config/site.ts` and Netlify environment variables)
 
-- [ ] Artist profile links: Spotify, Apple Music, YouTube Music, YouTube channel,
+- [ ] Artist profile links (Apple Music is done): Spotify, YouTube Music, YouTube channel,
       Amazon Music, plus Deezer, Pandora, TIDAL, Bandcamp if they exist.
-- [ ] Social: Instagram, TikTok, Facebook, YouTube, X, Threads (only the ones Gage
-      actually uses).
+- [ ] Social: confirm instagram.com/gagemarvel and facebook.com/gage.marvel (found
+      publicly) are the accounts to promote; add TikTok, YouTube, X, Threads if used.
 - [ ] Booking email address (`PUBLIC_BOOKING_EMAIL`, `BOOKING_EMAIL`).
 - [ ] Fan message email address (`PUBLIC_FAN_EMAIL`, `FAN_EMAIL`).
 

@@ -1,0 +1,162 @@
+---
+/**
+ * LISTEN NOW chooser. Any element with [data-listen-open] opens it, so every
+ * LISTEN NOW on the site lets fans pick their own service for the featured
+ * release. Built on <dialog>: focus is trapped, Esc closes it, and focus
+ * returns to whatever opened it.
+ */
+import { Image } from 'astro:assets';
+import PlatformIcon from '@/components/icons/PlatformIcon.astro';
+import Icon from '@/components/icons/Icon.astro';
+import { getFeaturedSong } from '@/lib/content';
+import { platformLinks, kindLabel, releaseYear } from '@/lib/music';
+import { withUtm } from '@/config/site';
+
+const song = await getFeaturedSong();
+const links = song ? platformLinks(song) : [];
+---
+
+{song && (
+  <dialog class="listen-modal" aria-labelledby="listen-title" data-listen-modal>
+    <div class="panel" style={`--glow:${song.data.glow ?? '#E8B830'}`}>
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <Image
+            src={song.data.cover}
+            alt=""
+            width={96}
+            height={96}
+            format="webp"
+            class="size-20 shrink-0 rounded-[3px] object-cover"
+          />
+          <div>
+            <p class="label text-gold">Listen now</p>
+            <h2 id="listen-title" class="mt-1 text-3xl">
+              {song.data.title}
+            </h2>
+            <p class="text-sm text-ivory-muted">
+              {kindLabel(song)} · {releaseYear(song)}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="-mt-2 -mr-2 inline-flex size-12 shrink-0 items-center justify-center"
+          data-listen-close
+        >
+          <Icon name="close" size={24} />
+          <span class="sr-only">Close</span>
+        </button>
+      </div>
+
+      <p class="mt-6 text-ivory-muted">Pick where you listen:</p>
+      <ul class="mt-3 grid gap-2">
+        {links.map((l) => (
+          <li>
+            <a
+              href={withUtm(l.url, 'modal')}
+              target="_blank"
+              rel="noopener"
+              class="choice"
+              data-listen-platform={l.key}
+              data-song={song.data.title}
+              data-location="modal"
+            >
+              <PlatformIcon name={l.key} size={22} />
+              <span class="flex-1">{l.label}</span>
+              {!l.direct && <span class="text-sm text-ivory-muted">Artist page</span>}
+              <Icon name="arrow-right" size={18} />
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </dialog>
+)}
+
+<style>
+  .listen-modal {
+    width: min(30rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ivory);
+    overflow: visible;
+  }
+  .listen-modal::backdrop {
+    background: rgb(0 0 0 / 0.72);
+    backdrop-filter: blur(6px);
+  }
+  .panel {
+    position: relative;
+    padding: 1.5rem;
+    border: 1px solid rgb(244 238 223 / 0.14);
+    border-radius: 6px;
+    background:
+      radial-gradient(
+        120% 80% at 0% 0%,
+        color-mix(in srgb, var(--glow) 28%, transparent),
+        transparent 60%
+      ),
+      var(--charcoal);
+    box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.9);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+  }
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 3.25rem;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    background: var(--charcoal-2);
+    font-weight: 600;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+  .choice:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .choice:hover :global(.text-ivory-muted) {
+    color: var(--black);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .listen-modal[open] .panel {
+      animation: pop 320ms var(--ease-out-soft);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+  }
+</style>
+
+<script>
+  import { trapFocus } from '@/lib/focus-trap';
+  const modal = document.querySelector<HTMLDialogElement>('[data-listen-modal]');
+  let opener: HTMLElement | null = null;
+  if (modal) {
+    trapFocus(modal);
+    document.addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest<HTMLElement>('[data-listen-open]');
+      if (!t) return;
+      e.preventDefault();
+      opener = t;
+      modal.showModal();
+    });
+    modal.querySelector('[data-listen-close]')?.addEventListener('click', () => modal.close());
+    // Click on the backdrop closes it.
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.close();
+    });
+    modal.addEventListener('close', () => opener?.focus());
+  }
+</script>

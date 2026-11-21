@@ -21,8 +21,11 @@ export function todayIso(now = new Date()): string {
   }).format(now);
 }
 
+/** Releases, newest first. Undated ones go last. */
 export async function getSongs() {
-  return (await getCollection('songs')).sort(byOrder);
+  return (await getCollection('songs')).sort(
+    (a, b) => (b.data.releaseDate ?? '').localeCompare(a.data.releaseDate ?? '') || byOrder(a, b),
+  );
 }
 
 export async function getFeaturedSong(): Promise<CollectionEntry<'songs'> | undefined> {

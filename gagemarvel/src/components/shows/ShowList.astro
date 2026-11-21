@@ -1,0 +1,163 @@
+---
+/**
+ * Upcoming (or past) shows as a ruled list. Each row: an index code, the date
+ * in gold, venue and place, and the ticket action.
+ */
+import Icon from '@/components/icons/Icon.astro';
+import { showDateParts, showPlace, type Show } from '@/lib/shows';
+
+interface Props {
+  shows: Show[];
+  past?: boolean;
+  /** Heading level for each venue name, to keep page outlines correct. */
+  headingLevel?: 3 | 4;
+}
+const { shows, past = false, headingLevel = 3 } = Astro.props;
+const H = `h${headingLevel}` as 'h3' | 'h4';
+const typeLabel = {
+  concert: 'Concert',
+  festival: 'Festival',
+  private: 'Private event',
+  appearance: 'Appearance',
+};
+---
+
+<ol class="show-list ruled border-charcoal-2 text-charcoal-2">
+  {shows.map((show, i) => {
+    const d = showDateParts(show.data.date);
+    const { venue, time, ticketUrl, soldOut, eventType, notes, sample } = show.data;
+    return (
+      <li class="show-row text-ivory" data-reveal>
+        <p class="code label text-ivory-muted" aria-hidden="true">
+          GM-{String(i + 1).padStart(2, '0')}
+        </p>
+
+        <p class:list={['date font-display', past ? 'text-ivory-muted' : 'text-gold']}>
+          <span class="sr-only">{d.long}</span>
+          <span aria-hidden="true" class="flex items-baseline gap-2">
+            <span class="month">{d.month}</span>
+            <span class="day">{d.day}</span>
+          </span>
+          <span aria-hidden="true" class="label mt-1 block text-ivory-muted">
+            {d.weekday} · {d.year}
+            {time && ` · ${time}`}
+          </span>
+        </p>
+
+        <div class="where">
+          <H class="text-2xl leading-none sm:text-3xl">{venue}</H>
+          <p class="mt-1.5 text-ivory-muted">
+            {showPlace(show)}
+            {eventType !== 'concert' && <span> · {typeLabel[eventType]}</span>}
+          </p>
+          {notes && <p class="mt-1 text-sm text-ivory-muted">{notes}</p>}
+          {sample && (
+            <p class="label mt-2 inline-block bg-charcoal-2 px-2 py-1 text-ivory">
+              Sample show: hidden on the live site
+            </p>
+          )}
+        </div>
+
+        {!past && (
+          <div class="actions">
+            {soldOut ? (
+              <span class="badge">Sold out</span>
+            ) : ticketUrl ? (
+              <a
+                href={ticketUrl}
+                target="_blank"
+                rel="noopener"
+                class="btn btn-gold btn-sm"
+                data-ticket={venue}
+                data-date={show.data.date}
+              >
+                <Icon name="ticket" size={16} />
+                Tickets
+                <span class="sr-only">
+                  for {venue} on {d.long} (opens in a new tab)
+                </span>
+              </a>
+            ) : eventType === 'private' ? (
+              <span class="badge">Private event</span>
+            ) : (
+              <span class="badge">Free show</span>
+            )}
+            <a href={`/calendar/${show.id}.ics`} class="cal" download>
+              <Icon name="calendar" size={16} />
+              Add to calendar
+              <span class="sr-only">
+                : {venue}, {d.long}
+              </span>
+            </a>
+          </div>
+        )}
+      </li>
+    );
+  })}
+</ol>
+
+<style>
+  .show-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem 1.5rem;
+    padding: 1.5rem 0;
+  }
+  @media (min-width: 48rem) {
+    .show-row {
+      grid-template-columns: 4.5rem 11rem 1fr auto;
+      align-items: center;
+      padding: 1.75rem 0;
+    }
+  }
+  .code {
+    font-variant-numeric: tabular-nums;
+  }
+  .month {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .day {
+    font-size: 3.25rem;
+    font-weight: 900;
+    line-height: 0.85;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+  @media (min-width: 48rem) {
+    .actions {
+      flex-direction: column;
+      align-items: flex-end;
+    }
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 1px solid var(--ivory-muted);
+    border-radius: 2px;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: var(--tracking-nav);
+    text-transform: uppercase;
+  }
+  .cal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    font-size: 0.9375rem;
+    color: var(--ivory-muted);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .cal:hover {
+    color: var(--ivory);
+  }
+</style>

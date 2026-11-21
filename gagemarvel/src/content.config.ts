@@ -35,20 +35,36 @@ const songs = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/songs' }),
   schema: ({ image }) =>
     z.object({
+      /** Title exactly as fans should see it. */
       title: z.string(),
+      /** single or ep (an EP also lists its tracks). */
+      kind: z.enum(['single', 'ep', 'album']).default('single'),
       /** Leave out until the client confirms the date. Never guess. */
       releaseDate: isoDate.optional(),
+      /** Copyright line, for example "℗ 2026 Marvel Records". */
+      label: z.string().optional(),
       cover: image(),
       coverAlt: z.string().min(5, 'Describe the cover art for screen reader users'),
+      /**
+       * A color picked from the cover art. Used for the soft glow behind the
+       * cover so each release keeps its own mood. Optional; defaults to gold.
+       */
+      glow: z
+        .string()
+        .regex(/^#[0-9a-fA-F]{6}$/, 'Use a hex color like #E8B830')
+        .optional(),
       /** Short description, one or two sentences. Optional. */
       description: z.string().optional(),
-      /** The featured song gets the home page spotlight and the LISTEN NOW modal. */
+      /** The featured release gets the home page spotlight and the LISTEN NOW modal. */
       featured: z.boolean().default(false),
-      /** Lower numbers appear first. */
+      /** Releases sort newest first; use this only to break ties. */
       order: z.number().default(100),
-      /** Spotify track ID for the embedded player (the part after /track/). */
-      spotifyTrackId: z.string().optional(),
+      /** Spotify track or album ID for the embedded player (the part after /track/ or /album/). */
+      spotifyId: z.string().optional(),
       links: platformLinks,
+      tracks: z
+        .array(z.object({ title: z.string(), appleMusic: url.optional(), spotify: url.optional() }))
+        .default([]),
       credits: z.array(z.object({ role: z.string(), name: z.string() })).default([]),
       /** Set true only if the markdown body below holds lyrics the client supplied. */
       hasLyrics: z.boolean().default(false),

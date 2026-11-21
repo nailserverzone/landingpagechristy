@@ -199,6 +199,7 @@ const socials = activeLinks(social);
 </style>
 
 <script>
+  import { trapFocus } from '@/lib/focus-trap';
   const header = document.querySelector<HTMLElement>('[data-header]');
   const overlay = header?.dataset.solid === 'false';
   if (header && overlay) {
@@ -213,6 +214,7 @@ const socials = activeLinks(social);
   const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
   const closeBtn = menu?.querySelector<HTMLButtonElement>('[data-menu-close]');
   if (menu && openBtn) {
+    trapFocus(menu);
     openBtn.addEventListener('click', () => {
       menu.showModal();
       openBtn.setAttribute('aria-expanded', 'true');

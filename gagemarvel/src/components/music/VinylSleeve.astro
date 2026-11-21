@@ -1,0 +1,116 @@
+---
+/**
+ * Cover art with a vinyl record tucked behind it. The record slides out when
+ * the parent `.sleeve-host` is hovered or focused, and rests half out when
+ * `out` is set. The record's centre label takes the release's glow color,
+ * so every record matches its own cover.
+ */
+import { Image } from 'astro:assets';
+import type { Song } from '@/lib/music';
+
+interface Props {
+  song: Song;
+  /** Rendered width hint for responsive images. */
+  sizes?: string;
+  /** Keep the record partly out at rest (used for the hero and featured cards). */
+  out?: boolean;
+  eager?: boolean;
+  class?: string;
+}
+const { song, sizes = '(min-width: 1024px) 22vw, 60vw', out = false, eager = false } = Astro.props;
+const glow = song.data.glow ?? '#E8B830';
+---
+
+<div class:list={['sleeve', out && 'is-out', Astro.props.class]} style={`--glow:${glow}`}>
+  <div class="record" aria-hidden="true"></div>
+  <div class="cover">
+    <Image
+      src={song.data.cover}
+      alt={song.data.coverAlt}
+      widths={[320, 480, 720, 960]}
+      sizes={sizes}
+      format="webp"
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : undefined}
+      class="size-full object-cover"
+    />
+  </div>
+</div>
+
+<style>
+  .sleeve {
+    position: relative;
+    aspect-ratio: 1;
+    /* Leave room on the right for the record to slide into. */
+    margin-right: 22%;
+  }
+  .cover {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 3px;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.08) inset,
+      0 18px 40px -12px rgb(0 0 0 / 0.65);
+  }
+  .record {
+    position: absolute;
+    top: 3%;
+    left: 3%;
+    width: 94%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle closest-side, #0b0b0b 0 3.5%, transparent 4%),
+      radial-gradient(circle closest-side, rgb(0 0 0 / 0.18) 0 20%, transparent 21%),
+      radial-gradient(circle closest-side, var(--glow) 0 34%, #0d0d0d 34.6%),
+      repeating-radial-gradient(circle closest-side, #121212 0 0.8%, #1c1c1c 0.9% 1.5%);
+    box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.8);
+    transform: translateX(14%) rotate(0deg);
+    transition: transform 700ms var(--ease-out-soft);
+  }
+  /* Grooves + a soft sheen, so it reads as vinyl even at small sizes. */
+  .record::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      repeating-radial-gradient(
+        circle closest-side,
+        rgb(255 255 255 / 0.04) 0 0.35%,
+        transparent 0.4% 1.2%
+      ),
+      conic-gradient(
+        from 30deg,
+        transparent 0 8%,
+        rgb(255 255 255 / 0.13) 12%,
+        transparent 18% 50%,
+        rgb(255 255 255 / 0.1) 62%,
+        transparent 68%
+      );
+    -webkit-mask: radial-gradient(
+      circle closest-side,
+      transparent 0 35%,
+      #000 36% 98%,
+      transparent 99%
+    );
+    mask: radial-gradient(circle closest-side, transparent 0 35%, #000 36% 98%, transparent 99%);
+  }
+  .is-out .record {
+    transform: translateX(26%) rotate(40deg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.sleeve-host:hover) .record,
+    :global(.sleeve-host:focus-visible) .record,
+    :global(.sleeve-host:focus-within) .record {
+      transform: translateX(40%) rotate(140deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .record {
+      transition: none;
+    }
+  }
+</style>

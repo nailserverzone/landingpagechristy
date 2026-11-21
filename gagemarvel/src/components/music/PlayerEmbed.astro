@@ -1,0 +1,109 @@
+---
+/**
+ * Click-to-load music player. Nothing from Spotify or Apple loads until the
+ * visitor presses play, which keeps the page fast and avoids third-party
+ * cookies on first visit. Uses Spotify when a spotifyId is set, otherwise the
+ * Apple Music embed for the release.
+ */
+import Icon from '@/components/icons/Icon.astro';
+import { appleEmbedUrl, spotifyEmbedUrl, type Song } from '@/lib/music';
+
+interface Props {
+  song: Song;
+  class?: string;
+}
+const { song, class: className } = Astro.props;
+const isAlbum = song.data.kind !== 'single';
+const spotify = spotifyEmbedUrl(song.data.spotifyId, isAlbum ? 'album' : 'track');
+const src = spotify || appleEmbedUrl(song.data.links.appleMusic);
+const service = spotify ? 'Spotify' : 'Apple Music';
+const height = isAlbum ? 352 : spotify ? 152 : 175;
+---
+
+{src && (
+  <div class:list={['player', className]} style={`--h:${height}px`} data-player>
+    <button
+      type="button"
+      class="player-facade"
+      data-player-load={src}
+      data-player-title={`${song.data.title} on ${service}`}
+      data-song={song.data.title}
+    >
+      <span class="play">
+        <Icon name="play" size={22} />
+      </span>
+      <span class="text-left">
+        <span class="block font-semibold">Play {song.data.title}</span>
+        <span class="block text-sm text-ivory-muted">Loads the {service} player</span>
+      </span>
+    </button>
+  </div>
+)}
+
+<style>
+  .player {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .player-facade {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    min-height: 5rem;
+    padding: 0.9rem 1.1rem;
+    border: 1px solid rgb(244 238 223 / 0.16);
+    border-radius: 12px;
+    background: rgb(11 11 11 / 0.45);
+    backdrop-filter: blur(14px);
+    color: var(--ivory);
+    cursor: pointer;
+    transition: border-color 160ms ease;
+  }
+  .player-facade:hover {
+    border-color: var(--gold);
+  }
+  .play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--black);
+    padding-left: 3px;
+  }
+  .player :global(iframe) {
+    display: block;
+    width: 100%;
+    height: var(--h);
+    border: 0;
+    border-radius: 12px;
+  }
+</style>
+
+<script>
+  import { track } from '@/lib/analytics';
+  document.querySelectorAll<HTMLButtonElement>('[data-player-load]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = btn.dataset.playerLoad!;
+      f.title = btn.dataset.playerTitle ?? 'Music player';
+      f.allow = 'autoplay *; encrypted-media *; clipboard-write; fullscreen; picture-in-picture';
+      f.loading = 'lazy';
+      f.setAttribute(
+        'sandbox',
+        'allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation',
+      );
+      btn.replaceWith(f);
+      f.focus();
+      track('listen_click', {
+        platform: f.src.includes('spotify') ? 'spotify' : 'appleMusic',
+        song: btn.dataset.song ?? '',
+        location: 'embed',
+      });
+    });
+  });
+</script>
