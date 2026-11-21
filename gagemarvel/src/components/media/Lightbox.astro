@@ -1,0 +1,152 @@
+---
+/**
+ * Accessible photo lightbox. Opened by any [data-lightbox-index] button.
+ * Arrow keys move between photos, Esc closes, focus is trapped inside and
+ * returns to the photo that opened it. Alt text and captions come from the
+ * photos collection, where alt text is required.
+ */
+import Icon from '@/components/icons/Icon.astro';
+---
+
+<dialog class="lb" aria-label="Photo viewer" data-lightbox>
+  <div class="lb-inner">
+    <div class="lb-top">
+      <p class="label text-ivory-muted" aria-live="polite" data-lb-count></p>
+      <button type="button" class="lb-btn" data-lb-close>
+        <Icon name="close" size={24} />
+        <span class="sr-only">Close photo viewer</span>
+      </button>
+    </div>
+    <figure class="lb-fig">
+      <img data-lb-img alt="" />
+      <figcaption class="lb-cap" data-lb-cap></figcaption>
+    </figure>
+    <div class="lb-nav">
+      <button type="button" class="lb-btn" data-lb-prev>
+        <Icon name="arrow-right" size={24} class="rotate-180" />
+        <span class="sr-only">Previous photo</span>
+      </button>
+      <button type="button" class="lb-btn" data-lb-next>
+        <Icon name="arrow-right" size={24} />
+        <span class="sr-only">Next photo</span>
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .lb {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(8 8 8 / 0.96);
+    color: var(--ivory);
+  }
+  .lb::backdrop {
+    background: rgb(0 0 0 / 0.9);
+  }
+  .lb-inner {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100%;
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+  }
+  .lb-top,
+  .lb-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .lb-fig {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 0;
+    place-items: center;
+    gap: 0.75rem;
+  }
+  .lb-fig img {
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 0;
+    object-fit: contain;
+  }
+  .lb-cap {
+    max-width: 48rem;
+    text-align: center;
+    color: var(--ivory-muted);
+  }
+  .lb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid rgb(244 238 223 / 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .lb-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lb[open] .lb-fig img {
+      animation: lb-in 380ms var(--ease-out-soft);
+    }
+  }
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+  }
+</style>
+
+<script>
+  import { trapFocus } from '@/lib/focus-trap';
+
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  const items = [...document.querySelectorAll<HTMLButtonElement>('[data-lightbox-index]')];
+  if (dlg && items.length) {
+    trapFocus(dlg);
+    const img = dlg.querySelector<HTMLImageElement>('[data-lb-img]')!;
+    const cap = dlg.querySelector<HTMLElement>('[data-lb-cap]')!;
+    const count = dlg.querySelector<HTMLElement>('[data-lb-count]')!;
+    let i = 0;
+    let opener: HTMLElement | null = null;
+
+    const show = (n: number) => {
+      i = (n + items.length) % items.length;
+      const d = items[i].dataset;
+      img.src = d.full ?? '';
+      img.srcset = d.srcset ?? '';
+      img.sizes = '100vw';
+      img.alt = d.alt ?? '';
+      cap.textContent = [d.caption, d.credit ? `Photo: ${d.credit}` : '']
+        .filter(Boolean)
+        .join(' · ');
+      cap.hidden = !cap.textContent;
+      count.textContent = `Photo ${i + 1} of ${items.length}`;
+    };
+
+    items.forEach((btn, n) =>
+      btn.addEventListener('click', () => {
+        opener = btn;
+        show(n);
+        dlg.showModal();
+      }),
+    );
+    dlg.querySelector('[data-lb-close]')!.addEventListener('click', () => dlg.close());
+    dlg.querySelector('[data-lb-prev]')!.addEventListener('click', () => show(i - 1));
+    dlg.querySelector('[data-lb-next]')!.addEventListener('click', () => show(i + 1));
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') show(i + 1);
+      if (e.key === 'ArrowLeft') show(i - 1);
+    });
+    dlg.addEventListener('close', () => opener?.focus());
+  }
+</script>

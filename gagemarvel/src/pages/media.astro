@@ -1,0 +1,325 @@
+---
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import VideoCard from '@/components/media/VideoCard.astro';
+import Lightbox from '@/components/media/Lightbox.astro';
+import FanSignup from '@/components/ui/FanSignup.astro';
+import TitleMarquee from '@/components/home/TitleMarquee.astro';
+import { getPhotos, getVideos } from '@/lib/content';
+import { social, withUtm } from '@/config/site';
+
+const videos = await getVideos();
+const photos = await getPhotos();
+const counts = {
+  all: videos.length,
+  'music-video': videos.filter((v) => v.data.category === 'music-video').length,
+  live: videos.filter((v) => v.data.category === 'live').length,
+};
+const filters = [
+  { key: 'all', label: 'All' },
+  { key: 'music-video', label: 'Music videos' },
+  { key: 'live', label: 'Live' },
+].filter((f) => counts[f.key as keyof typeof counts] > 0);
+
+const full = await Promise.all(
+  photos.map((p) => getImage({ src: p.data.image, widths: [800, 1400, 2000], format: 'webp' })),
+);
+const youtube = social.youtube;
+---
+
+<BaseLayout
+  title="Photos & Videos"
+  description="Music videos, live performances and photos of Gage Marvel."
+>
+  <header class="container-site pt-12 pb-10 lg:pt-20">
+    <div class="flex flex-wrap items-end justify-between gap-6 border-b border-charcoal-2 pb-8">
+      <h1 class="page-title">
+        Photos <span class="text-gold">&</span> Videos
+      </h1>
+      <nav aria-label="On this page" class="flex gap-2">
+        <a href="#videos" class="btn btn-outline btn-sm">
+          Videos
+        </a>
+        <a href="#photos" class="btn btn-outline btn-sm">
+          Photos
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- VIDEOS -->
+  <section id="videos" class="container-site pb-20 lg:pb-28" aria-labelledby="videos-heading">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <h2 id="videos-heading" class="text-display-md">
+        Watch
+      </h2>
+      {filters.length > 1 && (
+        <div class="filters" role="group" aria-label="Filter videos">
+          {filters.map((f, i) => (
+            <button
+              type="button"
+              class="filter"
+              data-filter={f.key}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
+              {f.label}
+              <span class="n">{counts[f.key as keyof typeof counts]}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {videos.length > 0 ? (
+      <ul class="mt-10 grid gap-x-8 gap-y-12 md:grid-cols-2" data-video-grid>
+        {videos.map((v, i) => (
+          <li data-category={v.data.category} class:list={[i === 0 && 'md:col-span-2']}>
+            <VideoCard video={v} large={i === 0} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="empty mt-10">
+        <p class="font-display text-display-sm uppercase">Videos are on the way.</p>
+        <p class="mt-3 max-w-md text-ivory-muted">
+          Music videos and live clips will land here. Join the fan list and you'll hear first.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          {youtube && (
+            <a
+              href={withUtm(youtube, 'media_empty')}
+              target="_blank"
+              rel="noopener"
+              class="btn btn-outline btn-sm"
+              data-follow="youtube"
+              data-location="media_empty"
+            >
+              YouTube<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          )}
+        </div>
+      </div>
+    )}
+    <p class="mt-10 text-sm text-ivory-muted">
+      Videos load from YouTube only when you press play. Captions are available on YouTube where
+      provided.
+    </p>
+  </section>
+
+  <TitleMarquee />
+
+  <!-- PHOTOS: a contact sheet -->
+  <section id="photos" class="sheet py-20 lg:py-28" aria-labelledby="photos-heading">
+    <div class="container-site">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h2 id="photos-heading" class="text-display-md">
+          Contact Sheet
+        </h2>
+        <p class="label text-ivory-muted">{photos.length} frames · select a frame to enlarge</p>
+      </div>
+
+      {photos.length > 0 ? (
+        <ul class="frames mt-10">
+          {photos.map((p, i) => (
+            <li class="frame-li">
+              <button
+                type="button"
+                class="frame lift"
+                data-lightbox-index={i}
+                data-full={full[i].src}
+                data-srcset={full[i].srcSet.attribute}
+                data-alt={p.data.alt}
+                data-caption={p.data.caption ?? ''}
+                data-credit={p.data.credit ?? ''}
+              >
+                <span class="strip" aria-hidden="true" />
+                <Image
+                  src={p.data.image}
+                  alt={p.data.alt}
+                  widths={[400, 640, 900]}
+                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+                  format="webp"
+                  loading={i < 3 ? 'eager' : 'lazy'}
+                  class="photo"
+                />
+                <span class="strip" aria-hidden="true" />
+                <span class="code label" aria-hidden="true">
+                  GM {String(i + 1).padStart(2, '0')}A
+                </span>
+                {p.data.sample && (
+                  <span class="sample label" aria-hidden="true">
+                    Sample
+                  </span>
+                )}
+                <span class="sr-only">Enlarge photo {i + 1}</span>
+              </button>
+              {(p.data.caption || p.data.credit) && (
+                <p class="mt-2 text-sm text-ivory-muted">
+                  {p.data.caption}
+                  {p.data.credit && <span> · Photo: {p.data.credit}</span>}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="empty mt-10 grid gap-8 lg:grid-cols-2">
+          <div>
+            <p class="font-display text-display-sm uppercase">Photos coming soon.</p>
+            <p class="mt-3 max-w-md text-ivory-muted">
+              Stage shots and behind the scenes, as soon as they're cleared.
+            </p>
+          </div>
+          <FanSignup id="media-signup" variant="compact" location="media_empty" />
+        </div>
+      )}
+    </div>
+  </section>
+
+  <Lightbox />
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: clamp(3.75rem, 13vw, 12rem);
+    line-height: 0.82;
+    font-weight: 900;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 1px solid rgb(244 238 223 / 0.22);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: var(--tracking-nav);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .filter .n {
+    color: var(--ivory-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .filter[aria-pressed='true'] {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+  }
+  .filter[aria-pressed='true'] .n {
+    color: var(--black);
+  }
+  .empty {
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px solid var(--charcoal-2);
+    background: var(--charcoal);
+  }
+
+  /* Contact sheet: each photo in a film frame with sprocket holes. */
+  .sheet {
+    background: #111;
+  }
+  .frames {
+    columns: 1;
+    column-gap: 1.25rem;
+  }
+  @media (min-width: 40rem) {
+    .frames {
+      columns: 2;
+    }
+  }
+  @media (min-width: 64rem) {
+    .frames {
+      columns: 3;
+    }
+  }
+  .frame-li {
+    break-inside: avoid;
+    margin-bottom: 1.25rem;
+  }
+  .frame {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0 0.6rem;
+    background: #050505;
+    cursor: zoom-in;
+    text-align: left;
+  }
+  .strip {
+    display: block;
+    height: 1.4rem;
+    background: radial-gradient(circle, transparent 0, transparent 0) 0 0;
+    background-image: linear-gradient(90deg, #2a2a2a 0 55%, transparent 55%);
+    background-size: 1.1rem 0.55rem;
+    background-repeat: repeat-x;
+    background-position: 0 50%;
+    opacity: 0.9;
+  }
+  .frame :global(.photo) {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: filter 300ms ease;
+    filter: grayscale(0.15) contrast(1.05);
+  }
+  .frame:hover :global(.photo),
+  .frame:focus-visible :global(.photo) {
+    filter: none;
+  }
+  .code {
+    position: absolute;
+    bottom: 0.15rem;
+    right: 0.8rem;
+    font-size: 0.625rem;
+    color: var(--gold);
+  }
+  .sample {
+    position: absolute;
+    top: 2rem;
+    left: 1.2rem;
+    padding: 0.2rem 0.45rem;
+    background: var(--black);
+    font-size: 0.625rem;
+  }
+  /* A gold grease-pencil box marks the frame you're on. */
+  .frame::after {
+    content: '';
+    position: absolute;
+    inset: 1rem 0.25rem;
+    border: 2px solid var(--gold);
+    border-radius: 3px;
+    opacity: 0;
+    transform: scale(1.02);
+    transition:
+      opacity 200ms ease,
+      transform 300ms var(--ease-out-soft);
+    pointer-events: none;
+  }
+  .frame:hover::after,
+  .frame:focus-visible::after {
+    opacity: 1;
+    transform: none;
+  }
+</style>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('[data-video-grid]');
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      const key = b.dataset.filter;
+      buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      grid?.querySelectorAll<HTMLElement>('[data-category]').forEach((li) => {
+        li.hidden = key !== 'all' && li.dataset.category !== key;
+      });
+    }),
+  );
+</script>

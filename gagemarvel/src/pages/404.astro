@@ -1,0 +1,130 @@
+---
+/**
+ * 404: the needle skipped. A record with a "404" label wobbles like it's
+ * skipping a groove; the way out is to listen.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getFeaturedSong } from '@/lib/content';
+
+const featured = await getFeaturedSong();
+---
+
+<BaseLayout title="Page not found" noindex description="That page doesn't exist.">
+  <section class="container-site grid min-h-[78svh] items-center gap-12 overflow-x-clip py-16 lg:grid-cols-12">
+    <div class="lg:col-span-6">
+      <p class="label text-gold">Error 404 · Side C</p>
+      <h1 class="big mt-4">Wrong groove.</h1>
+      <p class="mt-6 max-w-md text-lg text-ivory-muted">
+        The needle skipped and this page isn't on the record. Pick something that is.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <button type="button" class="btn btn-gold" data-listen-open>
+          Listen Now
+        </button>
+        <a href="/" class="btn btn-outline">
+          Back to home
+        </a>
+        <a href="/shows" class="btn btn-outline">
+          Shows
+        </a>
+      </div>
+      {featured && (
+        <p class="mt-8 text-sm text-ivory-muted">
+          Latest release:{' '}
+          <a href={`/music#${featured.id}`} class="text-ivory underline underline-offset-4">
+            {featured.data.title}
+          </a>
+        </p>
+      )}
+    </div>
+
+    <div class="lg:col-span-5 lg:col-start-8" aria-hidden="true">
+      <div class="rec">
+        <div class="lbl">
+          <span class="font-display">404</span>
+          <span class="label">Gage Marvel</span>
+        </div>
+        <span class="scratch"></span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .big {
+    font-size: clamp(4rem, 11vw, 9.5rem);
+    line-height: 0.82;
+    font-weight: 900;
+  }
+  .rec {
+    position: relative;
+    width: min(100%, 30rem);
+    aspect-ratio: 1;
+    margin-inline: auto;
+    border-radius: 50%;
+    background:
+      conic-gradient(
+        from 20deg,
+        transparent 0 10%,
+        rgb(255 255 255 / 0.08) 14%,
+        transparent 20% 55%,
+        rgb(255 255 255 / 0.06) 62%,
+        transparent 70%
+      ),
+      repeating-radial-gradient(circle closest-side, #111 0 0.7%, #1c1c1c 0.8% 1.4%);
+  }
+  .lbl {
+    position: absolute;
+    inset: 32%;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--black);
+  }
+  .lbl .font-display {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 900;
+    line-height: 0.9;
+  }
+  .lbl .label {
+    font-size: 0.55rem;
+  }
+  /* A scratch across the grooves where the needle jumped. */
+  .scratch {
+    position: absolute;
+    top: 18%;
+    left: 58%;
+    width: 30%;
+    height: 2px;
+    background: rgb(244 238 223 / 0.35);
+    transform: rotate(-38deg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .rec {
+      animation: skip 2.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+  }
+  /* Spins, catches on the scratch, jumps back. */
+  @keyframes skip {
+    0% {
+      transform: rotate(0deg);
+    }
+    70% {
+      transform: rotate(250deg);
+    }
+    74% {
+      transform: rotate(238deg);
+    }
+    78% {
+      transform: rotate(250deg);
+    }
+    82% {
+      transform: rotate(238deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>

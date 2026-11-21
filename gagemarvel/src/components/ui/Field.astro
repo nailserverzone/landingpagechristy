@@ -1,0 +1,108 @@
+---
+/**
+ * One labelled form field with its error slot. Required fields show an
+ * asterisk and say "(required)" to screen readers.
+ */
+interface Option {
+  value: string;
+  label: string;
+}
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  type?: 'text' | 'email' | 'tel' | 'date' | 'select' | 'textarea';
+  required?: boolean;
+  autocomplete?: string;
+  options?: Option[];
+  hint?: string;
+  min?: string;
+  minlength?: number;
+  class?: string;
+}
+const {
+  id,
+  name,
+  label,
+  type = 'text',
+  required = false,
+  autocomplete,
+  options = [],
+  hint,
+  min,
+  minlength,
+  class: className,
+} = Astro.props;
+const describedBy = [hint && `${id}-hint`, `${id}-error`].filter(Boolean).join(' ');
+const common = {
+  id,
+  name,
+  required,
+  autocomplete,
+  'aria-describedby': describedBy,
+  'data-label': label,
+  class: 'field',
+};
+---
+
+<div class={className}>
+  <label for={id} class="label mb-1.5 block text-ivory-muted">
+    {label}
+    {required ? <span aria-hidden="true"> *</span> : <span class="opt"> (optional)</span>}
+    {required && <span class="sr-only"> (required)</span>}
+  </label>
+  {type === 'select' ? (
+    <select {...common}>
+      <option value="">Choose one</option>
+      {options.map((o) => (
+        <option value={o.value}>{o.label}</option>
+      ))}
+    </select>
+  ) : type === 'textarea' ? (
+    <textarea {...common} rows={6} minlength={minlength} />
+  ) : (
+    <input {...common} type={type} min={min} minlength={minlength} />
+  )}
+  {hint && (
+    <p id={`${id}-hint`} class="mt-1 text-sm text-ivory-muted">
+      {hint}
+    </p>
+  )}
+  <p id={`${id}-error`} class="field-error" hidden></p>
+</div>
+
+<style>
+  .opt {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+  }
+  .field-error {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffb4a6;
+  }
+  :global(.field[aria-invalid='true']) {
+    border-color: #ffb4a6;
+  }
+  select.field {
+    appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--ivory) 50%),
+      linear-gradient(135deg, var(--ivory) 50%, transparent 50%);
+    background-position:
+      calc(100% - 1.15rem) 55%,
+      calc(100% - 0.8rem) 55%;
+    background-size: 0.35rem 0.35rem;
+    background-repeat: no-repeat;
+    padding-right: 2.5rem;
+  }
+  textarea.field {
+    min-height: 9rem;
+    resize: vertical;
+  }
+  input[type='date'].field {
+    color-scheme: dark;
+  }
+</style>

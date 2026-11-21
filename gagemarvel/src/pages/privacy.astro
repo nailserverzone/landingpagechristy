@@ -1,0 +1,225 @@
+---
+/**
+ * Plain-language privacy policy TEMPLATE.
+ * TODO(content): must be reviewed by the client and their lawyer before
+ * launch. It describes how this site is actually built (Netlify Forms, the
+ * fan list provider, Plausible, click-to-load embeds); update it if any of
+ * those change.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { contact } from '@/config/site';
+
+// TODO(content): set the date once the policy has been reviewed.
+const updated = '[date of legal review]';
+const provider = import.meta.env.PUBLIC_EMAIL_PROVIDER || 'netlify';
+const providerName =
+  provider === 'kit'
+    ? 'Kit (ConvertKit)'
+    : provider === 'mailchimp'
+      ? 'Mailchimp'
+      : 'our email provider';
+const contactEmail = contact.fanEmail || contact.bookingEmail;
+const sections = [
+  ['who', 'Who we are'],
+  ['collect', 'What we collect and why'],
+  ['list', 'The fan list'],
+  ['analytics', 'Analytics'],
+  ['embeds', 'Music players, previews and videos'],
+  ['share', 'Who we share it with'],
+  ['keep', 'How long we keep it'],
+  ['rights', 'Your choices and rights'],
+  ['kids', 'Children'],
+  ['contact', 'Contact'],
+];
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="How gagemarvel.com handles your information: forms, the fan list and analytics."
+>
+  <header class="container-site pt-12 pb-10 lg:pt-20">
+    <h1 class="page-title border-b border-charcoal-2 pb-8">Privacy</h1>
+    <p class="review label mt-6">
+      Draft template: to be reviewed by the client and their legal adviser before launch.
+    </p>
+  </header>
+
+  <div class="container-site grid gap-12 pb-24 lg:grid-cols-12">
+    <nav aria-label="Sections" class="lg:col-span-3">
+      <ol class="toc lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
+        {sections.map(([id, t], i) => (
+          <li>
+            <a href={`#${id}`}>
+              <span class="text-ivory-muted tabular-nums">{String(i + 1).padStart(2, '0')}</span>{' '}
+              {t}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <article class="prose-gm lg:col-span-8 lg:col-start-5">
+      <p class="lead">
+        The short version: we only collect what you choose to give us, we use it for the reason you
+        gave it, we don't sell it, and we don't use advertising cookies.
+      </p>
+      <p class="text-sm text-ivory-muted">Last updated: {updated}</p>
+
+      <h2 id="who">Who we are</h2>
+      <p>
+        This is the official website of Gage Marvel, an independent country music artist ("we",
+        "us"). It lives at gagemarvel.com.
+      </p>
+
+      <h2 id="collect">What we collect and why</h2>
+      <ul>
+        <li>
+          <strong>Booking inquiries:</strong> your name, organization, email, phone, event details
+          and message. Used only to respond about your event.
+        </li>
+        <li>
+          <strong>Fan messages:</strong> your name, email and message. Used only to read and, if we
+          can, reply.
+        </li>
+        <li>
+          <strong>Fan list sign-ups:</strong> your email, and optionally your first name and ZIP or
+          postal code. Used to send new music and show announcements, and to tell you about shows
+          near you.
+        </li>
+      </ul>
+      <p>
+        We don't ask for more than we need, and we never combine these with information from other
+        sources.
+      </p>
+
+      <h2 id="list">The fan list</h2>
+      <p>
+        You join only by ticking the consent box yourself; it is never pre-ticked. We then send a
+        confirmation email, and you're only added once you confirm (double opt-in). Every email has
+        an unsubscribe link that works straight away. The list is managed by {providerName}.
+      </p>
+
+      <h2 id="analytics">Analytics</h2>
+      <p>
+        We use Plausible Analytics to count visits and which links get clicked (for example, which
+        music service people choose). Plausible does not use cookies, does not collect personal
+        information and does not track you across other websites. That's why there's no cookie
+        banner.
+      </p>
+
+      <h2 id="embeds">Music players, previews and videos</h2>
+      <p>
+        Players from Apple Music, Spotify and YouTube don't load until you press play. Once you do,
+        that service may set its own cookies under its own privacy policy. The 30 second song
+        previews stream directly from Apple when you press play. Links to streaming services and
+        social networks take you to those sites, which have their own policies.
+      </p>
+
+      <h2 id="share">Who we share it with</h2>
+      <p>
+        We never sell your information. It's handled for us by the services that run this site:
+        Netlify (hosting and forms), {providerName} (the fan list) and Plausible (analytics).
+        Booking inquiries may be shared with Gage's booking and management team to arrange an event.
+        We'll disclose information if the law requires it.
+      </p>
+
+      <h2 id="keep">How long we keep it</h2>
+      <p>
+        Booking inquiries and messages are kept as long as needed to respond and keep a record of
+        the conversation, then deleted. Fan list details are kept until you unsubscribe.
+      </p>
+
+      <h2 id="rights">Your choices and rights</h2>
+      <p>
+        You can unsubscribe from the fan list at any time using the link in any email. You can also
+        ask us to show you, correct or delete the information we hold about you. Depending on where
+        you live (for example the EU, UK, Canada or California) you may have further rights under
+        laws such as the GDPR, CASL or the CCPA, and you can complain to your local data protection
+        authority.
+      </p>
+
+      <h2 id="kids">Children</h2>
+      <p>
+        This site isn't directed at children under 13 (or under 16 in the EU and UK), and we don't
+        knowingly collect their information.
+      </p>
+
+      <h2 id="contact">Contact</h2>
+      <p>
+        Questions or requests about your information:{' '}
+        {contactEmail ? (
+          <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+        ) : (
+          <a href="/contact#fan-message">use the fan message form</a>
+        )}
+        .
+      </p>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: clamp(4.5rem, 18vw, 15rem);
+    line-height: 0.8;
+    font-weight: 900;
+  }
+  .review {
+    display: inline-block;
+    padding: 0.4rem 0.7rem;
+    background: var(--gold);
+    color: var(--black);
+  }
+  .toc {
+    display: grid;
+    gap: 0.1rem;
+    border-top: 1px solid var(--charcoal-2);
+  }
+  .toc a {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    min-height: 2.75rem;
+    border-bottom: 1px solid var(--charcoal-2);
+    font-weight: 600;
+  }
+  .toc a:hover {
+    color: var(--gold);
+  }
+  .prose-gm {
+    max-width: 44rem;
+    font-size: 1.0625rem;
+  }
+  .prose-gm .lead {
+    font-size: 1.375rem;
+    line-height: 1.45;
+    margin-bottom: 0.75rem;
+  }
+  .prose-gm h2 {
+    margin-top: 2.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--charcoal-2);
+    font-size: 2rem;
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+  .prose-gm p,
+  .prose-gm ul {
+    margin-top: 1rem;
+  }
+  .prose-gm ul {
+    display: grid;
+    gap: 0.75rem;
+    padding-left: 1.1rem;
+    list-style: square;
+  }
+  .prose-gm li::marker {
+    color: var(--gold);
+  }
+  .prose-gm a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-gm a:hover {
+    color: var(--gold);
+  }
+</style>

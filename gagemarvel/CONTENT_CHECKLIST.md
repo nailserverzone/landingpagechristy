@@ -78,6 +78,13 @@ _Back In the Country (feat. Aaron Brown)_, _Right Hand Man_, _Me Against Me_
 - [ ] A press quote or a line from Gage for the pull quote.
 - [ ] Press kit files (bio PDF, photos) and the booking contact to list.
 
+## Booking form
+
+- [ ] Confirm the budget ranges and audience sizes on the booking form suit Gage's
+      pricing (`src/pages/contact.astro`).
+- [ ] Set up the Netlify form notifications so `booking-inquiry` and `fan-message`
+      go to their own inboxes (README > Forms).
+
 ## Email list, analytics, legal
 
 - [ ] Choose Kit (ConvertKit) or Mailchimp and share the public form URL.

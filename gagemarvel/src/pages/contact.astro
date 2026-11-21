@@ -1,0 +1,346 @@
+---
+/**
+ * Contact & Booking. Two separate forms, booking first.
+ *
+ * Destinations: each form has its own Netlify Forms name
+ * ("booking-inquiry" and "fan-message"), so their email notifications can go
+ * to different inboxes: booking-inquiry -> BOOKING_EMAIL, fan-message ->
+ * FAN_EMAIL (set under Netlify > Forms > Form notifications; see README).
+ * To use Formspree or similar instead, set PUBLIC_BOOKING_FORM_ENDPOINT and
+ * PUBLIC_FAN_FORM_ENDPOINT. No addresses are hardcoded here.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Field from '@/components/ui/Field.astro';
+import Icon from '@/components/icons/Icon.astro';
+import { contact } from '@/config/site';
+
+const bookingEndpoint = import.meta.env.PUBLIC_BOOKING_FORM_ENDPOINT || '';
+const fanEndpoint = import.meta.env.PUBLIC_FAN_FORM_ENDPOINT || '';
+const today = new Date().toISOString().slice(0, 10);
+
+const eventTypes = ['Venue / Club', 'Festival', 'Private Event', 'Corporate', 'Wedding', 'Other'];
+// TODO(content): client to confirm these ranges suit their pricing.
+const budgets = [
+  'Under $1,000',
+  '$1,000 to $2,500',
+  '$2,500 to $5,000',
+  '$5,000 to $10,000',
+  '$10,000 and up',
+  'Not sure yet',
+];
+const audiences = ['Under 100', '100 to 300', '300 to 1,000', '1,000 to 5,000', 'Over 5,000'];
+const opts = (a: string[]) => a.map((v) => ({ value: v, label: v }));
+---
+
+<BaseLayout
+  title="Contact & Booking"
+  description="Book Gage Marvel for your venue, festival or private event, or send Gage a message."
+>
+  <header class="container-site pt-12 pb-10 lg:pt-20">
+    <div class="flex flex-wrap items-end justify-between gap-6 border-b border-charcoal-2 pb-8">
+      <h1 class="page-title">Contact</h1>
+      <nav aria-label="Forms on this page" class="flex flex-wrap gap-2">
+        <a href="#booking" class="btn btn-gold btn-sm">
+          Booking inquiry
+        </a>
+        <a href="#fan-message" class="btn btn-outline btn-sm">
+          Fan message
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container-site grid items-start gap-10 pb-24 lg:grid-cols-12 lg:gap-12">
+    <!-- BOOKING -->
+    <section id="booking" class="card ticket lg:col-span-7" aria-labelledby="booking-heading">
+      <div class="stub" aria-hidden="true">
+        <span class="label">Booking</span>
+        <span class="label text-ivory-muted">GM-B</span>
+      </div>
+      <div class="body">
+        <p class="label text-gold">Venues · Festivals · Private events</p>
+        <h2 id="booking-heading" class="text-display-md mt-3">
+          Book Gage
+        </h2>
+        <p class="mt-3 max-w-prose text-ivory-muted">
+          Tell us about the event. The more detail you share, the faster the booking team can come
+          back with availability.
+        </p>
+
+        <form
+          name="booking-inquiry"
+          method="POST"
+          action="/"
+          data-netlify={bookingEndpoint ? undefined : 'true'}
+          netlify-honeypot={bookingEndpoint ? undefined : 'bot-field'}
+          data-endpoint={bookingEndpoint || undefined}
+          data-form
+          data-event="booking_submit"
+          novalidate
+          class="mt-8"
+        >
+          <input type="hidden" name="form-name" value="booking-inquiry" />
+          <p class="hidden" aria-hidden="true">
+            <label>
+              Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
+
+          <div data-fields>
+            <fieldset>
+              <legend class="legend">About you</legend>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <Field id="b-name" name="name" label="Name" required autocomplete="name" />
+                <Field
+                  id="b-org"
+                  name="organization"
+                  label="Organization or venue"
+                  autocomplete="organization"
+                />
+                <Field
+                  id="b-email"
+                  name="email"
+                  label="Email"
+                  type="email"
+                  required
+                  autocomplete="email"
+                />
+                <Field id="b-phone" name="phone" label="Phone" type="tel" autocomplete="tel" />
+              </div>
+            </fieldset>
+
+            <fieldset class="mt-8">
+              <legend class="legend">The event</legend>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <Field
+                  id="b-type"
+                  name="event_type"
+                  label="Event type"
+                  type="select"
+                  required
+                  options={opts(eventTypes)}
+                />
+                <Field
+                  id="b-date"
+                  name="event_date"
+                  label="Event date"
+                  type="date"
+                  required
+                  min={today}
+                  hint="Not fixed yet? Pick your best guess and say so below."
+                />
+                <Field
+                  id="b-city"
+                  name="location"
+                  label="City or location"
+                  required
+                  autocomplete="address-level2"
+                />
+                <Field
+                  id="b-size"
+                  name="audience_size"
+                  label="Expected audience size"
+                  type="select"
+                  options={opts(audiences)}
+                />
+                <Field
+                  id="b-budget"
+                  name="budget"
+                  label="Budget range"
+                  type="select"
+                  options={opts(budgets)}
+                  class="sm:col-span-2"
+                />
+                <Field
+                  id="b-msg"
+                  name="message"
+                  label="Message"
+                  type="textarea"
+                  required
+                  minlength={10}
+                  class="sm:col-span-2"
+                  hint="Set times, sound and staging, travel, anything else useful."
+                />
+              </div>
+            </fieldset>
+
+            <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <button type="submit" class="btn btn-gold">
+                Send booking inquiry
+              </button>
+              <p class="status text-sm" data-status role="status" aria-live="polite"></p>
+            </div>
+            <p class="use-note">
+              We use these details only to reply about your event. They go to the booking team, are
+              not added to the fan list and are never sold. See the{' '}
+              <a href="/privacy">privacy policy</a>.
+            </p>
+          </div>
+
+          <div data-success hidden tabindex="-1" class="success">
+            <Icon name="check" size={28} class="text-gold" />
+            <p class="font-display text-display-sm mt-3 uppercase">Inquiry sent.</p>
+            <p class="mt-2 text-ivory-muted">
+              Thanks. The booking team has your details and will be in touch.
+            </p>
+          </div>
+        </form>
+
+        {contact.bookingEmail && (
+          <p class="mt-8 text-sm text-ivory-muted">
+            Prefer email?{' '}
+            <a
+              href={`mailto:${contact.bookingEmail}`}
+              class="text-ivory underline underline-offset-4"
+            >
+              {contact.bookingEmail}
+            </a>
+          </p>
+        )}
+      </div>
+    </section>
+
+    <!-- FAN MESSAGE -->
+    <section id="fan-message" class="card lg:col-span-5" aria-labelledby="fan-heading">
+      <div class="body">
+        <p class="label text-ivory-muted">For fans</p>
+        <h2 id="fan-heading" class="text-display-md mt-3">
+          Say Hey
+        </h2>
+        <p class="mt-3 text-ivory-muted">
+          A note for Gage: a song that hit home, a show you caught, or just hello.
+        </p>
+
+        <form
+          name="fan-message"
+          method="POST"
+          action="/"
+          data-netlify={fanEndpoint ? undefined : 'true'}
+          netlify-honeypot={fanEndpoint ? undefined : 'bot-field'}
+          data-endpoint={fanEndpoint || undefined}
+          data-form
+          data-event="fan_message_submit"
+          novalidate
+          class="mt-8"
+        >
+          <input type="hidden" name="form-name" value="fan-message" />
+          <p class="hidden" aria-hidden="true">
+            <label>
+              Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
+          <div data-fields>
+            <div class="grid gap-4">
+              <Field id="f-name" name="name" label="Name" required autocomplete="name" />
+              <Field
+                id="f-email"
+                name="email"
+                label="Email"
+                type="email"
+                required
+                autocomplete="email"
+              />
+              <Field
+                id="f-msg"
+                name="message"
+                label="Message"
+                type="textarea"
+                required
+                minlength={2}
+              />
+            </div>
+            <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <button type="submit" class="btn btn-gold">
+                Send message
+              </button>
+              <p class="status text-sm" data-status role="status" aria-live="polite"></p>
+            </div>
+            <p class="use-note">
+              Your email is only used if Gage or his team replies. It is not added to the fan list.
+              Want news? <a href="#footer-signup-email">Join the fan list</a>. See the{' '}
+              <a href="/privacy">privacy policy</a>.
+            </p>
+          </div>
+          <div data-success hidden tabindex="-1" class="success">
+            <Icon name="check" size={28} class="text-gold" />
+            <p class="font-display text-display-sm mt-3 uppercase">Message sent.</p>
+            <p class="mt-2 text-ivory-muted">Thanks for writing in.</p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-title {
+    font-size: clamp(4.5rem, 18vw, 15rem);
+    line-height: 0.8;
+    font-weight: 900;
+  }
+  .card {
+    position: relative;
+    background: var(--charcoal);
+    border: 1px solid var(--charcoal-2);
+    border-radius: 6px;
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+  .body {
+    padding: clamp(1.25rem, 4vw, 2.75rem);
+  }
+  /* Ticket-stub top on the booking card, with a perforated tear line. */
+  .stub {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.9rem clamp(1.25rem, 4vw, 2.75rem);
+    background: var(--gold);
+    color: var(--black);
+    border-radius: 6px 6px 0 0;
+    position: relative;
+  }
+  .stub .text-ivory-muted {
+    color: rgb(11 11 11 / 0.75);
+  }
+  .stub::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 10px;
+    background: radial-gradient(circle 5px at 50% 50%, var(--charcoal) 96%, transparent) 0 0 / 18px
+      10px repeat-x;
+  }
+  .legend {
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .use-note {
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--ivory-muted);
+  }
+  .use-note a {
+    color: var(--ivory);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .success {
+    padding: 2rem 0 0.5rem;
+    outline: none;
+  }
+</style>
+
+<script>
+  import { initForm } from '@/lib/forms';
+  // Keep "no past dates" accurate even when the page was built days ago.
+  const date = document.querySelector<HTMLInputElement>('#b-date');
+  if (date) {
+    const d = new Date();
+    date.min = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  }
+  document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach(initForm);
+</script>

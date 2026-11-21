@@ -94,6 +94,28 @@ ever play after a click, never on page load.
 When building on a machine behind a proxy, run the build with
 `NODE_USE_ENV_PROXY=1` so Node's fetch uses it. Netlify needs nothing extra.
 
+## Forms: where messages go
+
+The site has three forms, each with its own name in Netlify:
+
+| Form                                 | Netlify name      | Should email                      | Success event        |
+| ------------------------------------ | ----------------- | --------------------------------- | -------------------- |
+| Booking inquiry (`/contact#booking`) | `booking-inquiry` | `BOOKING_EMAIL`                   | `booking_submit`     |
+| Fan message (`/contact#fan-message`) | `fan-message`     | `FAN_EMAIL`                       | `fan_message_submit` |
+| Fan list signup (site-wide)          | `fan-list`        | (export or sync to Kit/Mailchimp) | `fan_signup`         |
+
+To send each form to its own inbox, after the first deploy:
+
+1. In Netlify open **Forms** and enable form detection if asked, then redeploy once.
+2. Go to **Site configuration > Notifications > Emails and webhooks > Form
+   submission notifications**.
+3. Add an email notification for `booking-inquiry` to the booking address, and a
+   second one for `fan-message` to the fan address.
+
+Every form has a hidden honeypot field (`bot-field`) and Netlify's spam
+filtering. To use Formspree instead, set `PUBLIC_BOOKING_FORM_ENDPOINT` and
+`PUBLIC_FAN_FORM_ENDPOINT` to the Formspree form URLs; nothing else changes.
+
 ## Environment variables
 
 All of them are listed, with comments, in `.env.example`. Set them on Netlify
