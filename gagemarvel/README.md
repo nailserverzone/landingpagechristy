@@ -217,11 +217,66 @@ Contact emails are **not** in code; they're environment variables (section 7).
 
 ## 6. Optional features
 
-| Feature                                           | How to turn it on                                                         | Status                |
-| ------------------------------------------------- | ------------------------------------------------------------------------- | --------------------- |
-| Bandsintown widget on Shows                       | Set `ENABLE_BANDSINTOWN=true` and `PUBLIC_BANDSINTOWN_ARTIST=Gage Marvel` | Ready, off by default |
-| Merch page and nav link                           | `SHOW_MERCH=true`                                                         | Phase 5               |
-| Decap CMS (edit content in a browser at `/admin`) | `ENABLE_CMS=true`                                                         | Phase 5               |
+All three are off by default. With a flag off, its pages are not hidden: they
+are simply not built.
+
+| Feature                                       | Turn it on                                                            |
+| --------------------------------------------- | --------------------------------------------------------------------- |
+| Bandsintown widget on Shows                   | `ENABLE_BANDSINTOWN=true` and `PUBLIC_BANDSINTOWN_ARTIST=Gage Marvel` |
+| Merch page at `/merch`, plus a Merch nav link | `SHOW_MERCH=true`                                                     |
+| Content editor (Decap CMS) at `/admin`        | `ENABLE_CMS=true`, plus the one-time login setup below                |
+
+### Content editor (Decap CMS)
+
+Lets Christy, Danielle or anyone with access add shows, songs, videos, photos
+and merch through simple forms at `gagemarvel.com/admin`, no code. Every save is
+a commit to the repository, and edits start as **drafts** (Workflow tab) that
+can be previewed before they're published. The forms follow the same rules as
+the site, so required alt text, date formats and links are checked as you type.
+
+One-time setup (default: sign in with GitHub):
+
+1. In GitHub: **Settings > Developer settings > OAuth Apps > New OAuth App**.
+   Homepage URL `https://gagemarvel.com`, Authorization callback URL
+   `https://api.netlify.com/auth/done`. Copy the Client ID and create a Client
+   secret.
+2. In Netlify: **Site configuration > Access & security > OAuth > Install
+   provider**, choose GitHub and paste the Client ID and secret.
+3. Set `ENABLE_CMS=true` (and check `CMS_REPO`, `CMS_BRANCH` and
+   `CMS_CONTENT_ROOT` in section 7), then redeploy.
+4. Each editor needs a GitHub account with write access to the repository.
+
+Prefer email/password logins? Set `CMS_BACKEND=git-gateway` and enable Netlify
+Identity and Git Gateway on the site instead (check Netlify's docs first: Identity
+is in maintenance mode).
+
+Uploaded images land in `src/assets/covers`, `src/assets/photos` or
+`src/assets/merch` and are optimized automatically.
+
+### Merch
+
+Products are files in `src/content/merch/` (or added through the CMS):
+
+```yaml
+---
+name: 'Stacked Logo Tee'
+image: ../../assets/merch/stacked-logo-tee.jpg
+alt: 'Black T-shirt printed with the stacked GAGE MARVEL wordmark.'
+price: '$30' # leave out to show "Price TBA"
+url: https://store.example.com/products/stacked-logo-tee # store page
+shopifyProductId: '1234567890' # optional, for the Shopify Buy Button
+soldOut: false
+order: 1
+---
+```
+
+Each product shows, in order of preference: a **Shopify Buy Button** (when
+`PUBLIC_SHOPIFY_DOMAIN` and `PUBLIC_SHOPIFY_STOREFRONT_TOKEN` are set and the
+product has a `shopifyProductId`), a **Shop** link to its `url`, or **Coming
+soon**. `PUBLIC_STORE_URL` adds a "Visit the store" button. The three products
+in the folder now are samples built from the wordmarks and never appear on the
+live site. With no real products, `/merch` shows a "Merch is on the way" fan list
+signup.
 
 ### Forms: where messages go
 
@@ -270,6 +325,11 @@ secrets there.
 | `PUBLIC_GA4_ID`                                            | `G-XXXXXXX` if using GA4                                                                  | Google Analytics    |
 | `SHOW_MERCH`, `ENABLE_CMS`, `ENABLE_BANDSINTOWN`           | Feature flags (`true` / `false`)                                                          | Your choice         |
 | `PUBLIC_BANDSINTOWN_ARTIST`                                | Artist name on Bandsintown                                                                | Bandsintown         |
+| `PUBLIC_STORE_URL`                                         | Link to the full merch store                                                              | Store               |
+| `PUBLIC_SHOPIFY_DOMAIN`, `PUBLIC_SHOPIFY_STOREFRONT_TOKEN` | Shopify Buy Button (the Storefront token is meant to be public)                           | Shopify admin       |
+| `CMS_BACKEND`                                              | `github` (default) or `git-gateway`                                                       | Your choice         |
+| `CMS_REPO`, `CMS_BRANCH`                                   | Repository and the branch the live site deploys from                                      | GitHub / Netlify    |
+| `CMS_CONTENT_ROOT`                                         | Folder holding this site inside the repository (`gagemarvel`)                             | Repository          |
 | `SHOW_SAMPLE_CONTENT`                                      | Show demo shows/videos/photos. Set by `netlify.toml`: on for previews, off for production | Automatic           |
 
 ---

@@ -95,3 +95,11 @@ _Back In the Country (feat. Aaron Brown)_, _Right Hand Man_, _Me Against Me_
       daily rebuild runs (README > Daily rebuild).
 - [ ] Domain: add the DNS records in README section 8 at the registrar.
 - [ ] Privacy policy reviewed by the client or their lawyer.
+
+## Phase 5 options (when the client is ready)
+
+- [ ] Merch: product photos, names, prices and store links (or Shopify product IDs),
+      then set `SHOW_MERCH=true`. The three current products are samples.
+- [ ] Content editor: who should be able to edit, and which branch the live site
+      deploys from. Then the GitHub OAuth setup in README section 6.
+- [ ] Bandsintown: only if they'd rather manage dates there.

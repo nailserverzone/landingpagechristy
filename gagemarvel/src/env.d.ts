@@ -16,6 +16,13 @@ interface ImportMetaEnv {
   readonly ENABLE_CMS?: string;
   readonly ENABLE_BANDSINTOWN?: string;
   readonly SHOW_SAMPLE_CONTENT?: string;
+  readonly PUBLIC_STORE_URL?: string;
+  readonly PUBLIC_SHOPIFY_DOMAIN?: string;
+  readonly PUBLIC_SHOPIFY_STOREFRONT_TOKEN?: string;
+  readonly CMS_BACKEND?: 'github' | 'git-gateway' | '';
+  readonly CMS_REPO?: string;
+  readonly CMS_BRANCH?: string;
+  readonly CMS_CONTENT_ROOT?: string;
 }
 
 interface ImportMeta {

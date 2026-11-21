@@ -1,0 +1,25 @@
+---
+/**
+ * Decap CMS at /admin. Only built when ENABLE_CMS=true (see astro.config.mjs).
+ * A plain page on purpose: Decap renders its own full-screen app.
+ */
+const backend = import.meta.env.CMS_BACKEND || 'github';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Gage Marvel · Content editor</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link href="/admin-config.yml" type="text/yaml" rel="cms-config-url" />
+    {backend === 'git-gateway' && (
+      <script is:inline src="https://identity.netlify.com/v1/netlify-identity-widget.js" />
+    )}
+  </head>
+  <body>
+    <script is:inline src="https://unpkg.com/decap-cms@3.17.3/dist/decap-cms.js"></script>
+  </body>
+</html>

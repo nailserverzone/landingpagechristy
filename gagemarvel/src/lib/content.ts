@@ -52,3 +52,7 @@ export async function getVideos() {
 export async function getPhotos() {
   return (await getCollection('photos')).filter(keep).sort(byOrder);
 }
+
+export async function getMerch() {
+  return (await getCollection('merch')).filter(keep).sort(byOrder);
+}
