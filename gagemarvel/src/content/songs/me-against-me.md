@@ -8,6 +8,11 @@ label: '℗ 2023 Marvel Records'
 cover: ../../assets/covers/me-against-me.jpg
 coverAlt: 'Silhouette of a man in a cap holding a guitar, walking through tall grass under a pink and orange sunset sky.'
 glow: '#e49f72'
+# Apple Music track used for the 30 second preview.
+appleTrackId: 1693749381
+# TODO(content): two to four short lyric lines from the client, used as
+# decoration around the site. Leave empty until supplied; never guess lyrics.
+lyricLines: []
 featured: false
 links:
   appleMusic: https://music.apple.com/us/album/me-against-me-ep/1693749380

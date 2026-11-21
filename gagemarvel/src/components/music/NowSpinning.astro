@@ -1,0 +1,397 @@
+---
+/**
+ * The site-wide preview player. Hidden until a fan presses a preview button
+ * anywhere on the site; then it docks at the bottom with a spinning record,
+ * a scrubber and live level bars drawn from the actual audio.
+ * Never autoplays: playback only ever starts from a click.
+ */
+---
+
+<aside class="ns" data-ns hidden aria-label="Now playing preview">
+  <div class="ns-inner">
+    <div class="ns-disc" aria-hidden="true">
+      <img data-ns-cover alt="" width="80" height="80" />
+    </div>
+
+    <div class="ns-meta">
+      <p class="label ns-kicker">
+        <span class="ns-dot" aria-hidden="true"></span>
+        <span data-ns-state>Preview</span> · Apple Music
+      </p>
+      <p class="ns-title font-display" data-ns-title></p>
+      <div class="ns-scrub">
+        <span class="ns-time" data-ns-cur>
+          0:00
+        </span>
+        <input
+          type="range"
+          min="0"
+          max="30"
+          step="0.1"
+          value="0"
+          data-ns-seek
+          aria-label="Seek in preview"
+        />
+        <span class="ns-time" data-ns-dur>
+          0:30
+        </span>
+      </div>
+    </div>
+
+    <canvas class="ns-bars" data-ns-bars width="160" height="56" aria-hidden="true"></canvas>
+
+    <div class="ns-actions">
+      <button type="button" class="ns-btn ns-play" data-ns-toggle aria-label="Pause preview">
+        <svg viewBox="0 0 24 24" class="i-play" aria-hidden="true">
+          <path d="M8 5l12 7-12 7z" fill="currentColor"></path>
+        </svg>
+        <svg viewBox="0 0 24 24" class="i-pause" aria-hidden="true">
+          <path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"></path>
+        </svg>
+      </button>
+      <a
+        class="ns-full label"
+        data-ns-apple
+        target="_blank"
+        rel="noopener"
+        data-listen-platform="appleMusic"
+        data-location="now_spinning"
+      >
+        Full song<span class="sr-only"> on Apple Music (opens in a new tab)</span>
+      </a>
+      <button type="button" class="ns-btn" data-ns-close aria-label="Close player">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <audio data-ns-audio crossorigin="anonymous" preload="none"></audio>
+</aside>
+
+<style>
+  .ns {
+    position: fixed;
+    left: 50%;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    z-index: 60;
+    width: min(46rem, calc(100% - 1.5rem));
+    transform: translateX(-50%);
+    color: var(--ivory);
+  }
+  .ns-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.6rem 0.75rem 0.6rem 0.6rem;
+    border: 1px solid rgb(244 238 223 / 0.14);
+    border-radius: 999px;
+    background: rgb(16 16 16 / 0.82);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.9);
+  }
+  @media (min-width: 40rem) {
+    .ns-inner {
+      grid-template-columns: auto 1fr auto auto;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ns:not([hidden]) {
+      animation: ns-in 500ms var(--ease-out-soft);
+    }
+  }
+  @keyframes ns-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 40px);
+    }
+  }
+
+  /* The record: grooves around the cover, which spins while playing. */
+  .ns-disc {
+    position: relative;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle closest-side, #121212 0 2.5%, #1e1e1e 3% 5%);
+    box-shadow: 0 0 0 2px #0b0b0b;
+    animation: spin 2.2s linear infinite;
+    animation-play-state: paused;
+  }
+  .ns-disc img {
+    position: absolute;
+    inset: 22%;
+    width: 56%;
+    height: 56%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .ns-disc::after {
+    content: '';
+    position: absolute;
+    inset: 47%;
+    border-radius: 50%;
+    background: #0b0b0b;
+  }
+  .ns.is-playing .ns-disc {
+    animation-play-state: running;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ns-disc {
+      animation: none;
+    }
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .ns-meta {
+    min-width: 0;
+  }
+  .ns-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--ivory-muted);
+    font-size: 0.6875rem;
+  }
+  .ns-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+  .ns.is-playing .ns-dot {
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+  .ns-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.05;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ns-scrub {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.15rem;
+  }
+  .ns-time {
+    font-size: 0.75rem;
+    color: var(--ivory-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .ns-scrub input {
+    flex: 1;
+    min-width: 0;
+    height: 1.5rem;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .ns-bars {
+    display: none;
+    width: 80px;
+    height: 28px;
+  }
+  @media (min-width: 40rem) {
+    .ns-bars {
+      display: block;
+    }
+  }
+  .ns-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .ns-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--ivory);
+  }
+  .ns-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .ns-btn:hover {
+    color: var(--gold);
+  }
+  .ns-play {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .ns-play:hover {
+    background: var(--gold-deep);
+    color: var(--black);
+  }
+  .ns-play .i-play {
+    display: none;
+  }
+  .ns:not(.is-playing) .ns-play .i-play {
+    display: block;
+  }
+  .ns:not(.is-playing) .ns-play .i-pause {
+    display: none;
+  }
+  .ns-full {
+    display: none;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 0.75rem;
+    color: var(--ivory);
+    font-size: 0.6875rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .ns-full:hover {
+    color: var(--gold);
+  }
+  @media (min-width: 40rem) {
+    .ns-full {
+      display: inline-flex;
+    }
+  }
+</style>
+
+<script>
+  import { track } from '@/lib/analytics';
+
+  const root = document.querySelector<HTMLElement>('[data-ns]')!;
+  const audio = root.querySelector<HTMLAudioElement>('[data-ns-audio]')!;
+  const cover = root.querySelector<HTMLImageElement>('[data-ns-cover]')!;
+  const title = root.querySelector<HTMLElement>('[data-ns-title]')!;
+  const state = root.querySelector<HTMLElement>('[data-ns-state]')!;
+  const seek = root.querySelector<HTMLInputElement>('[data-ns-seek]')!;
+  const cur = root.querySelector<HTMLElement>('[data-ns-cur]')!;
+  const dur = root.querySelector<HTMLElement>('[data-ns-dur]')!;
+  const toggle = root.querySelector<HTMLButtonElement>('[data-ns-toggle]')!;
+  const apple = root.querySelector<HTMLAnchorElement>('[data-ns-apple]')!;
+  const canvas = root.querySelector<HTMLCanvasElement>('[data-ns-bars]')!;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let currentId = '';
+  let glow = '#E8B830';
+  const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+
+  /** Tell every preview button, and anything spinning for this song, the state. */
+  function broadcast() {
+    const playing = !audio.paused && !audio.ended;
+    root.classList.toggle('is-playing', playing);
+    state.textContent = playing ? 'Now spinning' : 'Paused';
+    toggle.setAttribute('aria-label', playing ? 'Pause preview' : 'Play preview');
+    document
+      .querySelectorAll<HTMLElement>('[data-preview]')
+      .forEach((b) =>
+        b.setAttribute('aria-pressed', String(playing && b.dataset.previewId === currentId)),
+      );
+    document
+      .querySelectorAll<HTMLElement>('[data-spin-for]')
+      .forEach((el) =>
+        el.classList.toggle('is-spinning', playing && el.dataset.spinFor === currentId),
+      );
+    document.dispatchEvent(new CustomEvent('gm:preview', { detail: { id: currentId, playing } }));
+  }
+
+  // Live level bars from the real audio (Apple serves previews with CORS).
+  let analyser: AnalyserNode | undefined;
+  let data: Uint8Array<ArrayBuffer> | undefined;
+  function setupAnalyser() {
+    if (analyser || reduce) return;
+    try {
+      const ctx = new AudioContext();
+      const src = ctx.createMediaElementSource(audio);
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 64;
+      data = new Uint8Array(analyser.frequencyBinCount);
+      src.connect(analyser);
+      analyser.connect(ctx.destination);
+      audio.addEventListener('play', () => ctx.resume());
+    } catch {
+      analyser = undefined;
+    }
+  }
+  const g = canvas.getContext('2d')!;
+  function draw() {
+    requestAnimationFrame(draw);
+    if (root.hidden) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    g.clearRect(0, 0, w, h);
+    const n = 14;
+    const bw = w / n;
+    if (analyser && data) analyser.getByteFrequencyData(data);
+    for (let i = 0; i < n; i++) {
+      const v = data && !audio.paused ? data[Math.min(i + 1, data.length - 1)] / 255 : 0.08;
+      const bh = Math.max(3, v * h);
+      g.fillStyle = i % 4 === 0 ? glow : '#F4EEDF';
+      g.globalAlpha = i % 4 === 0 ? 1 : 0.85;
+      g.fillRect(i * bw + 1, h - bh, bw - 3, bh);
+    }
+  }
+  if (!reduce) requestAnimationFrame(draw);
+
+  function load(btn: HTMLElement) {
+    currentId = btn.dataset.previewId ?? '';
+    glow = btn.dataset.previewGlow ?? glow;
+    audio.src = btn.dataset.preview ?? '';
+    cover.src = btn.dataset.previewCover ?? '';
+    title.textContent = btn.dataset.previewTitle ?? '';
+    apple.href = btn.dataset.previewApple || 'https://music.apple.com/';
+    apple.dataset.song = btn.dataset.previewTitle ?? '';
+    root.hidden = false;
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-preview]');
+    if (!btn) return;
+    e.preventDefault();
+    setupAnalyser();
+    if (btn.dataset.previewId === currentId && !audio.paused) {
+      audio.pause();
+      return;
+    }
+    if (btn.dataset.previewId !== currentId) load(btn);
+    audio.play().catch(() => {
+      state.textContent = 'Preview unavailable';
+    });
+    track('preview_play', {
+      song: btn.dataset.previewTitle ?? '',
+      location: btn.dataset.location ?? '',
+    });
+  });
+
+  toggle.addEventListener('click', () => (audio.paused ? audio.play() : audio.pause()));
+  root.querySelector('[data-ns-close]')!.addEventListener('click', () => {
+    audio.pause();
+    root.hidden = true;
+    currentId = '';
+    broadcast();
+  });
+  seek.addEventListener('input', () => {
+    audio.currentTime = Number(seek.value);
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    seek.max = String(audio.duration || 30);
+    dur.textContent = fmt(audio.duration || 30);
+  });
+  audio.addEventListener('timeupdate', () => {
+    seek.value = String(audio.currentTime);
+    cur.textContent = fmt(audio.currentTime);
+  });
+  ['play', 'pause', 'ended'].forEach((ev) => audio.addEventListener(ev, broadcast));
+</script>

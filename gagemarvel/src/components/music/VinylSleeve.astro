@@ -98,6 +98,18 @@ const glow = song.data.glow ?? '#E8B830';
     );
     mask: radial-gradient(circle closest-side, transparent 0 35%, #000 36% 98%, transparent 99%);
   }
+  /* A printed mark on the label so the spin is visible. */
+  .record::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 36%;
+    width: 9%;
+    height: 2.2%;
+    margin-left: -4.5%;
+    border-radius: 2px;
+    background: rgb(11 11 11 / 0.55);
+  }
   .is-out .record {
     transform: translateX(26%) rotate(40deg);
   }
@@ -106,6 +118,19 @@ const glow = song.data.glow ?? '#E8B830';
     :global(.sleeve-host:focus-visible) .record,
     :global(.sleeve-host:focus-within) .record {
       transform: translateX(40%) rotate(140deg);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sleeve:global(.is-spinning) .record {
+      animation: rec-spin 1.8s linear infinite;
+    }
+  }
+  @keyframes rec-spin {
+    from {
+      transform: translateX(42%) rotate(0deg);
+    }
+    to {
+      transform: translateX(42%) rotate(360deg);
     }
   }
   @media (prefers-reduced-motion: reduce) {

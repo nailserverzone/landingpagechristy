@@ -83,6 +83,17 @@ required field is missing.
 Entries with `sample: true` are demo content. They show in local development and
 on Netlify deploy previews, and never on the production site.
 
+## Music previews
+
+Each song file has an `appleTrackId`. At build time the site asks Apple's
+public catalog for that track's official 30 second preview, so preview links
+never go stale (the daily rebuild refreshes them). If Apple can't be reached,
+the build still succeeds and the preview buttons just don't show. Previews only
+ever play after a click, never on page load.
+
+When building on a machine behind a proxy, run the build with
+`NODE_USE_ENV_PROXY=1` so Node's fetch uses it. Netlify needs nothing extra.
+
 ## Environment variables
 
 All of them are listed, with comments, in `.env.example`. Set them on Netlify

@@ -5,6 +5,8 @@ import VinylSleeve from '@/components/music/VinylSleeve.astro';
 import PlatformButtons from '@/components/music/PlatformButtons.astro';
 import PlayerEmbed from '@/components/music/PlayerEmbed.astro';
 import ShareButton from '@/components/music/ShareButton.astro';
+import PreviewButton from '@/components/music/PreviewButton.astro';
+import RecordShelf from '@/components/music/RecordShelf.astro';
 import FanBand from '@/components/ui/FanBand.astro';
 import { getSongs, getFeaturedSong } from '@/lib/content';
 import { formatDate, kindLabel, releaseYear } from '@/lib/music';
@@ -56,18 +58,9 @@ const recordingsLd = songs.map((s) => ({
         </button>
       </div>
     </div>
-    <nav aria-label="Releases" class="mt-6">
-      <ul class="flex flex-wrap gap-x-5 gap-y-1">
-        {songs.map((s, i) => (
-          <li>
-            <a href={`#${s.id}`} class="jump">
-              <span class="text-ivory-muted tabular-nums">{String(i + 1).padStart(2, '0')}</span>{' '}
-              {s.data.title}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <div class="mt-12">
+      <RecordShelf title="Pick a Record" headingId="shelf-heading" />
+    </div>
   </header>
 
   <div>
@@ -136,7 +129,10 @@ const recordingsLd = songs.map((s) => ({
                 </ol>
               )}
 
-              <PlatformButtons song={song} location="music_page" class="mt-8" />
+              <div class="mt-8 flex flex-wrap items-center gap-3">
+                <PreviewButton song={song} variant="gold" location="music_page" />
+              </div>
+              <PlatformButtons song={song} location="music_page" class="mt-5" />
               <div class="mt-6 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
                 <PlayerEmbed song={song} />
                 <ShareButton title={d.title} path={`/music#${song.id}`} />

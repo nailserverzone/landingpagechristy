@@ -1,0 +1,378 @@
+---
+/**
+ * The catalogue as a physical stack of postcards you throw aside.
+ * Drag or swipe the top card past ~10% of the deck width to throw it; it
+ * re-stacks at the back. Left/right arrow keys and the dots do the same, so
+ * it works without a mouse. touch-action: pan-y keeps page scrolling on
+ * phones. With reduced motion the throw becomes an instant swap.
+ */
+import { Image } from 'astro:assets';
+import PreviewButton from '@/components/music/PreviewButton.astro';
+import { getSongs } from '@/lib/content';
+import { kindLabel, releaseYear } from '@/lib/music';
+
+const songs = await getSongs();
+---
+
+<div class="deck-wrap">
+  <div
+    class="deck"
+    tabindex="0"
+    role="region"
+    aria-roledescription="card deck"
+    aria-label="Releases. Use the left and right arrow keys to flip through."
+    data-deck
+  >
+    {songs.map((song, i) => (
+      <article class="card" data-card data-index={i} aria-label={song.data.title}>
+        <div class="stamp">
+          <div class="stamp-in">
+            <div class="frame">
+              <Image
+                src={song.data.cover}
+                alt={song.data.coverAlt}
+                widths={[360, 540, 720]}
+                sizes="(min-width: 1024px) 30rem, 82vw"
+                format="webp"
+                loading={i < 2 ? 'eager' : 'lazy'}
+                draggable="false"
+                class="art"
+              />
+              <span class="cat label" aria-hidden="true">
+                GM-{String(songs.length - i).padStart(2, '0')}
+              </span>
+            </div>
+            <div class="strip">
+              <div class="min-w-0">
+                <a href={`/music#${song.id}`} class="ttl font-display" draggable="false">
+                  {song.data.title}
+                </a>
+                <p class="label sub">
+                  {releaseYear(song)} · {kindLabel(song)}
+                </p>
+              </div>
+              <PreviewButton song={song} variant="round" location="deck" />
+            </div>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <div class="deck-foot">
+    <p class="label text-ivory-muted">
+      <span class="hint-pointer">Drag or swipe to flip</span>
+      <span class="hint-key">· arrow keys work too</span>
+    </p>
+    <div class="dots" role="group" aria-label="Choose a release">
+      {songs.map((s, i) => (
+        <button
+          type="button"
+          class="dot"
+          data-dot={i}
+          aria-label={`${i + 1} of ${songs.length}: ${s.data.title}`}
+        />
+      ))}
+    </div>
+  </div>
+  <p class="sr-only" aria-live="polite" data-deck-live></p>
+</div>
+
+<style>
+  .deck-wrap {
+    width: 100%;
+    max-width: 30rem;
+    margin-inline: auto;
+    /* Room for the stacked cards peeking out to the right. */
+    padding-right: 2.5rem;
+  }
+  .deck {
+    position: relative;
+    aspect-ratio: 0.84;
+    touch-action: pan-y;
+    user-select: none;
+    outline-offset: 10px;
+  }
+  .card {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 85%;
+    cursor: grab;
+    will-change: transform;
+  }
+  .card:active {
+    cursor: grabbing;
+  }
+  .card {
+    filter: drop-shadow(0 22px 26px rgb(0 0 0 / 0.5));
+  }
+  /* Postage-stamp edge: half-circle bites along the outer band only. */
+  .stamp {
+    --hole: 9px;
+    height: 100%;
+    padding: var(--hole);
+    background: var(--gold);
+    color: var(--black);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      radial-gradient(circle calc(var(--hole) * 0.55) at 50% 50%, #0000 96%, #000)
+        calc(var(--hole) * -1) calc(var(--hole) * -1) / calc(var(--hole) * 2) calc(var(--hole) * 2)
+        round;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      radial-gradient(circle calc(var(--hole) * 0.55) at 50% 50%, #0000 96%, #000)
+        calc(var(--hole) * -1) calc(var(--hole) * -1) / calc(var(--hole) * 2) calc(var(--hole) * 2)
+        round;
+  }
+  .stamp-in {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 4.5% 4.5% 3.5%;
+  }
+  .frame {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--black);
+    box-shadow: 0 0 0 3px var(--black);
+  }
+  .frame :global(.art) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .cat {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--black);
+    color: var(--gold);
+    font-size: 0.6875rem;
+  }
+  .strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 0.9rem;
+  }
+  .ttl {
+    display: block;
+    font-size: clamp(1.35rem, 1rem + 1.2vw, 1.9rem);
+    font-weight: 900;
+    line-height: 0.92;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .ttl:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .sub {
+    margin-top: 0.35rem;
+    font-size: 0.6875rem;
+  }
+  .card :global(.pv-icon) {
+    background: var(--black);
+    color: var(--gold);
+  }
+  .card :global(:focus-visible) {
+    outline-color: var(--black);
+  }
+
+  .deck-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-top: 2rem;
+  }
+  .dots {
+    display: flex;
+    gap: 0;
+  }
+  .dot {
+    position: relative;
+    width: 1.6rem;
+    height: 2.75rem;
+    cursor: pointer;
+  }
+  .dot::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--charcoal-2);
+    transform: translate(-50%, -50%);
+    transition:
+      background-color 200ms ease,
+      width 300ms var(--ease-out-soft);
+  }
+  .dot[aria-current='true']::before {
+    width: 18px;
+    border-radius: 4px;
+    background: var(--gold);
+  }
+  .dot:hover::before {
+    background: var(--ivory-muted);
+  }
+  @media (hover: none) {
+    .hint-key {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { animate } from 'motion';
+
+  const deck = document.querySelector<HTMLElement>('[data-deck]');
+  if (deck) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cards = [...deck.querySelectorAll<HTMLElement>('[data-card]')];
+    const dots = [...document.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const live = document.querySelector<HTMLElement>('[data-deck-live]')!;
+    const n = cards.length;
+    // order[0] is the card on top.
+    let order = cards.map((_, i) => i);
+    let busy = false;
+
+    const spring = { type: 'spring' as const, stiffness: 260, damping: 26 };
+    const pose = (k: number) => ({
+      x: k * 9,
+      y: k * -7,
+      rotate: k === 0 ? 0 : (k % 2 ? 1 : -1) * (2 + k * 1.2),
+      scale: 1 - k * 0.035,
+    });
+
+    function layout(instant = false) {
+      order.forEach((ci, k) => {
+        const el = cards[ci];
+        el.style.zIndex = String(n - k);
+        const top = k === 0;
+        el.toggleAttribute('inert', !top);
+        el.setAttribute('aria-hidden', String(!top));
+        if (k > 4) {
+          el.style.opacity = '0';
+        } else {
+          el.style.opacity = '1';
+        }
+        const target = pose(Math.min(k, 4));
+        animate(el, target, instant || reduce ? { duration: 0 } : spring);
+      });
+      const topIndex = order[0];
+      dots.forEach((d, i) => d.setAttribute('aria-current', String(i === topIndex)));
+      live.textContent = `${topIndex + 1} of ${n}: ${cards[topIndex].getAttribute('aria-label')}`;
+    }
+
+    async function throwTop(dir: 1 | -1) {
+      if (busy) return;
+      busy = true;
+      const el = cards[order[0]];
+      const w = deck!.offsetWidth;
+      if (!reduce) {
+        await animate(
+          el,
+          { x: dir * w * 1.25, y: -50, rotate: dir * 26, scale: 1.02 },
+          { duration: 0.38, ease: [0.3, 0.7, 0.4, 1] },
+        ).finished;
+      }
+      order = [...order.slice(1), order[0]];
+      // The thrown card returns to the back of the stack from where it landed.
+      layout();
+      busy = false;
+    }
+
+    async function bringBack() {
+      if (busy) return;
+      busy = true;
+      const last = order[n - 1];
+      const el = cards[last];
+      order = [last, ...order.slice(0, n - 1)];
+      if (!reduce) {
+        el.style.zIndex = String(n + 1);
+        await animate(
+          el,
+          { x: -deck!.offsetWidth * 1.25, y: -50, rotate: -26, scale: 1.02 },
+          { duration: 0 },
+        ).finished;
+      }
+      layout();
+      busy = false;
+    }
+
+    async function goTo(index: number) {
+      let guard = n;
+      while (order[0] !== index && guard--) {
+        // eslint-disable-next-line no-await-in-loop
+        await throwTop(1);
+      }
+    }
+
+    // ---- dragging ----
+    let startX = 0;
+    let startY = 0;
+    let dx = 0;
+    let dragging: HTMLElement | null = null;
+    deck.addEventListener('pointerdown', (e) => {
+      const card = (e.target as HTMLElement).closest<HTMLElement>('[data-card]');
+      if (!card || busy || card !== cards[order[0]]) return;
+      if ((e.target as HTMLElement).closest('button, a') && e.pointerType === 'mouse') return;
+      dragging = card;
+      startX = e.clientX;
+      startY = e.clientY;
+      dx = 0;
+      card.setPointerCapture(e.pointerId);
+    });
+    deck.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      dx = e.clientX - startX;
+      const dy = (e.clientY - startY) * 0.25;
+      animate(dragging, { x: dx, y: dy, rotate: dx * 0.06, scale: 1.02 }, { duration: 0 });
+    });
+    const end = () => {
+      if (!dragging) return;
+      const el = dragging;
+      dragging = null;
+      if (Math.abs(dx) > deck.offsetWidth * 0.1) {
+        throwTop(dx > 0 ? 1 : -1);
+      } else {
+        animate(el, pose(0), spring);
+      }
+    };
+    deck.addEventListener('pointerup', end);
+    deck.addEventListener('pointercancel', end);
+    // A drag should never also follow the title link.
+    deck.addEventListener(
+      'click',
+      (e) => {
+        if (Math.abs(dx) > 6) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      true,
+    );
+
+    deck.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        throwTop(1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        bringBack();
+      }
+    });
+    dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+
+    layout(true);
+  }
+</script>

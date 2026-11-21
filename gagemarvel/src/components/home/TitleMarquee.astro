@@ -1,0 +1,113 @@
+---
+/**
+ * A band of giant type that drifts sideways and speeds up with your scroll
+ * (and reverses when you scroll back up). It uses the client's lyric lines
+ * when any exist, otherwise the song titles, so it never shows words Gage
+ * didn't write. Decorative: hidden from screen readers.
+ */
+import { getSongs } from '@/lib/content';
+
+interface Props {
+  tone?: 'dark' | 'gold';
+}
+const { tone = 'dark' } = Astro.props;
+const songs = await getSongs();
+const lyrics = songs.flatMap((s) => s.data.lyricLines);
+const words = lyrics.length
+  ? lyrics
+  : songs.map((s) => s.data.title.replace(/\s*\(feat\..*\)/, ''));
+// Two identical runs so the loop is seamless.
+const run = [...words, ...words];
+---
+
+<div class:list={['marquee', tone === 'gold' && 'on-gold']} aria-hidden="true" data-marquee>
+  <div class="track" data-track>
+    {[0, 1].map(() => (
+      <div class="run">
+        {run.map((w, i) => (
+          <>
+            <span class:list={['w font-display', i % 2 ? 'outline' : '']}>{w}</span>
+            <span class="star">
+              <svg viewBox="0 0 20 20">
+                <path d="M10 0Q11 9 20 10Q11 11 10 20Q9 11 0 10Q9 9 10 0Z" fill="currentColor" />
+              </svg>
+            </span>
+          </>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    padding-block: clamp(1rem, 2.5vw, 2rem);
+    border-block: 1px solid var(--charcoal-2);
+    white-space: nowrap;
+  }
+  .marquee.on-gold {
+    border-color: var(--black);
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+  }
+  .run {
+    display: flex;
+    align-items: center;
+  }
+  .w {
+    font-size: clamp(2.75rem, 7vw, 6.5rem);
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    padding-inline: 0.15em;
+  }
+  .outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px currentColor;
+  }
+  .marquee:not(.on-gold) .outline {
+    -webkit-text-stroke-color: var(--ivory-muted);
+  }
+  .star {
+    display: inline-flex;
+    width: clamp(1.25rem, 2.4vw, 2rem);
+    margin-inline: 0.5em;
+    color: var(--gold);
+  }
+  .on-gold .star {
+    color: var(--black);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((m) => {
+    const track = m.querySelector<HTMLElement>('[data-track]')!;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let x = 0;
+    let dir = -1;
+    let lastY = window.scrollY;
+    let boost = 0;
+    let visible = false;
+    new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(m);
+    const tick = () => {
+      const y = window.scrollY;
+      const v = y - lastY;
+      lastY = y;
+      if (v !== 0) dir = v > 0 ? -1 : 1;
+      boost = boost * 0.9 + Math.min(Math.abs(v), 80) * 0.12;
+      if (visible) {
+        const half = track.scrollWidth / 2;
+        x += dir * (0.6 + boost);
+        if (x <= -half) x += half;
+        if (x > 0) x -= half;
+        track.style.transform = `translate3d(${x}px,0,0)`;
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+</script>

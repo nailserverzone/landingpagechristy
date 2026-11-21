@@ -62,6 +62,16 @@ const songs = defineCollection({
       /** Spotify track or album ID for the embedded player (the part after /track/ or /album/). */
       spotifyId: z.string().optional(),
       links: platformLinks,
+      /**
+       * Apple Music track ID (the number after ?i= in a song link). Used to
+       * fetch Apple's official 30 second preview at build time.
+       */
+      appleTrackId: z.number().int().optional(),
+      /**
+       * A few lyric lines supplied by the client, used as decoration (lyric
+       * cards, the title marquee). Only ever lines the client provides.
+       */
+      lyricLines: z.array(z.string()).default([]),
       tracks: z
         .array(z.object({ title: z.string(), appleMusic: url.optional(), spotify: url.optional() }))
         .default([]),

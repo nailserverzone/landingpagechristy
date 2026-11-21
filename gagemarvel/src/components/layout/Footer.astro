@@ -104,9 +104,30 @@ const year = new Date().getFullYear();
       </a>
     </div>
   </div>
+  <!-- The wordmark, full width, cropped by the bottom of the page. -->
+  <div class="crop" aria-hidden="true">
+    <span class="font-display">Gage Marvel</span>
+  </div>
 </footer>
 
 <style>
+  .crop {
+    overflow: hidden;
+    height: clamp(5rem, 13.5vw, 13rem);
+    padding-inline: clamp(0.5rem, 2vw, 1.5rem);
+  }
+  .crop span {
+    display: block;
+    font-size: clamp(5rem, 19.2vw, 19rem);
+    font-weight: 900;
+    line-height: 0.8;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-align: center;
+    color: var(--gold);
+    transform: translateY(8%);
+    letter-spacing: -0.01em;
+  }
   .social-btn {
     display: inline-flex;
     align-items: center;

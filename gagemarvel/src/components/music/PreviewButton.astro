@@ -1,0 +1,130 @@
+---
+/**
+ * Play button for a release's official Apple Music 30 second preview.
+ * Renders nothing if Apple had no preview for it this build.
+ * The shared player (NowSpinning) does the actual playing.
+ */
+import { getImage } from 'astro:assets';
+import { previewUrl } from '@/lib/apple';
+import type { Song } from '@/lib/music';
+
+interface Props {
+  song: Song;
+  variant?: 'pill' | 'round' | 'gold';
+  class?: string;
+  location: string;
+}
+const { song, variant = 'pill', class: className, location } = Astro.props;
+const url = await previewUrl(song.data.appleTrackId);
+const thumb = url ? await getImage({ src: song.data.cover, width: 160, format: 'webp' }) : null;
+---
+
+{url && thumb && (
+  <button
+    type="button"
+    class:list={['pv', `pv-${variant}`, className]}
+    data-preview={url}
+    data-preview-id={song.id}
+    data-preview-title={song.data.title}
+    data-preview-cover={thumb.src}
+    data-preview-glow={song.data.glow ?? '#E8B830'}
+    data-preview-apple={song.data.links.appleMusic ?? ''}
+    data-location={location}
+    aria-pressed="false"
+  >
+    <span class="pv-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" class="i-play">
+        <path d="M8 5l12 7-12 7z" fill="currentColor" />
+      </svg>
+      <svg viewBox="0 0 24 24" class="i-pause">
+        <path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" />
+      </svg>
+    </span>
+    {variant !== 'round' && (
+      <span class="pv-text">
+        <span class="when-paused">Play preview</span>
+        <span class="when-playing">Pause preview</span>
+      </span>
+    )}
+    <span class="sr-only">: {song.data.title}, 30 second Apple Music preview</span>
+  </button>
+)}
+
+<style>
+  .pv {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: var(--tracking-nav);
+    text-transform: uppercase;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      transform 200ms var(--ease-out-soft);
+  }
+  .pv-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--black);
+  }
+  .pv-icon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .pv-pill {
+    padding: 0.35rem 1rem 0.35rem 0.4rem;
+    border: 1px solid rgb(244 238 223 / 0.25);
+    border-radius: 999px;
+    color: var(--ivory);
+  }
+  .pv-pill:hover {
+    border-color: var(--gold);
+  }
+  .pv-gold {
+    padding: 0.4rem 1.2rem 0.4rem 0.45rem;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--black);
+  }
+  .pv-gold .pv-icon {
+    background: var(--black);
+    color: var(--gold);
+  }
+  .pv-gold:hover {
+    background: var(--gold-deep);
+  }
+  .pv-round {
+    padding: 0;
+    min-width: 2.75rem;
+    justify-content: center;
+  }
+  .pv-round .pv-icon {
+    width: 3rem;
+    height: 3rem;
+    box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.7);
+  }
+  .pv-round:hover {
+    transform: scale(1.06);
+  }
+  .i-pause,
+  .when-playing {
+    display: none;
+  }
+  .pv[aria-pressed='true'] .i-pause,
+  .pv[aria-pressed='true'] .when-playing {
+    display: inline;
+  }
+  .pv[aria-pressed='true'] .i-play,
+  .pv[aria-pressed='true'] .when-paused {
+    display: none;
+  }
+</style>

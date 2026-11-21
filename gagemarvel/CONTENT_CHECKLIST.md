@@ -40,7 +40,13 @@ _Back In the Country (feat. Aaron Brown)_, _Right Hand Man_, _Me Against Me_
 - [ ] Confirm the title spelling: the client brief says "Tonight's Only Me and You";
       streaming services list "Tonights Only Me and You" (no apostrophe). The site
       uses the apostrophe.
-- [ ] Optional: a one or two sentence description, credits and lyrics per release.
+- [ ] Lyric lines for decoration: two to four short lines per song, approved by
+      Gage. They go in `lyricLines` in each song file and appear in the scrolling
+      title band and other decorations. Until then the site shows song titles,
+      never guessed lyrics.
+- [ ] Approve or rewrite the home page line "Songs about faith, family, an ice cold
+      beer and the ones who stand beside you." (drawn only from the song titles).
+- [ ] Optional: a one or two sentence description, credits and full lyrics per release.
 - [ ] Confirm all eight releases should be listed (the brief named three).
 
 ## Links and contacts (`src/config/site.ts` and Netlify environment variables)
