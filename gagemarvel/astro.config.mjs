@@ -38,7 +38,8 @@ const placeholderGuard = {
 export default defineConfig({
   site: 'https://gagemarvel.com',
   trailingSlash: 'never',
-  build: { format: 'file' },
+  // Inline the (small) CSS into each page: no render-blocking stylesheet requests.
+  build: { format: 'file', inlineStylesheets: 'always' },
   integrations: [
     sitemap({
       // Hidden and utility pages stay out of the sitemap.

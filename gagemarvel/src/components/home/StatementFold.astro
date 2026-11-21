@@ -78,7 +78,7 @@ const count = String(songs.length).padStart(2, '0');
         <button type="button" class="btn btn-outline btn-sm" data-listen-open>
           Listen Now
         </button>
-        <ShareButton title={featured.data.title} path={`/music#${featured.id}`} />
+        <ShareButton title={featured.data.title} path={`/songs/${featured.id}`} />
       </div>
       <PlayerEmbed song={featured} class="mt-6 max-w-xl" />
       <p class="label mt-6 text-ivory-muted">Also on</p>

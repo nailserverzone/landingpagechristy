@@ -4,8 +4,9 @@ import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import ListenModal from '@/components/music/ListenModal.astro';
 import NowSpinning from '@/components/music/NowSpinning.astro';
+import Analytics from '@/components/layout/Analytics.astro';
 import { site } from '@/config/site';
-import displayFont from '@fontsource/big-shoulders-display/files/big-shoulders-display-latin-800-normal.woff2?url';
+import displayFont from '@fontsource/big-shoulders-display/files/big-shoulders-display-latin-900-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -86,8 +87,9 @@ const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <script is:inline>
       document.documentElement.classList.replace('no-js', 'js');
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches)
-        document.documentElement.classList.add('js-reveal');
+        document.documentElement.classList.add('js-reveal', 'portal-live');
     </script>
+    <Analytics />
     <slot name="head" />
   </head>
   <body>

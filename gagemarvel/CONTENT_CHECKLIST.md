@@ -89,5 +89,9 @@ _Back In the Country (feat. Aaron Brown)_, _Right Hand Man_, _Me Against Me_
 
 - [ ] Choose Kit (ConvertKit) or Mailchimp and share the public form URL.
 - [ ] Turn on double opt-in at the provider.
-- [ ] Plausible account (or GA4 property ID).
+- [ ] Plausible account (or GA4 property ID), with each event in README section 9
+      added as a custom-event goal.
+- [ ] Netlify build hook saved as the GitHub secret `NETLIFY_BUILD_HOOK_URL` so the
+      daily rebuild runs (README > Daily rebuild).
+- [ ] Domain: add the DNS records in README section 8 at the registrar.
 - [ ] Privacy policy reviewed by the client or their lawyer.

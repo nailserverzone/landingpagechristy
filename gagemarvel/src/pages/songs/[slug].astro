@@ -1,0 +1,239 @@
+---
+/**
+ * One page per release, mostly so each song can be shared with its own
+ * cover-art card (og:image) and found in search. Lit by the song's own mood.
+ */
+import { Image, getImage } from 'astro:assets';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import VinylSleeve from '@/components/music/VinylSleeve.astro';
+import PreviewButton from '@/components/music/PreviewButton.astro';
+import PlatformButtons from '@/components/music/PlatformButtons.astro';
+import PlayerEmbed from '@/components/music/PlayerEmbed.astro';
+import ShareButton from '@/components/music/ShareButton.astro';
+import { getSongs } from '@/lib/content';
+import { formatDate, kindLabel, releaseYear, type Song } from '@/lib/music';
+import { site, withUtm } from '@/config/site';
+
+export const getStaticPaths = (async () => {
+  const songs = await getSongs();
+  return songs.map((song, i) => ({
+    params: { slug: song.id },
+    props: { song, prev: songs[i + 1], next: songs[i - 1], all: songs },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  song: Song;
+  prev?: Song;
+  next?: Song;
+  all: Song[];
+}
+const { song, prev, next, all } = Astro.props;
+const d = song.data;
+const glow = await getImage({ src: d.cover, width: 480, format: 'webp' });
+const others = all.filter((s) => s.id !== song.id);
+const desc = `${d.title} by Gage Marvel. ${kindLabel(song)}${
+  d.releaseDate ? `, released ${formatDate(d.releaseDate)}` : ''
+}. Listen on Apple Music, Spotify, YouTube and more.`;
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': d.kind === 'single' ? 'MusicRecording' : 'MusicAlbum',
+  name: d.title,
+  url: `${site.url}/songs/${song.id}`,
+  image: `${site.url}/og/${song.id}.png`,
+  byArtist: { '@type': 'MusicGroup', name: site.name, url: site.url },
+  ...(d.releaseDate ? { datePublished: d.releaseDate } : {}),
+  ...(d.label ? { recordLabel: { '@type': 'Organization', name: site.label } } : {}),
+  ...(d.tracks.length
+    ? {
+        numTracks: d.tracks.length,
+        track: d.tracks.map((t) => ({ '@type': 'MusicRecording', name: t.title })),
+      }
+    : {}),
+  sameAs: Object.values(d.links).filter((u) => u && !u.includes('#todo-content')),
+};
+---
+
+<BaseLayout
+  title={d.title}
+  description={desc}
+  image={`/og/${song.id}.png`}
+  imageAlt={d.coverAlt}
+  jsonLd={ld}
+>
+  <article
+    class="relative isolate overflow-hidden"
+    data-mood={d.mood}
+    style={`--glow:${d.glow ?? '#E8B830'}`}
+    aria-labelledby="song-title"
+  >
+    <img src={glow.src} alt="" class="ambient opacity-40!" />
+    <div
+      class="absolute inset-0 -z-10 bg-gradient-to-b from-black/40 via-black/70 to-black"
+      aria-hidden="true"
+    ></div>
+    {d.mood && <canvas class="mood-canvas" data-mood-canvas aria-hidden="true"></canvas>}
+
+    <div class="container-site grid items-center gap-12 pt-10 pb-20 lg:grid-cols-12 lg:pt-16 lg:pb-28">
+      <nav aria-label="Breadcrumb" class="label text-ivory-muted lg:col-span-12">
+        <a href="/music" class="hover:text-gold">
+          Music
+        </a>{' '}
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{d.title}</span>
+      </nav>
+
+      <div class="sleeve-host lg:col-span-5" tabindex="-1">
+        <VinylSleeve song={song} out eager sizes="(min-width: 1024px) 36vw, 80vw" />
+      </div>
+
+      <div class="lg:col-span-7">
+        <p class="label text-gold">
+          {kindLabel(song)} · {releaseYear(song)}
+        </p>
+        <h1 id="song-title" class:list={['song-title mt-3', d.mood === 'neon' && 'neon-title']}>
+          {d.title}
+        </h1>
+        <p class="mt-4 text-ivory-muted">
+          {d.releaseDate ? `Released ${formatDate(d.releaseDate)}` : 'Release date to come'}
+          {d.label && <> · {d.label}</>}
+        </p>
+        {d.description && <p class="mt-5 max-w-prose text-lg">{d.description}</p>}
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <PreviewButton song={song} variant="gold" location="song_page" />
+          <ShareButton title={d.title} path={`/songs/${song.id}`} />
+        </div>
+
+        {d.tracks.length > 0 && (
+          <ol class="tracks mt-8 max-w-xl">
+            {d.tracks.map((t, n) => (
+              <li>
+                <span class="text-ivory-muted tabular-nums">{n + 1}</span>
+                {t.appleMusic ? (
+                  <a
+                    href={withUtm(t.appleMusic, 'song_page')}
+                    target="_blank"
+                    rel="noopener"
+                    class="hover:text-gold hover:underline"
+                    data-listen-platform="appleMusic"
+                    data-song={t.title}
+                    data-location="song_page"
+                  >
+                    {t.title}
+                    <span class="sr-only"> on Apple Music (opens in a new tab)</span>
+                  </a>
+                ) : (
+                  <span>{t.title}</span>
+                )}
+              </li>
+            ))}
+          </ol>
+        )}
+
+        <p class="label mt-8 text-ivory-muted">Listen on</p>
+        <PlatformButtons song={song} location="song_page" class="mt-3" />
+        <PlayerEmbed song={song} class="mt-6 max-w-xl" />
+
+        {d.lyricLines.length > 0 && (
+          <blockquote class="lyric mt-10">
+            {d.lyricLines.map((l) => (
+              <p>{l}</p>
+            ))}
+          </blockquote>
+        )}
+      </div>
+    </div>
+  </article>
+
+  <nav aria-label="More releases" class="border-t border-charcoal-2">
+    <div class="container-site grid gap-6 py-10 sm:grid-cols-2">
+      {prev ? (
+        <a href={`/songs/${prev.id}`} class="pn">
+          <span class="label text-ivory-muted">Older</span>
+          <span class="font-display t">{prev.data.title}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <a href={`/songs/${next.id}`} class="pn sm:text-right">
+          <span class="label text-ivory-muted">Newer</span>
+          <span class="font-display t">{next.data.title}</span>
+        </a>
+      )}
+    </div>
+  </nav>
+
+  <section class="bg-charcoal py-14" aria-labelledby="more-heading">
+    <div class="container-site">
+      <h2 id="more-heading" class="text-display-sm">
+        More from Gage
+      </h2>
+      <ul class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
+        {others.map((s) => (
+          <li>
+            <a href={`/songs/${s.id}`} class="lift block">
+              <Image
+                src={s.data.cover}
+                alt=""
+                width={240}
+                height={240}
+                format="webp"
+                class="aspect-square w-full rounded-[3px] object-cover"
+              />
+              <span class="mt-2 block text-sm font-semibold">{s.data.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .song-title {
+    font-size: clamp(3.25rem, 2rem + 6vw, 7.5rem);
+    line-height: 0.86;
+    font-weight: 900;
+  }
+  .tracks {
+    border-top: 1px solid var(--charcoal-2);
+  }
+  .tracks li {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    align-items: center;
+    min-height: 2.75rem;
+    border-bottom: 1px solid var(--charcoal-2);
+  }
+  .lyric {
+    max-width: 30rem;
+    padding: 1.5rem 1.25rem;
+    border-left: 3px solid var(--gold);
+    font-family: 'Permanent Marker', cursive;
+    font-size: 1.35rem;
+    line-height: 1.5;
+  }
+  .pn {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+  }
+  .pn .t {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .pn:hover .t {
+    color: var(--gold);
+  }
+</style>
+
+<script>
+  import { initMoods } from '@/lib/moods';
+  initMoods();
+</script>

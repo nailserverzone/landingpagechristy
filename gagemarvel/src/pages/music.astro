@@ -140,7 +140,7 @@ const recordingsLd = songs.map((s) => ({
               <PlatformButtons song={song} location="music_page" class="mt-5" />
               <div class="mt-6 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
                 <PlayerEmbed song={song} />
-                <ShareButton title={d.title} path={`/music#${song.id}`} />
+                <ShareButton title={d.title} path={`/songs/${song.id}`} />
               </div>
 
               {d.credits.length > 0 && (

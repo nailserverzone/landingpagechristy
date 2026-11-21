@@ -1,0 +1,44 @@
+---
+/**
+ * Loads the chosen analytics tool, from env only (README > Analytics).
+ *   PUBLIC_ANALYTICS_PROVIDER = plausible (default) | ga4 | none
+ * Plausible is cookieless, so no consent banner is needed. Nothing loads in
+ * local development. A tiny queue means events fired before the script has
+ * loaded are not lost.
+ */
+const env = import.meta.env;
+const provider = env.PROD ? env.PUBLIC_ANALYTICS_PROVIDER || 'plausible' : 'none';
+const plausibleDomain = env.PUBLIC_PLAUSIBLE_DOMAIN || 'gagemarvel.com';
+const plausibleSrc =
+  env.PUBLIC_PLAUSIBLE_SCRIPT_SRC ||
+  'https://plausible.io/js/script.tagged-events.outbound-links.js';
+const ga4 = env.PUBLIC_GA4_ID || '';
+---
+
+{provider === 'plausible' && (
+  <>
+    <script is:inline>
+      window.plausible =
+        window.plausible ||
+        function (...args) {
+          (window.plausible.q = window.plausible.q || []).push(args);
+        };
+    </script>
+    <script is:inline defer data-domain={plausibleDomain} src={plausibleSrc} />
+  </>
+)}
+{provider === 'ga4' && ga4 && (
+  <>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`} />
+    <script is:inline define:vars={{ ga4 }}>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () {
+        // gtag must queue the real Arguments object, not an array.
+        // eslint-disable-next-line prefer-rest-params
+        window.dataLayer.push(arguments);
+      };
+      window.gtag('js', new Date());
+      window.gtag('config', ga4, { anonymize_ip: true });
+    </script>
+  </>
+)}

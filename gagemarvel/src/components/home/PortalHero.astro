@@ -20,13 +20,25 @@ const songs = await getSongs();
 const sideA = songs.slice(0, Math.ceil(songs.length / 2));
 const sideB = songs.slice(Math.ceil(songs.length / 2));
 // TODO(content): swap for the professional hero photo once it arrives.
-const bg = await getImage({ src: featured.data.cover, width: 1600, format: 'webp' });
+const bg = await getImage({
+  src: featured.data.cover,
+  widths: [480, 800, 1200, 1600],
+  format: 'webp',
+});
 const followUrl = activeLinks(social)[0]?.[1] ?? '';
 ---
 
 <section class="portal" data-portal aria-labelledby="portal-title">
   <div class="stage">
-    <img class="p-img" src={bg.src} alt="" fetchpriority="high" data-p="img" />
+    <img
+      class="p-img"
+      src={bg.src}
+      srcset={bg.srcSet.attribute}
+      sizes="100vw"
+      alt=""
+      fetchpriority="high"
+      data-p="img"
+    />
     <div class="p-duo" data-p="duo" aria-hidden="true"></div>
     <div class="p-veil" aria-hidden="true"></div>
 
@@ -302,6 +314,20 @@ const followUrl = activeLinks(social)[0]?.[1] ?? '';
   }
   :global(.portal-live) .p-title {
     z-index: 3;
+    /* Same as render(0), so the script's first frame changes nothing. */
+    transform: translateY(-50%) scale(0.78);
+    letter-spacing: 0.16em;
+  }
+  :global(.portal-live) .p-cta {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+    pointer-events: none;
+  }
+  :global(.portal-live) .p-img {
+    transform: scale(1.22);
+  }
+  :global(.portal-live) .p-duo {
+    opacity: 0;
   }
   :global(.portal-live) .p-meta {
     z-index: 3;
@@ -328,8 +354,9 @@ const followUrl = activeLinks(social)[0]?.[1] ?? '';
   const section = document.querySelector<HTMLElement>('[data-portal]');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // .portal-live is set in <head> (BaseLayout) so the first paint is already
+  // the closed state and nothing jumps when this script runs.
   if (section && !reduce) {
-    document.documentElement.classList.add('portal-live');
     const q = (k: string) => section.querySelector<HTMLElement>(`[data-p="${k}"]`)!;
     const img = q('img');
     const duo = q('duo');

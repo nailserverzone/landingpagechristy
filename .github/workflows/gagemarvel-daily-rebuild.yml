@@ -1,0 +1,31 @@
+# Rebuilds gagemarvel.com every morning so shows whose date has passed move
+# from "Upcoming" to "Past" on their own, and the Apple Music preview links
+# stay fresh. It only pings a Netlify build hook; nothing is built here.
+#
+# Setup (once): in Netlify, Site configuration > Build & deploy > Build hooks,
+# create a hook called "Daily rebuild" and copy its URL. In GitHub, Settings >
+# Secrets and variables > Actions, add it as NETLIFY_BUILD_HOOK_URL.
+name: gagemarvel daily rebuild
+
+on:
+  schedule:
+    # 10:17 UTC = early morning across the US (5:17 AM Central in winter).
+    - cron: '17 10 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Netlify build
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "NETLIFY_BUILD_HOOK_URL is not set; skipping. See the comment at the top of this file."
+            exit 0
+          fi
+          curl --fail --silent --show-error -X POST -d '{}' "$HOOK"
+          echo "Rebuild triggered."

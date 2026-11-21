@@ -31,10 +31,10 @@ const songs = await getSongs();
               <Image
                 src={song.data.cover}
                 alt={song.data.coverAlt}
-                widths={[360, 540, 720]}
+                widths={[300, 420, 600, 720]}
                 sizes="(min-width: 1024px) 30rem, 82vw"
                 format="webp"
-                loading={i < 2 ? 'eager' : 'lazy'}
+                loading="lazy"
                 draggable="false"
                 class="art"
               />
@@ -44,7 +44,7 @@ const songs = await getSongs();
             </div>
             <div class="strip">
               <div class="min-w-0">
-                <a href={`/music#${song.id}`} class="ttl font-display" draggable="false">
+                <a href={`/songs/${song.id}`} class="ttl font-display" draggable="false">
                   {song.data.title}
                 </a>
                 <p class="label sub">
@@ -232,7 +232,16 @@ const songs = await getSongs();
 </style>
 
 <script>
-  import { animate } from 'motion';
+  // Plain CSS transitions (no animation library): an overshooting curve
+  // gives the settle its spring.
+  type Pose = { x: number; y: number; rotate: number; scale: number };
+  const SETTLE = 'transform 560ms cubic-bezier(0.2, 0.9, 0.25, 1.18)';
+  const THROW = 'transform 380ms cubic-bezier(0.3, 0.7, 0.4, 1)';
+  const setPose = (el: HTMLElement, p: Pose, transition = 'none') => {
+    el.style.transition = transition;
+    el.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${p.rotate}deg) scale(${p.scale})`;
+  };
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   const deck = document.querySelector<HTMLElement>('[data-deck]');
   if (deck) {
@@ -245,8 +254,7 @@ const songs = await getSongs();
     let order = cards.map((_, i) => i);
     let busy = false;
 
-    const spring = { type: 'spring' as const, stiffness: 260, damping: 26 };
-    const pose = (k: number) => ({
+    const pose = (k: number): Pose => ({
       x: k * 9,
       y: k * -7,
       rotate: k === 0 ? 0 : (k % 2 ? 1 : -1) * (2 + k * 1.2),
@@ -266,7 +274,7 @@ const songs = await getSongs();
           el.style.opacity = '1';
         }
         const target = pose(Math.min(k, 4));
-        animate(el, target, instant || reduce ? { duration: 0 } : spring);
+        setPose(el, target, instant || reduce ? 'none' : SETTLE);
       });
       const topIndex = order[0];
       dots.forEach((d, i) => d.setAttribute('aria-current', String(i === topIndex)));
@@ -279,11 +287,8 @@ const songs = await getSongs();
       const el = cards[order[0]];
       const w = deck!.offsetWidth;
       if (!reduce) {
-        await animate(
-          el,
-          { x: dir * w * 1.25, y: -50, rotate: dir * 26, scale: 1.02 },
-          { duration: 0.38, ease: [0.3, 0.7, 0.4, 1] },
-        ).finished;
+        setPose(el, { x: dir * w * 1.25, y: -50, rotate: dir * 26, scale: 1.02 }, THROW);
+        await wait(380);
       }
       order = [...order.slice(1), order[0]];
       // The thrown card returns to the back of the stack from where it landed.
@@ -299,11 +304,8 @@ const songs = await getSongs();
       order = [last, ...order.slice(0, n - 1)];
       if (!reduce) {
         el.style.zIndex = String(n + 1);
-        await animate(
-          el,
-          { x: -deck!.offsetWidth * 1.25, y: -50, rotate: -26, scale: 1.02 },
-          { duration: 0 },
-        ).finished;
+        setPose(el, { x: -deck!.offsetWidth * 1.25, y: -50, rotate: -26, scale: 1.02 });
+        el.getBoundingClientRect(); // commit the start position before animating in
       }
       layout();
       busy = false;
@@ -335,7 +337,7 @@ const songs = await getSongs();
       if (!dragging) return;
       dx = e.clientX - startX;
       const dy = (e.clientY - startY) * 0.25;
-      animate(dragging, { x: dx, y: dy, rotate: dx * 0.06, scale: 1.02 }, { duration: 0 });
+      setPose(dragging, { x: dx, y: dy, rotate: dx * 0.06, scale: 1.02 });
     });
     const end = () => {
       if (!dragging) return;
@@ -344,7 +346,7 @@ const songs = await getSongs();
       if (Math.abs(dx) > deck.offsetWidth * 0.1) {
         throwTop(dx > 0 ? 1 : -1);
       } else {
-        animate(el, pose(0), spring);
+        setPose(el, pose(0), SETTLE);
       }
     };
     deck.addEventListener('pointerup', end);

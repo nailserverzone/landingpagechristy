@@ -108,7 +108,9 @@ const songs = (await getSongs()).flatMap((s) =>
 
 <style>
   .setlist-wrap {
-    padding: 1.25rem 0.5rem;
+    padding: 1.25rem 1rem;
+    /* The tape and the tilt never push the page sideways on phones. */
+    overflow-x: clip;
   }
   .paper {
     position: relative;
